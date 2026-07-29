@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: volunteeros
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 30
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cache:
+    type: redis
+
+  threads:
+    virtual:
+      enabled: true
+
+  ai:
+    google:
+      genai:
+        api-key: ${AI_API}
+        chat:
+          options:
+            model: gemini-2.5-flash
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  file:
+    name: logs/log.log
+  level:
+    root: debug
+
+server:
+  port: 8080
+
+security:
+  csrf-enabled: false
+
+jwt:
+  access-secret: ${JWT_ACCESS_SECRET}
+  refresh-secret: ${JWT_REFRESH_SECRET}
+
+  access-expiration: ${ACCESS_EXPIRATION}
+  refresh-expiration: ${REFRESH_EXPIRATION}
+

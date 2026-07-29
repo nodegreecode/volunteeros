@@ -1,0 +1,106 @@
+import { Link } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useLogout } from "@/features/auth/authHooks.ts";
+import { useAuth } from "@/features/auth/authHooks.ts";
+import { useNavigate } from "react-router-dom";
+
+export default function Header() {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
+  const logoutMutation = useLogout();
+  function handleLogout() {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        navigate("/auth/login");
+      },
+    });
+  }
+
+  return (
+    <AppBar
+      //position="static"
+      elevation={0}
+      sx={{
+        width: "100%",
+        borderBottom: "1px solid #eee",
+      }}
+    >
+      <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Button
+          component={Link}
+          to={isAuthenticated ? "/dashboard" : "/"}
+          variant="text"
+          color="inherit"
+          sx={{
+            "&:hover": {
+              backgroundColor: "transparent",
+            },
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            VolunteerOS
+          </Typography>
+        </Button>
+        {/* Navigation Links */}
+        {!isLoading && !isAuthenticated && (
+          <Box>
+            <Button color="inherit" href="#how-it-works">
+              How It Works
+            </Button>
+            <Button color="inherit" href="#vol-opportunities">
+              Opportunities
+            </Button>
+            <Button color="inherit" href="#categories">
+              Categories
+            </Button>
+            <Button color="inherit" href="#testimonials">
+              Testimonials
+            </Button>
+          </Box>
+        )}
+
+        {/* Right Buttons */}
+        {!isLoading && !isAuthenticated ? (
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+            }}
+          >
+            <Button component={Link} to="/auth/login" color="inherit">
+              Login
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                color: "black",
+                borderRadius: 3,
+                textTransform: "none",
+              }}
+
+              href="#call-to-action"
+              color="inherit"
+            >
+              Get Started
+            </Button>
+          </Box>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+            data-testid="logout-button"
+          >
+            LogOut
+          </Button>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+}

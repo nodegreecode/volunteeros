@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Create PostgreSQL enum type -->
+    <changeSet id="create-ai-label-enum" author="avasylenko">
+        <sql>
+            CREATE TYPE ai_label_enum AS ENUM (
+            'SAFE',
+            'SPAM',
+            'HATE_SPEECH',
+            'HARASSMENT',
+            'VIOLENCE',
+            'SEXUAL_CONTENT',
+            'MISINFORMATION',
+            'SELF_HARM',
+            'OTHER'
+            );
+        </sql>
+    </changeSet>
+
+    <!-- Create PostgreSQL enum type -->
+    <changeSet id="create-moderation-status-enum" author="avasylenko">
+        <sql>
+            CREATE TYPE moderation_status_enum AS ENUM (
+            'PENDING',
+            'UNDER_REVIEW',
+            'APPROVED',
+            'REJECTED'
+            );
+        </sql>
+    </changeSet>
+
+    <!-- Create table -->
+    <changeSet id="create-table-moderation_case" author="avasylenko">
+        
+        <createTable tableName="moderation_case">
+
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="content_id" type="bigint">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="ai_label" type="ai_label_enum">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="status" type="moderation_status_enum">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="reviewed_by" type="bigint">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="admin_action" type="text">
+                <constraints unique="false" nullable="true"/>
+            </column>
+            <column name="created_at" type="datetime">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="reviewed_at" type="datetime">
+                <constraints unique="false" nullable="true"/>
+            </column>
+
+        </createTable>
+            
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Drop columns -->
+    <changeSet id="update-organization-table" author="avasylenko">
+        <dropColumn tableName="organization" columnName="first_name"/>
+        <dropColumn tableName="organization" columnName="last_name"/>
+    </changeSet>
+
+    <!-- Rename columns -->
+    <changeSet id="rename-org-columns-organization-table" author="avasylenko">
+        <renameColumn tableName="organization"
+                      oldColumnName="organization_form"
+                      newColumnName="org_form"
+                      columnDataType="varchar(255)"/>
+
+        <renameColumn tableName="organization"
+                      oldColumnName="organization_name"
+                      newColumnName="org_name"
+                      columnDataType="varchar(255)"/>
+    </changeSet>
+
+    <!-- Add new columns -->
+    <changeSet id="add-avatar-and-updated-at-organization-table" author="avasylenko">
+        <addColumn tableName="organization">
+            <column name="avatar" type="varchar(255)"/>
+            <column name="updated_at" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

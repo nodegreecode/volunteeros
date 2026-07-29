@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- 1. Create enum type -->
+    <changeSet id="create-project-status-enum" author="avasylenko">
+        <sql>
+            CREATE TYPE project_status_enum AS ENUM (
+            'DRAFT',
+            'ACTIVE',
+            'COMPLETED',
+            'CANCELLED'
+            );
+        </sql>
+
+    </changeSet>
+
+    <!-- 2. Fix existing data -->
+    <changeSet id="set-existing-status-to-active" author="avasylenko">
+        <update tableName="project">
+            <column name="status" value="ACTIVE"/>
+        </update>
+    </changeSet>
+
+    <!-- 3. Convert column type -->
+    <changeSet id="alter-project-status-to-enum" author="avasylenko">
+
+        <modifyDataType tableName="project"
+                        columnName="status"
+                        newDataType="project_status_enum"/>
+
+    </changeSet>
+
+    <!-- 3. Drop NN constraint updated_at -->
+    <changeSet id="drop-notnull-updated-at-project" author="avasylenko">
+
+        <dropNotNullConstraint
+                tableName="project"
+                columnName="updated_at"
+                columnDataType="timestamp"/>
+
+    </changeSet>
+
+</databaseChangeLog>

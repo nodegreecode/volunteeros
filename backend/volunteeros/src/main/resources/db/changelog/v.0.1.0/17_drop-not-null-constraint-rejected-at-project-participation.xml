@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="drop-not-null-constraint-rejected-at-project-participation.xml" author="avasylenko">
+
+        <dropNotNullConstraint
+                tableName="project_participation"
+                columnName="rejected_at"
+                columnDataType="timestamp"/>
+
+    </changeSet>
+
+</databaseChangeLog>

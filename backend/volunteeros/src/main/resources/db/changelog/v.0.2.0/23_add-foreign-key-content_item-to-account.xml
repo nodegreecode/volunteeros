@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add-fk-content-item-created-by-account" author="avasylenko">
+        <addForeignKeyConstraint
+                baseTableName="content_item"
+                baseColumnNames="created_by"
+                constraintName="fk-content-item-created-by-account"
+                referencedTableName="account"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="update_skill-volunteer-to-user-profile" author="migration">
+
+        <!-- Drop old FK -->
+        <dropForeignKeyConstraint
+                baseTableName="skill"
+                constraintName="fk_skill_to_volunteer"/>
+
+        <!-- Rename column -->
+        <renameColumn
+                tableName="skill"
+                oldColumnName="volunteer_id"
+                newColumnName="user_profile_id"
+                columnDataType="BIGINT"/>
+
+        <!-- Add new FK -->
+        <addForeignKeyConstraint
+                baseTableName="skill"
+                baseColumnNames="user_profile_id"
+                constraintName="fk_skill_to_user_profile"
+                referencedTableName="user_profile"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+</databaseChangeLog>

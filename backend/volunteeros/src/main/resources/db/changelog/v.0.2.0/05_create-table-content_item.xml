@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Create PostgreSQL enum type -->
+    <changeSet id="create-content-type-enum" author="avasylenko">
+        <sql>
+            CREATE TYPE content_type_enum AS ENUM (
+            'PROJECT',
+            'COMMENT',
+            'TASK'
+            );
+        </sql>
+    </changeSet>
+
+    <!-- Create table -->
+    <changeSet id="create-table-content_item" author="avasylenko">
+        <createTable tableName="content_item">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="content_type" type="content_type_enum">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="entity_id" type="bigint">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="content_text" type="text">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="created_by" type="bigint">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp">
+                <constraints unique="false" nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-organization_member" author="avasylenko">
+        <createTable tableName="organization_member">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="account_id" type="bigint">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="organization_id" type="bigint">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="member_role" type="varchar(50)">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="joined_at" type="timestamp">
+                <constraints unique="false" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

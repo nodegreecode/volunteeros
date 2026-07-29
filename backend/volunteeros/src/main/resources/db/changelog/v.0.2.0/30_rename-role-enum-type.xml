@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="rename-role-enum-type" author="avasylenko">
+
+        <sql>
+            ALTER TYPE role_enum RENAME VALUE 'VOLUNTEER' TO 'ROLE_VOLUNTEER';
+            ALTER TYPE role_enum RENAME VALUE 'ORGANIZATION' TO 'ROLE_ORGANIZATION';
+            ALTER TYPE role_enum RENAME VALUE 'ADMIN' TO 'ROLE_ADMIN';
+        </sql>
+    </changeSet>
+</databaseChangeLog>

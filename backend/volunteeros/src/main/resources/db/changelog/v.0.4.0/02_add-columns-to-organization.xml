@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add-columns-to-organization" author="avasylenko">
+
+        <addColumn tableName="organization">
+            <column name="email" type="varchar(255)"/>
+            <column name="registration_country" type="char(2)"/>
+            <column name="street" type="varchar(255)"/>
+            <column name="registration_number" type="varchar(50)"/>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="populate-old-organization-columns" author="avasylenko">
+
+        <update tableName="organization">
+            <column name="phone" value="UNKNOWN"/>
+            <column name="website" value="UNKNOWN"/>
+            <column name="email" value="UNKNOWN"/>
+            <column name="registration_country" value="XX"/>
+            <column name="street" value="UNKNOWN"/>
+            <column name="registration_number" value="UNKNOWN"/>
+        </update>
+
+    </changeSet>
+
+    <changeSet id="make-organization-columns-not-null" author="avasylenko">
+
+        <addNotNullConstraint
+                tableName="organization"
+                columnName="phone"
+                columnDataType="varchar(50)"/>
+
+        <addNotNullConstraint
+                tableName="organization"
+                columnName="website"
+                columnDataType="varchar(255)"/>
+
+        <addNotNullConstraint
+                tableName="organization"
+                columnName="email"
+                columnDataType="varchar(255)"/>
+
+        <addNotNullConstraint
+                tableName="organization"
+                columnName="registration_country"
+                columnDataType="char(2)"/>
+
+        <addNotNullConstraint
+                tableName="organization"
+                columnName="city"
+                columnDataType="varchar(100)"/>
+
+        <addNotNullConstraint
+                tableName="organization"
+                columnName="street"
+                columnDataType="varchar(255)"/>
+
+        <addNotNullConstraint
+                tableName="organization"
+                columnName="registration_number"
+                columnDataType="varchar(50)"/>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="change-project-participation-user-to-account" author="avasylenko">
+
+        <dropForeignKeyConstraint
+                baseTableName="project_participation"
+                constraintName="fk_project_participation_to_user_profile"/>
+
+        <renameColumn
+                tableName="project_participation"
+                oldColumnName="user_profile_id"
+                newColumnName="account_id"
+                columnDataType="BIGINT"/>
+
+        <addForeignKeyConstraint
+                baseTableName="project_participation"
+                baseColumnNames="account_id"
+                constraintName="fk_project_participation_account"
+                referencedTableName="account"
+                referencedColumnNames="id"/>
+
+    </changeSet>
+</databaseChangeLog>

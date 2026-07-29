@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Create PostgreSQL enum type -->
+    <changeSet id="create-organization-status-enum" author="avasylenko">
+        <sql>
+            CREATE TYPE organization_application_status AS ENUM (
+            'PENDING',
+            'APPROVED',
+            'REJECTED'
+            );
+        </sql>
+    </changeSet>
+
+    <!-- Create table -->
+    <changeSet id="create-table-organization_application.xml" author="avasylenko">
+
+        <createTable tableName="organization_application">
+
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="organization_form" type="varchar(50)">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="organization_name" type="varchar(50)">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="status" type="organization_application_status">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="submitted_at" type="timestamp">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="reviewed_at" type="timestamp">
+                <constraints unique="false" nullable="true"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

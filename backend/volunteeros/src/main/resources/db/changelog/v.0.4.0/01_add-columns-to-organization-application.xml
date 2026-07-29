@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add-columns-to-organization-application" author="avasylenko">
+
+        <addColumn tableName="organization_application">
+            <column name="phone" type="varchar(50)"/>
+            <column name="website" type="varchar(255)"/>
+            <column name="email" type="varchar(255)"/>
+            <column name="registration_country" type="char(2)"/>
+            <column name="city" type="varchar(100)"/>
+            <column name="street" type="varchar(255)"/>
+            <column name="registration_number" type="varchar(50)"/>
+        </addColumn>
+
+    </changeSet>
+
+    <changeSet id="populate-old-organization-application-columns" author="avasylenko">
+
+        <update tableName="organization_application">
+            <column name="phone" value="UNKNOWN"/>
+            <column name="website" value="UNKNOWN"/>
+            <column name="email" value="UNKNOWN"/>
+            <column name="registration_country" value="XX"/>
+            <column name="city" value="UNKNOWN"/>
+            <column name="street" value="UNKNOWN"/>
+            <column name="registration_number" value="UNKNOWN"/>
+        </update>
+
+    </changeSet>
+
+    <changeSet id="make-organization-application-columns-not-null" author="avasylenko">
+
+        <addNotNullConstraint
+                tableName="organization_application"
+                columnName="phone"
+                columnDataType="varchar(50)"/>
+
+        <addNotNullConstraint
+                tableName="organization_application"
+                columnName="website"
+                columnDataType="varchar(255)"/>
+
+        <addNotNullConstraint
+                tableName="organization_application"
+                columnName="email"
+                columnDataType="varchar(255)"/>
+
+        <addNotNullConstraint
+                tableName="organization_application"
+                columnName="registration_country"
+                columnDataType="char(2)"/>
+
+        <addNotNullConstraint
+                tableName="organization_application"
+                columnName="city"
+                columnDataType="varchar(100)"/>
+
+        <addNotNullConstraint
+                tableName="organization_application"
+                columnName="street"
+                columnDataType="varchar(255)"/>
+
+        <addNotNullConstraint
+                tableName="organization_application"
+                columnName="registration_number"
+                columnDataType="varchar(50)"/>
+
+    </changeSet>
+
+</databaseChangeLog>

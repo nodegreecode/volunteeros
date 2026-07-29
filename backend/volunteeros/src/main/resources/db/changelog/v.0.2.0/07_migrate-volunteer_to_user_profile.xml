@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="migrate-volunteer_to_user_profile.xml" author="avasylenko">
+        <sql>
+            INSERT INTO user_profile (
+            id,
+            account_id,
+            first_name,
+            last_name,
+            phone,
+            city,
+            created_at,
+            updated_at
+            )
+            SELECT
+            v.id,
+            v.account_id,
+            v.first_name,
+            v.last_name,
+            v.phone,
+            v.city,
+            v.created_at,
+            NOW()
+            FROM volunteer v;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
