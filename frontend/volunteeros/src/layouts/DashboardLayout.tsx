@@ -1,48 +1,49 @@
-import { Outlet } from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import Header from "@/components/Header/Header.tsx";
 import Sidebar from "@/components/Sidebar/Sidebar";
-import { menuConfig } from "@/components/Sidebar/menuConfig.ts";
-import { useAuth } from "@/features/auth/authHooks.ts";
-import { Box } from "@mui/material";
-import { Toolbar } from "@mui/material";
+import {Box} from "@mui/material";
+import {Toolbar} from "@mui/material";
+import {menuConfig} from "@/components/Sidebar/menuConfig.ts";
+import {useProfile} from "@/features/auth/authHooks.ts";
 
-type Role = "ROLE_ORGANIZATION" | "ROLE_VOLUNTEER" | "ROLE_ADMIN";
+//type Role = "ROLE_ORGANIZATION" | "ROLE_VOLUNTEER" | "ROLE_ADMIN";
 
 export default function DashboardLayout() {
-  const { user, isLoading } = useAuth();
 
-  if (isLoading) {
-    return <div>Loading ....</div>;
-  }
+    const {data: user} = useProfile();
 
-  const menuItems = menuConfig[user?.roles[0] as Role] ?? [];
+    if (!user) {
+        return null;
+    }
 
-  return (
-    <>
-      <Box
-        sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-      >
-        <Header />
-        <Toolbar />
-        <Box
-          sx={{
-            display: "flex",
-            flex: 1,
-          }}
-        >
-          <Sidebar items={menuItems} />
+    const menuItems = menuConfig[user.roles[0]];
 
-          <Box
-            component="main"
-            sx={{
-              flex: 1,
-              p: 3,
-            }}
-          >
-            <Outlet />
-          </Box>
-        </Box>
-      </Box>
-    </>
-  );
+    return (
+        <>
+            <Box
+                sx={{display: "flex", flexDirection: "column", minHeight: "100vh"}}
+            >
+                <Header/>
+                <Toolbar/>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flex: 1,
+                    }}
+                >
+                    <Sidebar items={menuItems}/>
+
+                    <Box
+                        component="main"
+                        sx={{
+                            flex: 1,
+                            p: 3,
+                        }}
+                    >
+                        <Outlet/>
+                    </Box>
+                </Box>
+            </Box>
+        </>
+    );
 }

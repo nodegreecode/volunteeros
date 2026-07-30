@@ -10,11 +10,11 @@ import {
 } from "@mui/material";
 
 export default function DashboardHomePage() {
-  const { isLoading } = useAuth();
+  //const { isLoading } = useAuth();
 
-  if (isLoading) {
+ /* if (isLoading) {
     return <div>Loading...</div>;
-  }
+  } */
 
   return (
     <Box sx={{ maxWidth: 900, mx: "auto" }}>

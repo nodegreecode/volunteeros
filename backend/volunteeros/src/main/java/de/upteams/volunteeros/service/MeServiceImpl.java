@@ -42,7 +42,6 @@ public class MeServiceImpl implements MeService {
     private final ProjectMapper projectMapper;
     private final ProjectRepository projectRepository;
     private final ProjectParticipationRepository projectParticipationRepository;
-    private final ProjectParticipationMapper projectParticipationMapper;
     private final ProfileMapper profileMapper;
     private final SkillRepository skillRepository;
     private final SkillMapper skillMapper;
@@ -51,14 +50,13 @@ public class MeServiceImpl implements MeService {
     private final UserProfileRepository userProfileRepository;
 
 
-    public MeServiceImpl(UserRepository userRepository, OrganizationApplicationRepository applicationRepository, OrganizationApplicationMapper applicationMapper, ProjectMapper projectMapper, ProjectRepository projectRepository, ProjectParticipationRepository projectParticipationRepository, ProjectParticipationMapper projectParticipationMapper, ProfileMapper profileMapper, SkillRepository skillRepository, SkillMapper skillMapper, OrganizationMapper organizationMapper, OrganizationRepository organizationRepository, UserProfileRepository userProfileRepository) {
+    public MeServiceImpl(UserRepository userRepository, OrganizationApplicationRepository applicationRepository, OrganizationApplicationMapper applicationMapper, ProjectMapper projectMapper, ProjectRepository projectRepository, ProjectParticipationRepository projectParticipationRepository, ProfileMapper profileMapper, SkillRepository skillRepository, SkillMapper skillMapper, OrganizationMapper organizationMapper, OrganizationRepository organizationRepository, UserProfileRepository userProfileRepository) {
         this.userRepository = userRepository;
         this.applicationRepository = applicationRepository;
         this.applicationMapper = applicationMapper;
         this.projectMapper = projectMapper;
         this.projectRepository = projectRepository;
         this.projectParticipationRepository = projectParticipationRepository;
-        this.projectParticipationMapper = projectParticipationMapper;
         this.profileMapper = profileMapper;
         this.skillRepository = skillRepository;
         this.skillMapper = skillMapper;

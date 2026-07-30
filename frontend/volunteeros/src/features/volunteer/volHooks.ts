@@ -1,102 +1,107 @@
 import {
-  fetchAllActiveProjects,
-  applyForProject,
-  myParticipations,
-  withdrawParticipation,
-  myProjects,
-  myParticipants
+    fetchAllActiveProjects,
+    applyForProject,
+    myParticipations,
+    withdrawParticipation,
+    myProjects,
+    myParticipants
 } from "@/features/volunteer/volApi.ts";
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import {useQueryClient, useMutation, useQuery} from "@tanstack/react-query";
 
 export interface ProjectResponseDto {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  status: string;
-  requiredVolunteers: string;
-  createdAt: string;
+    id: number;
+    title: string;
+    description: string;
+    organizationName: string;
+    imageUrl?: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+    requiredVolunteers: number;
 }
 
 /**
  *
  */
 export function useAllActiveProjects() {
-  const query = useQuery<ProjectResponseDto[]>({
-    queryKey: ["active-projects"],
-    queryFn: fetchAllActiveProjects,
-  });
+    return useQuery<ProjectResponseDto[]>({
+        queryKey: ["active-projects"],
+        queryFn: fetchAllActiveProjects,
+        staleTime: 1000 * 60 * 5,
+    });
 
-  return { ...query, projects: query.data };
 }
 
 /**
  *
  */
 export function useApplyForProject() {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: applyForProject,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["my-participations"],
-      });
-    },
-  });
+    return useMutation({
+        mutationFn: applyForProject,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["active-projects"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["my-participations"],
+            });
+        },
+    });
 }
 
 /**
  * Fetch all participations
  */
 export function useMyParticipations() {
-  const query = useQuery({
-    queryKey: ["my-participations"],
-    queryFn: myParticipations,
-  });
+    const query = useQuery({
+        queryKey: ["my-participations"],
+        queryFn: myParticipations,
+    });
 
-  return { ...query, myParticipations: query.data };
+    return {...query, myParticipations: query.data};
 }
 
 /**
  * Fetch all participants
  */
 export function useMyParticipants() {
-  const query = useQuery({
-    queryKey: ["my-participants"],
-    queryFn: myParticipants,
-    retry: false,
-  });
+    const query = useQuery({
+        queryKey: ["my-participants"],
+        queryFn: myParticipants,
+        retry: false,
+    });
 
-  return { ...query, myParticipants: query.data };
+    return {...query, myParticipants: query.data};
 }
 
 /**
  *
  */
 export function useWithdrawParticipation() {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: withdrawParticipation,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["my-participations"],
-      });
-    },
-  });
+    return useMutation({
+        mutationFn: withdrawParticipation,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["my-participations"],
+            });
+        },
+    });
 }
 
 /**
  *
  */
 export function useMyProjects() {
-  const query = useQuery({
-    queryKey: ["my-projects"],
-    queryFn: myProjects,
-  });
+    const query = useQuery({
+        queryKey: ["my-projects"],
+        queryFn: myProjects,
+    });
 
-  return { ...query, myProjects: query.data };
+    return {...query, myProjects: query.data};
 }

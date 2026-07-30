@@ -1,72 +1,21 @@
-import { AuthUrls } from "@/api/volunteeros-be-api.ts";
+import {AuthUrls} from "@/api/volunteeros-be-api.ts";
 import {
-  type RegisterRequestPayload,
-  type LoginRequestPayload,
+    type RegisterRequestPayload,
+    type LoginRequestPayload,
 } from "./types.ts";
-import type { Role } from "@/shared/types/types.ts";
+import type {Role} from "@/shared/types/types.ts";
 
 interface User {
-  id: number;
-  roles: Role[];
-  firstName: string;
-  lastName: string;
-  city: string;
-  phone: string;
-  avatar: string;
-  bio: string;
-  createdA: string;
-  updatedAt: string;
-}
-
-/**
- *  Login
- * @param values
- */
-export async function loginUser(values: LoginRequestPayload) {
-  const payload = { email: values.email, password: values.password };
-
-  const loginResponse = await fetch(AuthUrls.login, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(payload),
-  });
-
-  if (!loginResponse.ok) {
-    throw new Error("Login failed");
-  }
-}
-
-/**
- *  Fetch user profile
- */
-export async function fetchProfile() {
-  const profileResponse = await fetch(AuthUrls.profile, {
-    credentials: "include",
-  });
-
-  if (profileResponse.status == 401 || profileResponse.status == 403) {
-    return null;
-  }
-
-  if (!profileResponse.ok) {
-    throw new Error("Failed to load user data");
-  }
-
-  return await profileResponse.json();
-}
-
-/**
- *  Logout
- */
-export async function logoutUser() {
-  const logoutResponse = await fetch(AuthUrls.logout, {
-    method: "POST",
-    credentials: "include",
-  });
-  if (!logoutResponse.ok) {
-    throw new Error("Logout failed");
-  }
+    id: number;
+    roles: Role[];
+    firstName: string;
+    lastName: string;
+    city: string;
+    phone: string;
+    avatar: string;
+    bio: string;
+    createdA: string;
+    updatedAt: string;
 }
 
 /**
@@ -74,16 +23,126 @@ export async function logoutUser() {
  * @param values
  */
 export async function registerUser(values: RegisterRequestPayload) {
-  const registerResponse = await fetch(AuthUrls.signup, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(values),
-  });
+    const registerResponse = await fetch(AuthUrls.signup, {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        credentials: "include",
+        body: JSON.stringify(values),
+    });
 
-  if (!registerResponse.ok) {
-    throw new Error("Register failed. Email already exists");
-  }
+    if (!registerResponse.ok) {
+        throw new Error("Register failed. Email already exists");
+    }
 
-  return registerResponse.text();
+    return registerResponse.text();
 }
+
+/**
+ *  Login
+ * @param values
+ */
+export async function loginUser(values: LoginRequestPayload) {
+    const payload = {email: values.email, password: values.password};
+
+    const loginResponse = await fetch(AuthUrls.login, {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+
+    if (!loginResponse.ok) {
+        throw new Error("Login failed");
+    }
+}
+
+/**
+ *  Fetch user profile
+ */
+export async function fetchProfile() {
+
+    const profileResponse = await apiFetch(AuthUrls.profile);
+
+    if (profileResponse.status == 401 || profileResponse.status == 403) {
+        return null;
+    }
+
+    if (!profileResponse.ok) {
+        throw new Error("Failed to load user data");
+    }
+
+    return await profileResponse.json();
+}
+
+/**
+ *  Logout
+ */
+export async function logoutUser() {
+
+    await fetch(AuthUrls.logout, {
+        method: "POST",
+        credentials: "include",
+    });
+}
+
+/**
+ *  Create AccessToken refresh function
+ */
+function createTokenRefresher() {
+    let refreshPromise: Promise<boolean> | null = null;
+
+    return async function refreshAccessToken() {
+
+        if (refreshPromise) {
+            return refreshPromise;
+        }
+
+        refreshPromise = (async () => {
+            try {
+                const response = await fetch(AuthUrls.refresh, {
+                    method: "POST",
+                    credentials: "include",
+                });
+                return response.ok;
+            } catch {
+                return false;
+            } finally {
+                refreshPromise = null;
+            }
+        })();
+
+        return refreshPromise;
+    }
+}
+
+const refreshAccessToken = createTokenRefresher();
+
+/**
+ *  Wrapper function to prevent unauthorized failure in case AccessToken expiration
+ * @param url
+ * @param options
+ * @param retry
+ */
+async function apiFetch(url: string, options: RequestInit = {}, retry = true) {
+    const response = await fetch(url, {...options, credentials: 'include'});
+
+    if (response.status !== 401) {
+        return response;
+    }
+
+    if (!retry) {
+        return response;
+    }
+
+    const refreshed = await refreshAccessToken();
+
+    if (!refreshed) {
+        return response;
+    }
+
+    return apiFetch(url,
+        options,
+        false);
+
+}
+

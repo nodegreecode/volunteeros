@@ -1,13 +1,9 @@
 package de.upteams.volunteeros.admin.controller;
 
 
-import com.zaxxer.hikari.HikariDataSource;
-import de.upteams.volunteeros.admin.dto.DatabaseStatus;
-import de.upteams.volunteeros.admin.service.DatabaseHealthMonitorImpl;
 import de.upteams.volunteeros.admin.service.MonitoringSseService;
-import de.upteams.volunteeros.admin.service.interfaces.DatabaseHealthMonitor;
 import de.upteams.volunteeros.dto.moderation.AdminNotificationEvent;
-import de.upteams.volunteeros.admin.AdminSsePublisher;
+import de.upteams.volunteeros.admin.event.AdminSsePublisher;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;

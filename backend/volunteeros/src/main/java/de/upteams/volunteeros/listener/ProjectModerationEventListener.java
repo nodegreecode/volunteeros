@@ -3,7 +3,7 @@ package de.upteams.volunteeros.listener;
 
 import de.upteams.volunteeros.dto.moderation.AdminNotificationEvent;
 import de.upteams.volunteeros.dto.moderation.ProjectModerationRequiredEvent;
-import de.upteams.volunteeros.admin.AdminSsePublisher;
+import de.upteams.volunteeros.admin.event.AdminSsePublisher;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
