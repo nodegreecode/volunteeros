@@ -1,100 +1,129 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
-import DashboardHomePage from "@/pages/DashboardHomePage/DashboardHomePage.tsx";
 import ProtectedRouteComponent from "@/routes/protectedRoute/ProtectedRouteComponent.tsx";
-import UserProfilePage from "@/pages/UserProfilePage/UserProfilePage.tsx";
-import SkillsPage from "@/pages/SkillsPage/SkillsPage";
-import ProjectsPage from "@/pages/ProjectsPage/ProjectsPage.tsx";
-import MyOrganizationPage from "@/features/organization/pages/ApplicationsPage/MyOrganizationPage.tsx";
-import ParticipationsPage from "@/pages/ParticipationsPage/ParticipationsPage.tsx";
+import OrganizationDashboardLayout from "@/layouts/OrganizationDashboardLayout.tsx";
+import OrganizationOverview from "@/features/organization/pages/OrganizationOverview/OrganizationOverview.tsx";
+import OrganizationProjects from "@/features/organization/components/OrganizationProjects/OrganizationProjects.tsx";
+import VolunteerOverview from "@/features/volunteer/pages/VolunteerOverview/VolunteerOverview.tsx";
+import Participants from "@/features/organization/pages/Participants/Participants.tsx";
+import Projects from "@/pages/Projects/Projects.tsx";
+import VolunteerDashboardLayout from "@/layouts/VolunteerDashboardLayout.tsx";
+import MyProjects from "@/features/volunteer/pages/MyProjects/MyProjects.tsx";
+import Skills from "@/features/volunteer/pages/Skills/Skills.tsx";
+import AdminDashboardLayout from "@/layouts/AdminDashboardLayout.tsx";
+import AdminOverview from "@/features/admin/pages/AdminOverview/AdminOverview.tsx";
+import Organizations from "@/features/admin/pages/Organizations/Organizations.tsx";
+import Moderation from "@/features/admin/pages/Moderation/Moderation.tsx";
+import Profile from "@/pages/Profile/Profile.tsx";
+import Settings from "@/pages/Settings/Settings.tsx";
+import Organization from "@/features/organization/pages/Organization/Organization.tsx";
 import RoleGuardRouteComponent from "@/routes/roleGuardRoute/RoleGuardRouteComponent.tsx";
-import OrganizationsPage from "@/features/admin/OrganizationsPage/OrganizationsPage.tsx";
-import OrganizationCreateProject from "@/features/organization/components/OrganizationProjects/OrganizationCreateProject";
-import MyProjectsPage from "@/features/volunteer/pages/MyProjectsPage/MyProjectsPage.tsx";
-import ModerationPage from "@/features/admin/ModerationPage/ModerationPage.tsx";
+
+import DashboardHomePage from "@/pages/DashboardHomePage/DashboardHomePage.tsx";
 
 export default [
-  {
-    element: <ProtectedRouteComponent />,
-    children: [
-      {
-        path: "/dashboard",
-        element: <DashboardLayout />,
+    {
+        element: <ProtectedRouteComponent/>,
         children: [
-          {
-            index: true,
-            element: <DashboardHomePage />,
-          },
-          {
-            path: "profile",
-            element: <UserProfilePage />,
-          },
-          {
-            path: "skills",
-            element: (
-              <RoleGuardRouteComponent allowedRoles={["ROLE_VOLUNTEER"]}>
-                <SkillsPage />
-              </RoleGuardRouteComponent>
-            ),
-          },
-          {
-            path: "projects",
-            children: [
-              {
-                index: true,
-                element: <ProjectsPage />,
-              },
-              {
-                path: "create",
-                element: (
-                  <RoleGuardRouteComponent allowedRoles={["ROLE_ORGANIZATION"]}>
-                    <OrganizationCreateProject />
-                  </RoleGuardRouteComponent>
-                ),
-              },
-              {
-                path: "me-projects",
-                element: (
-                  <RoleGuardRouteComponent allowedRoles={["ROLE_VOLUNTEER"]}>
-                    <MyProjectsPage />
-                  </RoleGuardRouteComponent>
-                ),
-              },
-            ],
-          },
-          {
-            path: "organization",
-            element: (
-              <RoleGuardRouteComponent allowedRoles={["ROLE_ORGANIZATION"]}>
-                <MyOrganizationPage />
-              </RoleGuardRouteComponent>
-            ),
-          },
-          {
-            path: "participants",
-            element: (
-              <RoleGuardRouteComponent allowedRoles={["ROLE_ORGANIZATION"]}>
-                <ParticipationsPage />
-              </RoleGuardRouteComponent>
-            ),
-          },
-          {
-            path: "organizations",
-            element: (
-              <RoleGuardRouteComponent allowedRoles={["ROLE_ADMIN"]}>
-                <OrganizationsPage />
-              </RoleGuardRouteComponent>
-            ),
-          },
-          {
-            path: "moderation",
-            element: (
-              <RoleGuardRouteComponent allowedRoles={["ROLE_ADMIN"]}>
-                <ModerationPage />
-              </RoleGuardRouteComponent>
-            ),
-          },
+            {
+                path: "/app",
+                element: <DashboardLayout/>,
+                children: [
+                    {
+                        index: true,
+                        element: <DashboardHomePage/>,
+                    },
+                    {
+                        path: "organization",
+                        element: (
+                            <RoleGuardRouteComponent allowedRoles={["ROLE_ORGANIZATION"]}/>
+                        ),
+                        children: [
+                            {
+                                element: <OrganizationDashboardLayout/>,
+                                children: [{
+                                    index: true,
+                                    element: <OrganizationOverview/>,
+                                },
+                                    {
+                                        path: "organization",
+                                        element: <Organization/>,
+                                    },
+                                    {
+                                        path: "projects",
+                                        element: <OrganizationProjects/>,
+                                    }
+                                    , {
+                                        path: "participants",
+                                        element: <Participants/>,
+                                    }]
+                            }
+                        ]
+                    },
+                    {
+                        path: "volunteer",
+                        element: (<RoleGuardRouteComponent allowedRoles={["ROLE_VOLUNTEER"]}/>),
+                        children: [
+                            {
+                                element: <VolunteerDashboardLayout/>,
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <VolunteerOverview/>,
+                                    },
+                                    {
+                                        path: "projects",
+                                        element: <Projects/>,
+                                    },
+                                    {
+                                        path: "my-projects",
+                                        element: <MyProjects/>,
+                                    }
+                                    , {
+                                        path: "skills",
+                                        element: <Skills/>,
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        path: "admin",
+                        element: (<RoleGuardRouteComponent allowedRoles={["ROLE_ADMIN"]}/>),
+                        children: [
+                            {
+                                element: <AdminDashboardLayout/>,
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <AdminOverview/>,
+                                    },
+                                    {
+                                        path: "organizations",
+                                        element: <Organizations/>,
+                                    },
+                                    {
+                                        path: "projects",
+                                        element: <Projects/>,
+                                    }
+                                    , {
+                                        path: "moderation",
+                                        element: <Moderation/>,
+                                    }
+                                ]
+                            }
+
+                        ]
+                    },
+                    {
+                        path: "profile",
+                        element: <Profile/>
+                    },
+                    {
+                        path: "settings",
+                        element: <Settings/>,
+                    }
+                ],
+            },
         ],
-      },
-    ],
-  },
+    },
 ];

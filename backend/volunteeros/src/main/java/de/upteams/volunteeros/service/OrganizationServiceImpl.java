@@ -10,6 +10,7 @@ import de.upteams.volunteeros.dto.project.ProjectCreateRequestDto;
 import de.upteams.volunteeros.dto.project.ProjectCreateResponseDto;
 import de.upteams.volunteeros.event.ProjectCreatedEvent;
 import de.upteams.volunteeros.exceptions.types.AuthorizationException;
+import de.upteams.volunteeros.exceptions.types.OrganizationAlreadyExistsException;
 import de.upteams.volunteeros.exceptions.types.OrganizationNotFounException;
 import de.upteams.volunteeros.repository.OrganizationRepository;
 import de.upteams.volunteeros.repository.ProjectRepository;
@@ -37,31 +38,25 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private final OrganizationRepository organizationRepository;
     private final OrganizationMapper organizationMapper;
-    private final ProjectRepository projectRepository;
-    private final ProjectMapper projectMapper;
-    private final ApplicationEventPublisher eventPublisher;
     private final UserRepository userRepository;
 
 
-    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, ProjectRepository projectRepository, ProjectMapper projectMapper, ApplicationEventPublisher eventPublisher, UserRepository userRepository) {
+    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, UserRepository userRepository) {
         this.organizationRepository = organizationRepository;
         this.organizationMapper = organizationMapper;
-        this.projectRepository = projectRepository;
-        this.projectMapper = projectMapper;
-        this.eventPublisher = eventPublisher;
         this.userRepository = userRepository;
     }
 
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void createOrganization(OrganizationApplication application) {
+    public Organization createOrganization(OrganizationApplication application) {
 
         Objects.requireNonNull(application, "Application cannot be null");
 
         if (organizationRepository.existsByOwnerId(application.getUser().getId())) {
             logger.info("Organization '{}' already exists.", application.getOrganizationName());
-            return;
+            throw new OrganizationAlreadyExistsException("Th use already has an organization");
         }
 
         OrganizationMember organizationMember = new OrganizationMember();
@@ -88,58 +83,25 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         organization.setOwner(application.getUser());
 
-        organizationRepository.save(organization);
+        Organization organizationSaved = organizationRepository.save(organization);
         logger.info("Organization {} and Organization Member {} created", organization.getId(), organizationMember.getId());
+        return organizationSaved;
+    }
+
+    @Override
+    public OrganizationResponseDto getOrganization(String email) {
+
+        return organizationRepository.findByOwnerEmail(email)
+                .map(organizationMapper::mapEntityToOrganizationResponseDto)
+                .orElse(null);
     }
 
     @Override
     @Transactional
-    public ProjectCreateResponseDto createProject(Long organizationId, ProjectCreateRequestDto requestDto) {
-        Objects.requireNonNull(organizationId, "OrganizationId cannot be null");
-        Objects.requireNonNull(requestDto, "ProjectCreateRequestDto cannot be null");
-
-        Organization organization = organizationRepository.findById(organizationId).orElseThrow(() -> {
-            logger.warn("Organization {} not found", organizationId);
-            return new AuthorizationException("Volunteer with this email not found");
-        });
-
-        Project project = new Project();
-        project.setOrganization(organization);
-        project.setTitle(requestDto.title());
-        project.setDescription(requestDto.description());
-        project.setLocation(requestDto.location());
-        project.setStartDate(requestDto.startDate());
-        project.setEndDate(requestDto.endDate());
-        project.setStatus(ProjectStatus.DRAFT);
-        project.setRequiredVolunteers(requestDto.requiredVolunteers());
-        project.setCreatedAt(Instant.now());
-        projectRepository.save(project);
-
-        logger.info("Project {} created", project.getId());
-
-        eventPublisher
-                .publishEvent(
-                        new ProjectCreatedEvent(project,
-                                project.getDescription())
-                );
-
-        return projectMapper.mapEntityToProjectCreateResponseDto(project);
-    }
-
-    @Override
-    public List<OrganizationResponseDto> allOrganizations() {
-        List<Organization> organizations = organizationRepository.findAll();
-        return organizationMapper.mapEntityToOrganizationResponseDtoList(organizations);
-    }
-
-    @Override
-    @Transactional
-    public OrganizationResponseDto editOrganization(Long organizationId, OrganizationUpdateRequestDto requestDto, Authentication authentication) {
+    public OrganizationResponseDto editOrganization(Long organizationId, OrganizationUpdateRequestDto requestDto, String email) {
 
         Objects.requireNonNull(organizationId, "OrganizationId cannot be null");
         Objects.requireNonNull(requestDto, "OrganizationUpdateRequestDto cannot be null");
-
-        String email = authentication.getName();
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> {
             logger.warn(" User not found {}", email);
@@ -163,5 +125,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setWebsite(requestDto.website());
         logger.info("Organization information updated {}", organizationId);
         return organizationMapper.mapEntityToOrganizationResponseDto(organization);
+    }
+
+    @Override
+    public List<OrganizationResponseDto> allOrganizations() {
+        List<Organization> organizations = organizationRepository.findAll();
+        return organizationMapper.mapEntityToOrganizationResponseDtoList(organizations);
     }
 }

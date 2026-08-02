@@ -21,8 +21,13 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,70 +43,35 @@ public class AuthServiceImpl implements AuthService {
 
     private final JwtProperties jwtProperties;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final RedisService redisService;
     private final UserRepository userRepository;
-    private final OrganizationRepository organizationRepository;
 
 
-    public AuthServiceImpl(BCryptPasswordEncoder passwordEncoder,
+    public AuthServiceImpl(BCryptPasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
                            TokenService tokenService,
                            JwtProperties jwtProperties,
                            UserRepository userRepository,
-                           RedisService redisService,
-                           OrganizationRepository organizationRepository) {
+                           RedisService redisService
+    ) {
+        this.authenticationManager = authenticationManager;
         this.jwtProperties = jwtProperties;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
         this.redisService = redisService;
         this.userRepository = userRepository;
-        this.organizationRepository = organizationRepository;
-
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> {
-                    logger.warn("Authentication failed: user with email '{}' not found", email);
-                    return new UsernameNotFoundException(String.format("User with email %s not found", email));
-                }
-        );
-        return new AuthUserDetails(user);
-    }
-
-    @Override
+    @Transactional
     public void register(UserRegistrationDto registrationDto) {
-        String encodedPassword = passwordEncoder.encode(registrationDto.password());
-        User user = userRepository.findByEmail(registrationDto.email()).orElse(null);
 
-        if (user == null) {
-
-            user = new User();
-            user.setEmail(registrationDto.email());
-            user.setPassword(encodedPassword);
-            user.setStatus(UserStatus.ACTIVE);
-            user.setEnabled(true);
-            user.setCreatedAt(Instant.now());
-
-            UserRole role = new UserRole();
-            role.setRole(registrationDto.role());
-            role.setAssignedAt(Instant.now());
-
-            UserProfile userProfile = new UserProfile();
-            user.setUserProfile(userProfile);
-            userProfile.setCreatedAt(Instant.now());
-            userProfile.setFirstName(registrationDto.firstName());
-            userProfile.setLastName(registrationDto.lastName());
-
-            role.setUser(user);
-            user.getRoles().add(role);
-            userProfile.setUser(user);
-            userProfile.setCreatedAt(Instant.now());
-
-        } else {
+        if (userRepository.existsByEmail(registrationDto.email())) {
             throw new RegistrationException(String.format("Email %s already in use", registrationDto.email()));
         }
+
+        User user = createUser(registrationDto);
 
         userRepository.save(user);
         logger.info("User registered successfully with email '{}",
@@ -110,67 +80,56 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenResponseDto login(LoginRequestDto requestDto) {
-        String email = requestDto.email();
-        UserDetails user = loadUserByUsername(email);
 
-        if (passwordEncoder.matches(requestDto.password(), user.getPassword())) {
+        String email = requestDto.email();
+        String password = requestDto.password();
+
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
+            /*UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email = userDetails.getUsername();*/
+
             String accessToken = tokenService.generateAccessToken(email);
             String refreshToken = tokenService.generateRefreshToken(email);
-            redisService.save(email, refreshToken, Duration.ofMillis(jwtProperties.getRefreshExpiration()));
-            logger.info("User '{}' logged in successfully", email);
-            return new TokenResponseDto(accessToken, refreshToken);
-        } else {
-            logger.warn("Failed login attempt for user '{}': invalid password", email);
-            throw new AuthorizationException("Password is incorrect");
-        }
 
+            redisService.save(email,
+                    refreshToken,
+                    Duration.ofMillis(jwtProperties.getRefreshExpiration()));
+
+            logger.info("User '{}' logged in successfully", email);
+
+            return new TokenResponseDto(accessToken, refreshToken);
+
+        } catch (AuthenticationException e) {
+            throw new AuthorizationException("Invalid credentials");
+        }
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = tokenService.getTokenFromRequest(request, TokenType.REFRESH_TOKEN.getValue());
+    public void logout(String refreshToken) {
 
         if (refreshToken != null && tokenService.validateRefreshToken(refreshToken)) {
             Claims refreshClaims = tokenService.getRefreshClaims(refreshToken);
             String email = refreshClaims.getSubject();
 
             String storedRefreshToken = redisService.find(email);
+
             if (refreshToken.equals(storedRefreshToken)) {
                 redisService.delete(email);
                 logger.debug("RefreshToken successfully removed");
             }
         }
-
-        Cookie accessCookie = new Cookie(TokenType.ACCESS_TOKEN.getValue(), null);
-        accessCookie.setPath("/");
-        accessCookie.setHttpOnly(true);
-        accessCookie.setMaxAge(0);
-        //NEW
-        accessCookie.setSecure(true);
-        accessCookie.setAttribute("SameSite", "None");
-
-        response.addCookie(accessCookie);
-
-        Cookie refreshCookie = new Cookie(TokenType.REFRESH_TOKEN.getValue(), null);
-        refreshCookie.setPath("/");
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setMaxAge(0);
-        //NEW
-        refreshCookie.setSecure(true);
-        refreshCookie.setAttribute("SameSite", "None");
-
-        response.addCookie(refreshCookie);
-
-        logger.info("User '{}' logged out successfully", request.getUserPrincipal().getName());
     }
 
     @Override
-    public TokenResponseDto getAccessToken(HttpServletRequest request) {
-        String refreshToken = tokenService.getTokenFromRequest(request, TokenType.REFRESH_TOKEN.getValue());
+    public TokenResponseDto getAccessToken(String refreshToken) {
 
         if (refreshToken != null && tokenService.validateRefreshToken(refreshToken)) {
             Claims refreshClaims = tokenService.getRefreshClaims(refreshToken);
             String email = refreshClaims.getSubject();
+
             String savedRefreshToken = redisService.find(email);
 
             if (savedRefreshToken != null && savedRefreshToken.equals(refreshToken)) {
@@ -183,7 +142,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void removeRefreshToken(HttpServletRequest request) {
-        String refreshToken = tokenService.getTokenFromRequest(request, TokenType.REFRESH_TOKEN.getValue());
+
+        String refreshToken = tokenService.getTokenFromRequest(
+                request,
+                TokenType.REFRESH_TOKEN.getValue());
 
         if (refreshToken != null && tokenService.validateRefreshToken(refreshToken)) {
             Claims refreshClaims = tokenService.getRefreshClaims(refreshToken);
@@ -191,6 +153,35 @@ public class AuthServiceImpl implements AuthService {
 
             redisService.delete(email);
         }
+    }
+
+    private User createUser(UserRegistrationDto registrationDto) {
+
+        Instant now = Instant.now();
+
+        User user = new User();
+
+        user.setEmail(registrationDto.email());
+        user.setPassword(passwordEncoder.encode(registrationDto.password()));
+        user.setStatus(UserStatus.ACTIVE);
+        user.setEnabled(true);
+        user.setCreatedAt(now);
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setCreatedAt(now);
+        userProfile.setFirstName(registrationDto.firstName());
+        userProfile.setLastName(registrationDto.lastName());
+        userProfile.setCreatedAt(now);
+        userProfile.setUser(user);
+        user.setUserProfile(userProfile);
+
+        UserRole role = new UserRole();
+        role.setRole(registrationDto.role());
+        role.setAssignedAt(now);
+        role.setUser(user);
+        user.getRoles().add(role);
+
+        return user;
     }
 
 }

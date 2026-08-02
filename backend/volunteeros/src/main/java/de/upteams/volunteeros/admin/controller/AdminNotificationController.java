@@ -1,14 +1,12 @@
 package de.upteams.volunteeros.admin.controller;
 
 
-import com.zaxxer.hikari.HikariDataSource;
-import de.upteams.volunteeros.admin.dto.DatabaseStatus;
-import de.upteams.volunteeros.admin.service.DatabaseHealthMonitorImpl;
 import de.upteams.volunteeros.admin.service.MonitoringSseService;
-import de.upteams.volunteeros.admin.service.interfaces.DatabaseHealthMonitor;
 import de.upteams.volunteeros.dto.moderation.AdminNotificationEvent;
-import de.upteams.volunteeros.admin.AdminSsePublisher;
+import de.upteams.volunteeros.admin.event.AdminSsePublisher;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +26,7 @@ public class AdminNotificationController {
         this.publisher = publisher;
     }
 
-    @GetMapping(
+   /* @GetMapping(
             value = "/events",
             produces = MediaType.TEXT_EVENT_STREAM_VALUE
     )
@@ -40,13 +38,17 @@ public class AdminNotificationController {
                                 .event(event.type())
                                 .build()
                 );
-    }
+    }*/
 
     @GetMapping(
             value = "/monitoring/database",
             produces = MediaType.TEXT_EVENT_STREAM_VALUE
     )
-    public SseEmitter stream() {
-        return sseService.subscribe();
+    public ResponseEntity<SseEmitter> stream() {
+        SseEmitter emitter = sseService.subscribe();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .header(HttpHeaders.CONNECTION, "keep-alive")
+                .body(emitter);
     }
 }

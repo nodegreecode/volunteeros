@@ -1,16 +1,18 @@
-import { Navigate } from "react-router-dom";
-import { Outlet } from "react-router-dom";
-import {  useAuth } from "@/features/auth/authHooks.ts";
+import {Navigate} from "react-router-dom";
+import {Outlet} from "react-router-dom";
+import {useProfile} from "@/features/auth/authHooks.ts";
+import Loading from "@/components/common/Loading.tsx";
 
 export default function AuthRouteComponent() {
-  const {  user, isLoading } = useAuth();
 
-  if (isLoading) {
-    return <div>Loading....</div>;
-  }
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
+    const {data: user, isLoading} = useProfile();
 
-  return <Outlet />;
+    if (isLoading) {
+        return  <Loading />;
+    }
+    if (user) {
+        return <Navigate to="/dashboard" replace/>;
+    }
+
+    return <Outlet/>;
 }

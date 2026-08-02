@@ -1,78 +1,106 @@
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import {useQueryClient, useMutation, useQuery} from "@tanstack/react-query";
 import {
-  loginUser,
-  logoutUser,
-  fetchProfile,
-  registerUser,
+    loginUser,
+    logoutUser,
+    fetchProfile,
+    registerUser,
 } from "@/features/auth/authApi.ts";
+import type {Role} from "@/shared/types/types.ts";
 
-export function useLogin() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: loginUser,
-
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["profile"],
-      });
-    },
-  });
+interface User {
+    id: number;
+    roles: Role[];
+    firstName: string;
+    lastName: string;
+    city: string;
+    phone: string;
+    avatar: string;
+    bio: string;
+    createdA: string;
+    updatedAt: string;
 }
-export function useLogout() {
-  const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: logoutUser,
 
-    onSuccess: async () => {
-      await queryClient.removeQueries({
-        queryKey: ["profile"],
-      });
+/**
+ *  UseRegister
+ */
+export function useRegister() {
+    const queryClient = useQueryClient();
 
-      queryClient.clear();
-    },
-  });
+    return useMutation({
+        mutationFn: registerUser,
+
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ["registration"],
+            });
+        },
+    });
+}
+
+/**
+ *  UseLogin
+ */
+export function useLogin() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: loginUser,
+
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ["profile"],
+            });
+        },
+    });
 }
 
 /**
  *  UseProfile
  */
 export function useProfile() {
-  return useQuery({
-    queryKey: ["profile"],
-    queryFn: fetchProfile,
-    retry: false,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-  });
+    return useQuery<User>({
+        queryKey: ["profile"],
+        queryFn: fetchProfile,
+        staleTime: 1000 * 60 * 5,
+        retry: false,
+        //refetchOnWindowFocus: false,
+    });
 }
 
 /**
  *  UseAuth
  */
 export function useAuth() {
-  const query = useProfile();
-  return {
-    ...query,
-    user: query.data,
-    isAuthenticated: Boolean(query.data),
-  };
+    const query = useProfile();
+    return {
+        ...query,
+        isAuthenticated: Boolean(query.data),
+    };
 }
 
 /**
- *  UseRegister
+ * UseLogout
  */
-export function useRegister() {
-  const queryClient = useQueryClient();
+export function useLogout() {
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: registerUser,
+    return useMutation({
+        mutationFn: logoutUser,
+        onSuccess: async () => {
+          /*  await queryClient.cancelQueries({
+                queryKey: ["profile"],
+            });
+            queryClient.removeQueries({
+                queryKey: ["profile"],
+            })*/
 
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["registration"],
-      });
-    },
-  });
+            await queryClient.cancelQueries();
+
+            queryClient.clear();
+
+        }
+    });
 }
+
+

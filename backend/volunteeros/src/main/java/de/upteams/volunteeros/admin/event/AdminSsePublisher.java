@@ -1,4 +1,4 @@
-package de.upteams.volunteeros.admin;
+package de.upteams.volunteeros.admin.event;
 
 import de.upteams.volunteeros.dto.moderation.AdminNotificationEvent;
 import org.springframework.stereotype.Component;

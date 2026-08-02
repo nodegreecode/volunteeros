@@ -1,6 +1,7 @@
 package de.upteams.volunteeros.security.filter;
 
 import de.upteams.volunteeros.security.dto.enums.TokenType;
+import de.upteams.volunteeros.security.service.CustomUserDetailsService;
 import de.upteams.volunteeros.security.service.TokenService;
 import de.upteams.volunteeros.security.service.interfaces.AuthService;
 import de.upteams.volunteeros.service.interfaces.OrganizationService;
@@ -21,15 +22,12 @@ import java.io.IOException;
 public class TokenFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final AuthService authService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-
-    public TokenFilter( TokenService tokenService, AuthService authService) {
-
+    public TokenFilter(TokenService tokenService, CustomUserDetailsService customUserDetailsService) {
         this.tokenService = tokenService;
-        this.authService = authService;
+        this.customUserDetailsService = customUserDetailsService;
     }
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -41,7 +39,7 @@ public class TokenFilter extends OncePerRequestFilter {
         if (accessToken != null && tokenService.validateAccessToken(accessToken)) {
             Claims accessClaims = tokenService.getAccessClaims(accessToken);
             String email = accessClaims.getSubject();
-            UserDetails userDetails = authService.loadUserByUsername(email);
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,

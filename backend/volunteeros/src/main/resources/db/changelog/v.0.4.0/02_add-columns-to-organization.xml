@@ -6,6 +6,21 @@
 
     <changeSet id="add-columns-to-organization" author="avasylenko">
 
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="organization" columnName="email"/>
+            </not>
+            <not>
+                <columnExists tableName="organization" columnName="registration_country"/>
+            </not>
+            <not>
+                <columnExists tableName="organization" columnName="street"/>
+            </not>
+            <not>
+                <columnExists tableName="organization" columnName="registration_number"/>
+            </not>
+        </preConditions>
+
         <addColumn tableName="organization">
             <column name="email" type="varchar(255)"/>
             <column name="registration_country" type="char(2)"/>
@@ -18,8 +33,21 @@
     <changeSet id="populate-old-organization-columns" author="avasylenko">
 
         <update tableName="organization">
-            <column name="phone" value="UNKNOWN"/>
+            <column name="phone" valueComputed="'UNKNOWN-' || id"/>
+            <where>phone IS NULL</where>
+        </update>
+
+        <update tableName="organization">
             <column name="website" value="UNKNOWN"/>
+            <where>website IS NULL</where>
+        </update>
+
+        <update tableName="organization">
+            <column name="city" value="UNKNOWN"/>
+            <where>city IS NULL</where>
+        </update>
+
+        <update tableName="organization">
             <column name="email" value="UNKNOWN"/>
             <column name="registration_country" value="XX"/>
             <column name="street" value="UNKNOWN"/>

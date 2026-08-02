@@ -69,6 +69,10 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ContentItem> contentItems = new HashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
+
     public Project() {
     }
 
