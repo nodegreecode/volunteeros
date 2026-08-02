@@ -1,4 +1,4 @@
-package de.upteams.volunteeros.domain;
+package de.upteams.volunteeros.domain.model;
 
 
 import jakarta.persistence.*;

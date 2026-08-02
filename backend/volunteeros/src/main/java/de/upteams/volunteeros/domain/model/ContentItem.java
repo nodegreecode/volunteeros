@@ -1,4 +1,4 @@
-package de.upteams.volunteeros.domain;
+package de.upteams.volunteeros.domain.model;
 
 import de.upteams.volunteeros.domain.enums.ContentType;
 import jakarta.persistence.*;
@@ -23,10 +23,8 @@ public class ContentItem {
     @Column(name = "content_type", columnDefinition = "ocontent_type_enum")
     private ContentType contentType;
 
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "entity_id")
-    private Project project;
+    @Column(name = "entity_id")
+    private Long entityId;
 
     private String contentText;
 
@@ -36,5 +34,14 @@ public class ContentItem {
 
     @OneToOne(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
     private ModerationCase moderationCase;
+
+    public static ContentItem fromProject(Project project) {
+        ContentItem contentItem = new ContentItem();
+        contentItem.setContentType(ContentType.PROJECT);
+        contentItem.setEntityId(project.getId());
+        contentItem.setContentText(project.getDescription());
+        contentItem.setCreatedAt(Instant.now());
+        return contentItem;
+    }
 
 }

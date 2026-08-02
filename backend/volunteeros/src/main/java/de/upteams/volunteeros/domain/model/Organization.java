@@ -1,11 +1,10 @@
-package de.upteams.volunteeros.domain;
+package de.upteams.volunteeros.domain.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CollectionId;
 
 import java.time.Instant;
 import java.util.HashSet;

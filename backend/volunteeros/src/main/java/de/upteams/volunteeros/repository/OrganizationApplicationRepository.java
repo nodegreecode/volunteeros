@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.repository;
 
-import de.upteams.volunteeros.domain.OrganizationApplication;
+import de.upteams.volunteeros.domain.model.OrganizationApplication;
 import de.upteams.volunteeros.domain.enums.OrganizationApplicationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 

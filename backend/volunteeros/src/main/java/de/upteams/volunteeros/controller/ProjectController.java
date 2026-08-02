@@ -111,4 +111,9 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
+
+    @GetMapping("/search")
+    public List<ProjectResponseDto> searchAllActiveProjects(@RequestParam String title) {
+        return projectService.searchActiveProjectsByTitle(title);
+    }
 }

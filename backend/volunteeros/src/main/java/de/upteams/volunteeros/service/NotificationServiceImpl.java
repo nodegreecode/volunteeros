@@ -1,19 +1,16 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.Notification;
-import de.upteams.volunteeros.domain.User;
+import de.upteams.volunteeros.domain.model.Notification;
+import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.domain.enums.NotificationType;
 import de.upteams.volunteeros.dto.mapping.NotificationMapper;
 import de.upteams.volunteeros.dto.notification.NotificationDto;
 import de.upteams.volunteeros.repository.NotificationRepository;
-import de.upteams.volunteeros.repository.UserRepository;
 import de.upteams.volunteeros.service.interfaces.NotificationService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;

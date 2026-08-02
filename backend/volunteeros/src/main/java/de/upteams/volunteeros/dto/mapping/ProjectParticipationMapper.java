@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.dto.mapping;
 
-import de.upteams.volunteeros.domain.ProjectParticipation;
+import de.upteams.volunteeros.domain.model.ProjectParticipation;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
 import org.mapstruct.Condition;

@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.repository;
 
-import de.upteams.volunteeros.domain.ProjectParticipation;
+import de.upteams.volunteeros.domain.model.ProjectParticipation;
 import de.upteams.volunteeros.domain.enums.ParticipationStatus;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.project.ParticipantsResponseDto;
@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface ProjectParticipationRepository extends JpaRepository<ProjectParticipation, Long> {
 

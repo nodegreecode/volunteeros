@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.dto.mapping;
 
-import de.upteams.volunteeros.domain.OrganizationApplication;
+import de.upteams.volunteeros.domain.model.OrganizationApplication;
 import de.upteams.volunteeros.dto.organization.OrganizationApplicationResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

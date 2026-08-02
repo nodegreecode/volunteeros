@@ -1,8 +1,8 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.Organization;
-import de.upteams.volunteeros.domain.OrganizationApplication;
-import de.upteams.volunteeros.domain.User;
+import de.upteams.volunteeros.domain.model.Organization;
+import de.upteams.volunteeros.domain.model.OrganizationApplication;
+import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.domain.enums.OrganizationApplicationStatus;
 import de.upteams.volunteeros.dto.mapping.OrganizationApplicationMapper;
 import de.upteams.volunteeros.dto.organization.OrganizationApplicationRequestDto;
@@ -21,7 +21,6 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

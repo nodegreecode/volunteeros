@@ -1,9 +1,8 @@
 package de.upteams.volunteeros.service.interfaces;
 
-import de.upteams.volunteeros.domain.User;
+import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.domain.enums.NotificationType;
 import de.upteams.volunteeros.dto.notification.NotificationDto;
-import org.springframework.security.core.Authentication;
 
 import java.util.List;
 

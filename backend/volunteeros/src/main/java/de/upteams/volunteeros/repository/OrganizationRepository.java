@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.repository;
 
-import de.upteams.volunteeros.domain.Organization;
+import de.upteams.volunteeros.domain.model.Organization;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

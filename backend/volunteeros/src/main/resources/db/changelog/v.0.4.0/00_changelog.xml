@@ -13,5 +13,6 @@
     <include file="05_create-table-notification.xml" relativeToChangelogFile="true"/>
     <include file="06_create-table-image.xml" relativeToChangelogFile="true"/>
     <include file="07_add-image-fk-constraint-to-project.xml" relativeToChangelogFile="true"/>
+    <include file="08_drop-fk-content-item-from-project.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

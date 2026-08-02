@@ -1,28 +1,22 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.*;
-import de.upteams.volunteeros.domain.enums.ProjectStatus;
+import de.upteams.volunteeros.domain.model.Organization;
+import de.upteams.volunteeros.domain.model.OrganizationApplication;
+import de.upteams.volunteeros.domain.model.OrganizationMember;
+import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.dto.mapping.OrganizationMapper;
-import de.upteams.volunteeros.dto.mapping.ProjectMapper;
 import de.upteams.volunteeros.dto.organization.OrganizationResponseDto;
 import de.upteams.volunteeros.dto.organization.OrganizationUpdateRequestDto;
-import de.upteams.volunteeros.dto.project.ProjectCreateRequestDto;
-import de.upteams.volunteeros.dto.project.ProjectCreateResponseDto;
-import de.upteams.volunteeros.event.ProjectCreatedEvent;
-import de.upteams.volunteeros.exceptions.types.AuthorizationException;
 import de.upteams.volunteeros.exceptions.types.OrganizationAlreadyExistsException;
 import de.upteams.volunteeros.exceptions.types.OrganizationNotFounException;
 import de.upteams.volunteeros.repository.OrganizationRepository;
-import de.upteams.volunteeros.repository.ProjectRepository;
 import de.upteams.volunteeros.repository.UserRepository;
 import de.upteams.volunteeros.service.interfaces.OrganizationService;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

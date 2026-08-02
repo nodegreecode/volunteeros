@@ -1,7 +1,7 @@
 package de.upteams.volunteeros.security;
 
-import de.upteams.volunteeros.domain.User;
-import de.upteams.volunteeros.domain.UserRole;
+import de.upteams.volunteeros.domain.model.User;
+import de.upteams.volunteeros.domain.model.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

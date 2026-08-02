@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.dto.mapping;
 
-import de.upteams.volunteeros.domain.Image;
+import de.upteams.volunteeros.domain.model.Image;
 import de.upteams.volunteeros.dto.image.ImageUploadResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

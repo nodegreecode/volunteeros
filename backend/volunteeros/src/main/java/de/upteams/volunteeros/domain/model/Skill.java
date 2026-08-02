@@ -1,4 +1,4 @@
-package de.upteams.volunteeros.domain;
+package de.upteams.volunteeros.domain.model;
 
 import de.upteams.volunteeros.domain.enums.SkillProficiency;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.security.service;
 
-import de.upteams.volunteeros.domain.User;
+import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.repository.UserRepository;
 import de.upteams.volunteeros.security.AuthUserDetails;
 import org.slf4j.Logger;

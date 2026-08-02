@@ -48,4 +48,6 @@ public interface ProjectService {
 
     void replaceProjectImage(Long projectId, MultipartFile file);
 
+    List<ProjectResponseDto> searchActiveProjectsByTitle(String title);
+
 }
