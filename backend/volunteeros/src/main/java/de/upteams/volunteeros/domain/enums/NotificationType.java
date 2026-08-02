@@ -1,0 +1,9 @@
+package de.upteams.volunteeros.domain.enums;
+
+public enum NotificationType {
+    ORGANIZATION_APPLICATION_CREATED,
+    ORGANIZATION_APPLICATION_APPROVED,
+    ORGANIZATION_APPLICATION_REJECTED,
+    PROJECT_CREATED,
+    PROJECT_APPROVED
+}

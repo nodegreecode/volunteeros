@@ -4,68 +4,111 @@ import de.upteams.volunteeros.dto.volunteer.UserRegistrationDto;
 import de.upteams.volunteeros.security.dto.LoginRequestDto;
 import de.upteams.volunteeros.security.dto.TokenResponseDto;
 import de.upteams.volunteeros.security.dto.enums.TokenType;
+import de.upteams.volunteeros.security.service.TokenService;
 import de.upteams.volunteeros.security.service.interfaces.AuthService;
+import de.upteams.volunteeros.utils.CookieUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final CookieUtils cookieUtils;
     private final AuthService authService;
+    private final TokenService tokenService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(CookieUtils cookieUtils, AuthService authService, TokenService tokenService) {
+        this.cookieUtils = cookieUtils;
         this.authService = authService;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/register")
-    public String register(@Valid @RequestBody UserRegistrationDto registrationDto) {
+    public ResponseEntity<Void> register(@Valid @RequestBody UserRegistrationDto registrationDto) {
         authService.register(registrationDto);
-        return "Registration complete";
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .build();
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
+    public ResponseEntity<Void> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         TokenResponseDto tokens = authService.login(requestDto);
 
-        Cookie accessCookie = new Cookie(TokenType.ACCESS_TOKEN.getValue(), tokens.getAccessToken());
-        accessCookie.setPath("/");
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(true);
-        accessCookie.setAttribute("SameSite", "None");
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                cookieUtils.createCookie(
+                                TokenType.ACCESS_TOKEN.getValue(),
+                                tokens.getAccessToken(),
+                                Duration.ofMinutes(15))
+                        .toString()
+        );
 
-        response.addCookie(accessCookie);
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                cookieUtils.createCookie(
+                                TokenType.REFRESH_TOKEN.getValue(),
+                                tokens.getRefreshToken(),
+                                Duration.ofDays(7))
+                        .toString()
+        );
 
-        Cookie refreshCookie = new Cookie(TokenType.REFRESH_TOKEN.getValue(), tokens.getRefreshToken());
-        refreshCookie.setPath("/");
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setAttribute("SameSite", "None");
-
-        response.addCookie(refreshCookie);
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        authService.logout(request, response);
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = tokenService.getTokenFromRequest(
+                request,
+                TokenType.REFRESH_TOKEN.getValue());
+
+        authService.logout(refreshToken);
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                cookieUtils.deleteCookie(TokenType.ACCESS_TOKEN.getValue()).toString());
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                cookieUtils.deleteCookie(TokenType.REFRESH_TOKEN.getValue()).toString());
+
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 
     @PostMapping("/refresh")
-    public void getNewAccessToken(HttpServletRequest requests, HttpServletResponse response) {
-        TokenResponseDto tokens = authService.getAccessToken(requests);
+    public ResponseEntity<Void> getNewAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
-        Cookie accessCookie = new Cookie(TokenType.ACCESS_TOKEN.getValue(), tokens.getAccessToken());
-        accessCookie.setPath("/");
-        accessCookie.setHttpOnly(true);
-        //NEW
-        accessCookie.setSecure(true);
-        accessCookie.setAttribute("SameSite", "None");
+        String refreshToken = tokenService.getTokenFromRequest(
+                request,
+                TokenType.REFRESH_TOKEN.getValue());
 
-        response.addCookie(accessCookie);
+        TokenResponseDto tokens = authService.getAccessToken(refreshToken);
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                cookieUtils.createCookie(
+                                TokenType.ACCESS_TOKEN.getValue(),
+                                tokens.getAccessToken(),
+                                Duration.ofMinutes(15))
+                        .toString()
+        );
+
+        return ResponseEntity
+                .noContent()
+                .build();
     }
-
-
 }

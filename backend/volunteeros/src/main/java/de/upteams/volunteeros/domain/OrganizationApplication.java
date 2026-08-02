@@ -54,6 +54,10 @@ public class OrganizationApplication {
 
     private Instant reviewedAt;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", unique = true)
+    private Organization organization;
+
     public OrganizationApplication() {
     }
 }

@@ -1,17 +1,17 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.Project;
-import de.upteams.volunteeros.domain.ProjectParticipation;
-import de.upteams.volunteeros.domain.User;
-import de.upteams.volunteeros.domain.enums.OrganizationApplicationStatus;
+import de.upteams.volunteeros.domain.*;
 import de.upteams.volunteeros.domain.enums.ParticipationStatus;
 
 import de.upteams.volunteeros.domain.enums.ProjectStatus;
+import de.upteams.volunteeros.domain.enums.UserRoleType;
+import de.upteams.volunteeros.dto.image.ImageUploadResponseDto;
 import de.upteams.volunteeros.dto.mapping.ProjectMapper;
 import de.upteams.volunteeros.dto.mapping.ProjectParticipationMapper;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
 import de.upteams.volunteeros.dto.project.*;
+import de.upteams.volunteeros.event.ProjectCreatedEvent;
 import de.upteams.volunteeros.exceptions.types.*;
 import de.upteams.volunteeros.repository.*;
 import de.upteams.volunteeros.service.interfaces.ProjectService;
@@ -21,11 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,149 +36,96 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
+    private final OrganizationRepository organizationRepository;
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final ProjectParticipationRepository participationRepository;
     private final ProjectParticipationMapper projectParticipationMapper;
     private final UserRepository userRepository;
+    private final ProjectParticipationRepository projectParticipationRepository;
+    private final ApplicationEventPublisher eventPublisher;
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository,
+    public ProjectServiceImpl(OrganizationRepository organizationRepository, ProjectRepository projectRepository,
                               ProjectMapper projectMapper,
                               ProjectParticipationRepository participationRepository,
                               ProjectParticipationMapper projectParticipationMapper,
-                              UserRepository userRepository) {
+                              UserRepository userRepository, ProjectParticipationRepository projectParticipationRepository, ApplicationEventPublisher eventPublisher, ImageService imageService, ImageRepository imageRepository) {
+        this.organizationRepository = organizationRepository;
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.participationRepository = participationRepository;
         this.projectParticipationMapper = projectParticipationMapper;
         this.userRepository = userRepository;
+        this.projectParticipationRepository = projectParticipationRepository;
+        this.eventPublisher = eventPublisher;
+        this.imageService = imageService;
+        this.imageRepository = imageRepository;
     }
 
     @Override
     @Transactional
-    public ProjectParticipationStatusUpdateResponseDto withdraw(Long participationId) {
+    public ProjectCreateResponseDto createProject(Long organizationId, ProjectCreateRequestDto requestDto) {
+        Objects.requireNonNull(organizationId, "OrganizationId cannot be null");
+        Objects.requireNonNull(requestDto, "ProjectCreateRequestDto cannot be null");
 
-        Objects.requireNonNull(participationId, "participationId cannot be null");
-
-        ProjectParticipation participation = participationRepository.findById(participationId).orElseThrow(() -> {
-            logger.warn("Participation not found {}", participationId);
-            return new EntityNotFoundException("ProjectParticipation with this email not found");
+        Organization organization = organizationRepository.findById(organizationId).orElseThrow(() -> {
+            logger.warn("Organization {} not found", organizationId);
+            return new AuthorizationException("Volunteer with this email not found");
         });
 
-        participation.setStatus(ParticipationStatus.CANCELLED);
-        participation.setRejectedAt(Instant.now());
-        return projectParticipationMapper.mapEntityToProjectParticipationStatusUpdateResponseDto(participation);
-    }
+        Project project = new Project();
+        project.setOrganization(organization);
+        project.setTitle(requestDto.title());
+        project.setDescription(requestDto.description());
+        project.setLocation(requestDto.location());
+        project.setStartDate(requestDto.startDate());
+        project.setEndDate(requestDto.endDate());
+        project.setStatus(ProjectStatus.DRAFT);
+        project.setRequiredVolunteers(requestDto.requiredVolunteers());
+        project.setCreatedAt(Instant.now());
+        projectRepository.save(project);
 
-    @Override
-    @Transactional
-    public String changeParticipantStatus(Long participationId, ParticipantStatusRequestDto requestDto) {
+        logger.info("Project {} created", project.getId());
 
-        Objects.requireNonNull(participationId, "Participation Id id cannot be null");
-        Objects.requireNonNull(requestDto, "ParticipantStatusRequestDto cannot be null");
+        eventPublisher
+                .publishEvent(
+                        new ProjectCreatedEvent(project,
+                                project.getDescription())
+                );
 
-        ParticipationStatus newStatus = requestDto.status();
-
-        if (newStatus == ParticipationStatus.PENDING) {
-            throw new InvalidPaticipationStatusException("Cannot set status to PENDING");
-        }
-
-        ProjectParticipation participation = participationRepository.findById(participationId).orElseThrow(() -> {
-            logger.warn("Participation not found:  participationId={}", participationId);
-            return new EntityNotFoundException("Entity not found");
-        });
-
-        participation.setStatus(newStatus);
-        return newStatus.name();
-    }
-
-    @Override
-    public List<ProjectResponseDto> allProjects() {
-        System.out.println("Fetching projects from database...");
-        return projectMapper.mapEntityToProjectResponseDtoList(projectRepository.findAll());
-    }
-
-    @Override
-    public List<ProjectResponseDto> allPendingModerationProjects() {
-        return projectMapper.mapEntityToProjectResponseDtoList(projectRepository.findAllByStatus(ProjectStatus.PENDING_MODERATION));
-    }
-
-    @Override
-    @Cacheable(value = "projects", key = "'active'")
-    public List<ProjectResponseDto> allActiveProjects() {
-        return projectMapper.mapEntityToProjectResponseDtoList(projectRepository.findAllByStatus(ProjectStatus.ACTIVE));
+        return projectMapper.mapEntityToProjectCreateResponseDto(project);
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "projects", allEntries = true)
-    public ProjectEditResponseDto completeProject(Long projectId) {
-        Objects.requireNonNull(projectId, "Project id cannot be null");
+    public ProjectEditResponseDto editProject(Long projectId, ProjectEditRequestDto requestDto, String email) {
 
-        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
-            logger.warn("Project not found: {}", projectId);
-            return new EntityNotFoundException("Entity not found");
+        Objects.requireNonNull(projectId, "Project id cannot be null");
+        Objects.requireNonNull(requestDto, "ProjectEditRequestDto cannot be null");
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn(" User not found {}", email);
+            return new EntityNotFoundException("User not found");
         });
 
-        entity.complete();
+        Long organizationId = user.getOrganization().getId();
 
-        logger.info("Project status updated {}", projectId);
+        Project entity = projectRepository.findByIdAndOrganizationId(projectId, organizationId)
+                .orElseThrow(() -> new ProjectEditDeniedException("Access denied"));
+
+        projectMapper.updateEntityFromDto(requestDto, entity);
+        logger.info("Project updated {}", projectId);
         return projectMapper.mapEntityToEditResponseDto(entity);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = "projects", allEntries = true)
-    public void removeProject(Long projectId) {
-        Objects.requireNonNull(projectId, "Project id cannot be null");
-
-        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
-            logger.warn("Project not found: {}", projectId);
-            return new EntityNotFoundException("Entity not found");
-        });
-
-        projectRepository.delete(entity);
-        logger.info("Project deleted: {}", projectId);
-    }
-
-    @Override
-    @Transactional
-    @CacheEvict(value = "projects", allEntries = true)
-    public ProjectEditResponseDto activateProject(Long projectId) {
-        Objects.requireNonNull(projectId, "Project id cannot be null");
-
-        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
-            logger.warn("Project not found: {}", projectId);
-            return new EntityNotFoundException("Entity not found");
-        });
-
-        entity.activate();
-
-        return projectMapper.mapEntityToEditResponseDto(entity);
-    }
-
-    @Override
-    @Transactional
-    @CacheEvict(value = "projects", allEntries = true)
-    public ProjectEditResponseDto cancelProject(Long projectId) {
-        Objects.requireNonNull(projectId, "Project id cannot be null");
-
-        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
-            logger.warn("Project not found: {}", projectId);
-            return new EntityNotFoundException("Entity not found");
-        });
-        entity.cancel();
-
-        return projectMapper.mapEntityToEditResponseDto(entity);
-    }
-
-    @Override
-    @Transactional
-    public ProjectParticipationResponseDto apply(Long projectId, Authentication authentication) {
+    public ProjectParticipationResponseDto apply(Long projectId, String email) {
 
         Objects.requireNonNull(projectId, "Project id cannot be null");
-
-        String email = authentication.getName();
 
         User currentUser = userRepository.findByEmail(email).orElseThrow(() -> {
             logger.warn("Volunteer not found for authenticated user {}", email);
@@ -200,35 +149,230 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ParticipationAlreadyExistException("User already has an active project application");
         }
 
-
-
         return projectParticipationMapper.mapEntityToProjectParticipationResponseDto(newParticipation);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = "projects", allEntries = true)
-    public ProjectEditResponseDto editProject(Long projectId, ProjectEditRequestDto requestDto, Authentication authentication) {
+    public ProjectParticipationStatusUpdateResponseDto withdraw(Long participationId) {
 
-        Objects.requireNonNull(projectId, "Project id cannot be null");
-        Objects.requireNonNull(requestDto, "ProjectEditRequestDto cannot be null");
+        Objects.requireNonNull(participationId, "participationId cannot be null");
 
-        String email = authentication.getName();
-
-        User user = userRepository.findByEmail(email).orElseThrow(() -> {
-            logger.warn(" User not found {}", email);
-            return new EntityNotFoundException("User not found");
+        ProjectParticipation participation = participationRepository.findById(participationId).orElseThrow(() -> {
+            logger.warn("Participation not found {}", participationId);
+            return new EntityNotFoundException("ProjectParticipation with this email not found");
         });
 
-        Long organizationId = user.getOrganization().getId();
+        participation.setStatus(ParticipationStatus.CANCELLED);
+        participation.setRejectedAt(Instant.now());
+        return projectParticipationMapper.mapEntityToProjectParticipationStatusUpdateResponseDto(participation);
+    }
 
-        Project entity = projectRepository.findByIdAndOrganizationId(projectId, organizationId)
-                .orElseThrow(() -> new ProjectEditDeniedException("Access denied"));
+    @Override
+    @Transactional
+    @CacheEvict(value = "projects", allEntries = true)
+    public ProjectEditResponseDto activateProject(Long projectId) {
 
-        projectMapper.updateEntityFromDto(requestDto, entity);
-        logger.info("Project updated {}", projectId);
+        Objects.requireNonNull(projectId, "Project id cannot be null");
+
+        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
+            logger.warn("Project not found: {}", projectId);
+            return new EntityNotFoundException("Entity not found");
+        });
+
+        entity.activate();
+
         return projectMapper.mapEntityToEditResponseDto(entity);
     }
 
+    @Override
+    @Transactional
+    @CacheEvict(value = "projects", allEntries = true)
+    public ProjectEditResponseDto cancelProject(Long projectId) {
+
+        Objects.requireNonNull(projectId, "Project id cannot be null");
+
+        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
+            logger.warn("Project not found: {}", projectId);
+            return new EntityNotFoundException("Entity not found");
+        });
+        entity.cancel();
+
+        return projectMapper.mapEntityToEditResponseDto(entity);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "projects", allEntries = true)
+    public ProjectEditResponseDto completeProject(Long projectId) {
+
+        Objects.requireNonNull(projectId, "Project id cannot be null");
+
+        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
+            logger.warn("Project not found: {}", projectId);
+            return new EntityNotFoundException("Entity not found");
+        });
+
+        entity.complete();
+
+        logger.info("Project status updated {}", projectId);
+        return projectMapper.mapEntityToEditResponseDto(entity);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "projects", allEntries = true)
+    public void removeProject(Long projectId) {
+
+        Objects.requireNonNull(projectId, "Project id cannot be null");
+
+        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
+            logger.warn("Project not found: {}", projectId);
+            return new EntityNotFoundException("Entity not found");
+        });
+
+        projectRepository.delete(entity);
+        logger.info("Project deleted: {}", projectId);
+    }
+
+    @Override
+    @Transactional
+    public String updateParticipantStatus(Long participationId, ParticipantStatusRequestDto requestDto) {
+
+        Objects.requireNonNull(participationId, "Participation Id id cannot be null");
+        Objects.requireNonNull(requestDto, "ParticipantStatusRequestDto cannot be null");
+
+        ParticipationStatus newStatus = requestDto.status();
+
+        if (newStatus == ParticipationStatus.PENDING) {
+            throw new InvalidPaticipationStatusException("Cannot set status to PENDING");
+        }
+
+        ProjectParticipation participation = participationRepository.findById(participationId).orElseThrow(() -> {
+            logger.warn("Participation not found:  participationId={}", participationId);
+            return new EntityNotFoundException("Entity not found");
+        });
+
+        participation.setStatus(newStatus);
+        return newStatus.name();
+    }
+
+    @Override
+    public List<ProjectParticipationResponseDto> myProjectParticipationApplications(String email) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn("User not found {}", email);
+            return new EntityNotFoundException("User not found");
+        });
+
+        return projectParticipationRepository.findParticipationsByUserId(user.getId());
+    }
+
+    @Override
+    public List<ParticipantsResponseDto> myParticipants(String email) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn("User not found {}", email);
+            return new EntityNotFoundException("User not found");
+        });
+
+        if (user.getOrganization() == null) {
+            logger.info("User {} has no organization yet", email);
+            return Collections.emptyList();
+        }
+
+        return projectParticipationRepository.findParticipantsByOrganizationId(user.getOrganization().getId());
+    }
+
+    @Override
+    public List<ProjectCreateResponseDto> allMyProjects(String email) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn("User not found {}", email);
+            return new EntityNotFoundException("User not found");
+        });
+
+        List<Project> projects = new ArrayList<>();
+
+        boolean isOrganization = user.getRoles()
+                .stream()
+                .anyMatch(r -> r.getRole() == UserRoleType.ROLE_ORGANIZATION);
+
+        if (isOrganization) {
+            projects.addAll(
+                    projectRepository.findByOrganizationOwnerId(user.getId())
+            );
+        } else {
+            projects.addAll(
+                    projectRepository.findApprovedProjectsByVolunteerId(user.getId(), ParticipationStatus.APPROVED)
+            );
+        }
+
+        return projectMapper.mapEntityToProjectCreateResponseDtoList(projects);
+    }
+
+    @Override
+    public List<ProjectResponseDto> allProjects() {
+        return projectMapper.mapEntityToProjectResponseDtoList(projectRepository.findAll());
+    }
+
+    @Override
+    public List<ProjectResponseDto> allPendingModerationProjects() {
+        return projectMapper.mapEntityToProjectResponseDtoList(projectRepository.findAllByStatus(ProjectStatus.PENDING_MODERATION));
+    }
+
+    @Override
+    @Cacheable(value = "projects", key = "'active'")
+    public List<ProjectResponseDto> allActiveProjects() {
+        return projectMapper.mapEntityToProjectResponseDtoList(projectRepository.findAllByStatus(ProjectStatus.ACTIVE));
+    }
+
+    @Transactional
+    public void uploadProjectImage(Long projectId, MultipartFile file)  {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+
+        ImageUploadResponseDto upload = imageService.upload(file);
+
+        Image image = new Image();
+        image.setPublicId(upload.publicId());
+        image.setUrl(upload.secureUrl());
+        image.setContentType(file.getContentType());
+        image.setOriginalFilename(file.getOriginalFilename());
+        image.setSize(file.getSize());
+        image.setUploadedAt(Instant.now());
+
+        project.setImage(image);
+
+        imageRepository.save(image);
+
+    }
+
+    @Transactional
+    public void replaceProjectImage(Long projectId, MultipartFile file) {
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+
+        Image image = project.getImage();
+
+        if (image == null) {
+            throw new EntityNotFoundException("Project has no image");
+        }
+
+        ImageUploadResponseDto upload = imageService.replace(
+                file,
+                image.getPublicId()
+        );
+
+        image.setPublicId(upload.publicId());
+        image.setUrl(upload.secureUrl());
+        image.setContentType(file.getContentType());
+        image.setOriginalFilename(file.getOriginalFilename());
+        image.setSize(file.getSize());
+        image.setUploadedAt(Instant.now());
+
+        imageRepository.save(image);
+    }
 
 }

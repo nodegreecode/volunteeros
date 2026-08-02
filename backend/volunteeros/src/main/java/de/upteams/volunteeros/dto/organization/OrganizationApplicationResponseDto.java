@@ -14,7 +14,8 @@ public record OrganizationApplicationResponseDto(Long id,
                                                  String street,
                                                  String registrationNumber,
                                                  String submittedAt,
-                                                 String reviewedAt
+                                                 String reviewedAt,
+                                                 Long organizationId
 ) {
 }
 

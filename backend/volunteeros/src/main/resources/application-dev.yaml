@@ -33,6 +33,11 @@ spring:
           options:
             model: gemini-2.5-flash
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
 springdoc:
   api-docs:
     enabled: true
@@ -57,4 +62,9 @@ jwt:
 
   access-expiration: ${ACCESS_EXPIRATION}
   refresh-expiration: ${REFRESH_EXPIRATION}
+
+cloudinary:
+  cloud-name: azvxecp0
+  api-key: 763742761483695
+  api-secret: 27owTASQP4SEE-x4KxkKzhxiMQ8
 

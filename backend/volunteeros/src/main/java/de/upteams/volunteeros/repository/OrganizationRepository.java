@@ -10,4 +10,6 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
     boolean existsByOwnerId(Long ownerId);
 
     Optional<Organization> findByOwnerEmail(String email);
+
+    boolean existsByPhone(String phone);
 }

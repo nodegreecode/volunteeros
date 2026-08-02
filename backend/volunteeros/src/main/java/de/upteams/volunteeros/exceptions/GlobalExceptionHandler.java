@@ -1,5 +1,6 @@
 package de.upteams.volunteeros.exceptions;
 
+import de.upteams.volunteeros.dto.errors.ApiError;
 import de.upteams.volunteeros.exceptions.types.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -20,17 +21,21 @@ public class GlobalExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(RegistrationException.class)
-    public ResponseEntity<String> handleException(RegistrationException e) {
+    public ResponseEntity<ApiError> handleException(RegistrationException e) {
         String message = e.getMessage();
         logger.warn(message, e);
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ApiError(message));
     }
 
     @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<String> handleException(AuthorizationException e) {
+    public ResponseEntity<ApiError> handleException(AuthorizationException e) {
         String message = e.getMessage();
         logger.warn(message, e);
-        return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiError(message));
     }
 
     @ExceptionHandler(InvalidProjectStatusException.class)
@@ -111,5 +116,44 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(OrganizationApplicationStatusException.class)
+    public ResponseEntity<ApiError> handleException(OrganizationApplicationStatusException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ApiError(message));
+
+    }
+
+    @ExceptionHandler(OrganizationAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleException(OrganizationAlreadyExistsException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ApiError(message));
+
+    }
+
+    @ExceptionHandler(DuplicateOrganizationException.class)
+    public ResponseEntity<ApiError> handleException(DuplicateOrganizationException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ApiError(message));
+
+    }
+
+    @ExceptionHandler(ImageUploadException.class)
+    public ResponseEntity<ApiError> handleException(ImageUploadException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiError(message));
+
+    }
 
 }

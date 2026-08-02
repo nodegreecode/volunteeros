@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrganizationApplicationMapper {
 
+    @Mapping(source = "organization.id", target = "organizationId")
     OrganizationApplicationResponseDto mapEntityToOrganizationApplicationResponseDto(OrganizationApplication entity);
 
     List<OrganizationApplicationResponseDto> mapEntitiyToOrganizationApplicationResponseDtoList(Collection<OrganizationApplication> entities);

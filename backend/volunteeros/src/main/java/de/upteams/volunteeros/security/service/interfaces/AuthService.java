@@ -7,17 +7,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface AuthService extends UserDetailsService {
+public interface AuthService  {
 
     public void register(UserRegistrationDto registrationDto);
 
     public TokenResponseDto login(LoginRequestDto requestDto);
 
-    public void logout(HttpServletRequest request, HttpServletResponse response);
+    public void logout(String refreshToken);
 
-    TokenResponseDto getAccessToken(HttpServletRequest request);
+    TokenResponseDto getAccessToken(String refreshToken);
 
     void removeRefreshToken(HttpServletRequest request);
-
 
 }

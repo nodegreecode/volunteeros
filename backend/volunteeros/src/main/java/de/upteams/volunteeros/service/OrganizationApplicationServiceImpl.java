@@ -1,24 +1,27 @@
 package de.upteams.volunteeros.service;
 
+import de.upteams.volunteeros.domain.Organization;
 import de.upteams.volunteeros.domain.OrganizationApplication;
 import de.upteams.volunteeros.domain.User;
 import de.upteams.volunteeros.domain.enums.OrganizationApplicationStatus;
 import de.upteams.volunteeros.dto.mapping.OrganizationApplicationMapper;
 import de.upteams.volunteeros.dto.organization.OrganizationApplicationRequestDto;
 import de.upteams.volunteeros.dto.organization.OrganizationApplicationResponseDto;
-import de.upteams.volunteeros.dto.organization.OrganizationApplicationStatusUpdateRequestDto;
-
-import de.upteams.volunteeros.event.OrganizationApplicationStatusEvent;
+import de.upteams.volunteeros.event.OrganizationApplicationCreatedEvent;
 import de.upteams.volunteeros.exceptions.types.ApplicationAlreadyExistException;
+import de.upteams.volunteeros.exceptions.types.DuplicateOrganizationException;
+import de.upteams.volunteeros.exceptions.types.OrganizationApplicationStatusException;
 import de.upteams.volunteeros.repository.OrganizationApplicationRepository;
-
+import de.upteams.volunteeros.repository.OrganizationRepository;
 import de.upteams.volunteeros.repository.UserRepository;
 import de.upteams.volunteeros.service.interfaces.OrganizationApplicationService;
+import de.upteams.volunteeros.service.interfaces.OrganizationService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -35,26 +38,30 @@ public class OrganizationApplicationServiceImpl implements OrganizationApplicati
     private final OrganizationApplicationMapper applicationMapper;
     private final ApplicationEventPublisher eventPublisher;
 
+    private final OrganizationService organizationService;
+    private final OrganizationRepository organizationRepository;
 
     public OrganizationApplicationServiceImpl(OrganizationApplicationRepository applicationRepository,
                                               UserRepository userRepository,
                                               OrganizationApplicationMapper applicationMapper,
-                                              ApplicationEventPublisher eventPublisher) {
+                                              ApplicationEventPublisher eventPublisher, OrganizationService organizationService, OrganizationRepository organizationRepository) {
         this.applicationRepository = applicationRepository;
         this.userRepository = userRepository;
         this.applicationMapper = applicationMapper;
         this.eventPublisher = eventPublisher;
+        this.organizationService = organizationService;
+        this.organizationRepository = organizationRepository;
     }
 
     @Override
     @Transactional
-    public OrganizationApplicationResponseDto applyForOrganization(OrganizationApplicationRequestDto requestDto) {
+    public OrganizationApplicationResponseDto apply(OrganizationApplicationRequestDto requestDto,  String email) {
 
         Objects.requireNonNull(requestDto, "OrganizationApplicationRequestDto cannot be null");
 
-        User user = userRepository.findById(requestDto.userId()).orElseThrow(() -> {
-            logger.warn("User not found {}", requestDto.userId());
-            return new EntityNotFoundException("User with this id not found");
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn("User not found {}", email);
+            return new EntityNotFoundException("User not found");
         });
 
         List<OrganizationApplicationStatus> statuses =
@@ -84,35 +91,51 @@ public class OrganizationApplicationServiceImpl implements OrganizationApplicati
 
         application.setSubmittedAt(Instant.now());
         applicationRepository.save(application);
+
         logger.info("Organization application saved successfully {}", application.getId());
+
+        eventPublisher.publishEvent(
+                new OrganizationApplicationCreatedEvent(application.getId(), application.getOrganizationName())
+        );
         return applicationMapper.mapEntityToOrganizationApplicationResponseDto(application);
     }
 
     @Override
     @Transactional
-    public OrganizationApplicationResponseDto updateApplicationStatus(Long applicationId,
-                                                                      OrganizationApplicationStatusUpdateRequestDto requestDto) {
-
-        Objects.requireNonNull(requestDto, "OrganizationApplicationStatusUpdateRequestDto  cannot be null");
+    public OrganizationApplicationResponseDto approve(Long applicationId) {
 
         OrganizationApplication application = applicationRepository.findById(applicationId).orElseThrow(() -> {
             logger.warn("Organization Application not found {}", applicationId);
-            return new EntityNotFoundException("Organization Application this id not found");
+            return new EntityNotFoundException("Organization Application not found");
         });
 
-        Long userId = application.getUser().getId();
+        if (application.getApplicationStatus() != OrganizationApplicationStatus.PENDING) {
+            throw new OrganizationApplicationStatusException("Application already reviewed.");
+        }
 
-        application.setApplicationStatus(OrganizationApplicationStatus.valueOf(requestDto.applicationStatus()));
+        validateOrganizationUniqueness(application);
+
+        Organization organization = organizationService.createOrganization(application);
+
+        application.setApplicationStatus(OrganizationApplicationStatus.APPROVED);
         application.setReviewedAt(Instant.now());
+        application.setOrganization(organization);
 
-        eventPublisher.publishEvent(
-                new OrganizationApplicationStatusEvent(
-                        userId,
-                        applicationId,
-                        OrganizationApplicationStatus.valueOf(requestDto.applicationStatus()))
-        );
+        return applicationMapper.mapEntityToOrganizationApplicationResponseDto(application);
+    }
 
-        return applicationMapper.mapEntityToOrganizationApplicationResponseDto(application); // no need to return
+    @Override
+    @Transactional
+    public OrganizationApplicationResponseDto reject(Long applicationId) {
+
+        OrganizationApplication application = applicationRepository.findById(applicationId).orElseThrow(() -> {
+            logger.warn("Organization Application not found {}", applicationId);
+            return new EntityNotFoundException("Organization Application not found");
+        });
+
+        application.setApplicationStatus(OrganizationApplicationStatus.REJECTED);
+        application.setReviewedAt(Instant.now());
+        return applicationMapper.mapEntityToOrganizationApplicationResponseDto(application);
     }
 
     @Override
@@ -125,6 +148,27 @@ public class OrganizationApplicationServiceImpl implements OrganizationApplicati
     public List<OrganizationApplicationResponseDto> allOrganizationApplicationsByUser(Long userId) {
         List<OrganizationApplication> applications = applicationRepository.findAllByUserId(userId);
         return applicationMapper.mapEntitiyToOrganizationApplicationResponseDtoList(applications);
+    }
+
+    @Override
+    public OrganizationApplicationResponseDto getOrganizationApplication(String email) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.info("user not found{}", email);
+            return new EntityNotFoundException("User not found");
+        });
+
+        return applicationRepository.findFirstByUserIdOrderBySubmittedAtDesc(user.getId())
+                .map(applicationMapper::mapEntityToOrganizationApplicationResponseDto)
+                .orElse(null);
+    }
+
+    private void validateOrganizationUniqueness(OrganizationApplication application) {
+
+        if (organizationRepository.existsByPhone(application.getPhone())) {
+            throw new DuplicateOrganizationException("An organization with this phone already exists");
+        }
+
     }
 
 

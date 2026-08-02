@@ -1,5 +1,6 @@
 package de.upteams.volunteeros.service.interfaces;
 
+import de.upteams.volunteeros.domain.Organization;
 import de.upteams.volunteeros.domain.OrganizationApplication;
 import de.upteams.volunteeros.dto.organization.OrganizationResponseDto;
 import de.upteams.volunteeros.dto.organization.OrganizationUpdateRequestDto;
@@ -10,12 +11,12 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface OrganizationService {
-    void createOrganization(OrganizationApplication application);
+    Organization createOrganization(OrganizationApplication application);
 
-    ProjectCreateResponseDto createProject(Long organizationId, ProjectCreateRequestDto requestDto);
+    OrganizationResponseDto editOrganization(Long organizationId, OrganizationUpdateRequestDto requestDto, String email);
+
+    OrganizationResponseDto getOrganization(String email);
 
     List<OrganizationResponseDto> allOrganizations();
-
-    OrganizationResponseDto  editOrganization(Long organizationId, OrganizationUpdateRequestDto requestDto,  Authentication authentication);
 }
 
