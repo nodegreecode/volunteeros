@@ -1,45 +1,45 @@
 package de.upteams.volunteeros.listener;
 
+
 import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.domain.enums.NotificationType;
 import de.upteams.volunteeros.domain.enums.UserRoleType;
-import de.upteams.volunteeros.event.OrganizationApplicationCreatedEvent;
+import de.upteams.volunteeros.dto.moderation.ProjectModerationRequiredEvent;
 
 import de.upteams.volunteeros.repository.UserRepository;
 import de.upteams.volunteeros.service.interfaces.NotificationService;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.List;
 
 @Component
-public class OrganizationApplicationNotificationListener {
+public class ProjectModerationNotificationEventListener {
 
     private final UserRepository userRepository;
     private final NotificationService notificationService;
 
-    public OrganizationApplicationNotificationListener(UserRepository userRepository, NotificationService notificationService) {
+    public ProjectModerationNotificationEventListener(UserRepository userRepository, NotificationService notificationService) {
         this.userRepository = userRepository;
         this.notificationService = notificationService;
     }
 
     @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handle(OrganizationApplicationCreatedEvent event) {
+    @EventListener
+    public void handle(ProjectModerationRequiredEvent event) {
 
         List<User> admins = userRepository.findAllByRolesRole(UserRoleType.ROLE_ADMIN);
 
         for (User admin : admins) {
-
             notificationService.create(
                     admin,
-                    NotificationType.ORGANIZATION_APPLICATION_CREATED,
-                    "New organization application",
-                    event.organizationName()
+                    NotificationType.PROJECT_PENDING_MODERATION,
+                    "New project requires moderation",
+                    event.title()
             );
         }
+
 
     }
 }

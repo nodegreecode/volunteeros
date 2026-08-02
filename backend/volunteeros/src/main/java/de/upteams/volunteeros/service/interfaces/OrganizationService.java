@@ -1,12 +1,9 @@
 package de.upteams.volunteeros.service.interfaces;
 
-import de.upteams.volunteeros.domain.Organization;
-import de.upteams.volunteeros.domain.OrganizationApplication;
+import de.upteams.volunteeros.domain.model.Organization;
+import de.upteams.volunteeros.domain.model.OrganizationApplication;
 import de.upteams.volunteeros.dto.organization.OrganizationResponseDto;
 import de.upteams.volunteeros.dto.organization.OrganizationUpdateRequestDto;
-import de.upteams.volunteeros.dto.project.ProjectCreateRequestDto;
-import de.upteams.volunteeros.dto.project.ProjectCreateResponseDto;
-import org.springframework.security.core.Authentication;
 
 import java.util.List;
 

@@ -1,9 +1,8 @@
 package de.upteams.volunteeros.repository;
 
-import de.upteams.volunteeros.domain.Project;
+import de.upteams.volunteeros.domain.model.Project;
 import de.upteams.volunteeros.domain.enums.ParticipationStatus;
 import de.upteams.volunteeros.domain.enums.ProjectStatus;
-import de.upteams.volunteeros.dto.project.ProjectResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

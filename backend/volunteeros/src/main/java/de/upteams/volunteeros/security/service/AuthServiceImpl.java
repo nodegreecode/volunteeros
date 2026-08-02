@@ -1,16 +1,14 @@
 package de.upteams.volunteeros.security.service;
 
-import de.upteams.volunteeros.domain.User;
+import de.upteams.volunteeros.domain.model.User;
 
-import de.upteams.volunteeros.domain.UserProfile;
-import de.upteams.volunteeros.domain.UserRole;
+import de.upteams.volunteeros.domain.model.UserProfile;
+import de.upteams.volunteeros.domain.model.UserRole;
 import de.upteams.volunteeros.domain.enums.UserStatus;
 import de.upteams.volunteeros.dto.volunteer.UserRegistrationDto;
 import de.upteams.volunteeros.exceptions.types.AuthorizationException;
 import de.upteams.volunteeros.exceptions.types.RegistrationException;
-import de.upteams.volunteeros.repository.OrganizationRepository;
 import de.upteams.volunteeros.repository.UserRepository;
-import de.upteams.volunteeros.security.AuthUserDetails;
 import de.upteams.volunteeros.security.config.JwtProperties;
 import de.upteams.volunteeros.security.dto.LoginRequestDto;
 import de.upteams.volunteeros.security.dto.TokenResponseDto;
@@ -18,9 +16,7 @@ import de.upteams.volunteeros.security.dto.enums.TokenType;
 import de.upteams.volunteeros.security.service.interfaces.AuthService;
 import de.upteams.volunteeros.service.RedisService;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +24,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 

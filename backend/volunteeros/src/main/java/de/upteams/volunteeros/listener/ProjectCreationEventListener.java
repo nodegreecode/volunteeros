@@ -1,24 +1,19 @@
 package de.upteams.volunteeros.listener;
 
-import de.upteams.volunteeros.domain.ContentItem;
-import de.upteams.volunteeros.domain.Project;
-import de.upteams.volunteeros.domain.enums.ContentType;
+import de.upteams.volunteeros.domain.model.ContentItem;
+import de.upteams.volunteeros.domain.model.Project;
 import de.upteams.volunteeros.event.ContentItemCreatedEvent;
 import de.upteams.volunteeros.event.ProjectCreatedEvent;
 import de.upteams.volunteeros.repository.ContentItemRepository;
-import de.upteams.volunteeros.service.OrganizationServiceImpl;
+import de.upteams.volunteeros.repository.ProjectRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
-
-import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +21,7 @@ public class ProjectCreationEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(ProjectCreationEventListener.class);
 
+    private final ProjectRepository projectRepository;
     private final ContentItemRepository contentItemRepository;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -33,16 +29,13 @@ public class ProjectCreationEventListener {
     @Transactional
     public void handle(ProjectCreatedEvent event) {
 
-        Project project = event.project();
+        Project project = projectRepository.findById(event.projectId())
+                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
 
-        ContentItem contentItem = new ContentItem();
-        contentItem.setContentType(ContentType.PROJECT);
-        contentItem.setProject(project);
-        project.getContentItems().add(contentItem);
-        contentItem.setContentText(project.getDescription());
-        contentItem.setCreatedAt(Instant.now());
+        ContentItem contentItem = project.toContentItem();
 
         contentItemRepository.saveAndFlush(contentItem);
+
         logger.info("Content Item created {}", contentItem.getId());
 
         eventPublisher.publishEvent(
@@ -52,4 +45,6 @@ public class ProjectCreationEventListener {
         );
 
     }
+
+
 }

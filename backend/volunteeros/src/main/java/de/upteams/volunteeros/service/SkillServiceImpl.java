@@ -1,7 +1,7 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.Skill;
-import de.upteams.volunteeros.domain.User;
+import de.upteams.volunteeros.domain.model.Skill;
+import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.dto.mapping.SkillMapper;
 import de.upteams.volunteeros.dto.skill.*;
 import de.upteams.volunteeros.exceptions.types.AuthorizationException;

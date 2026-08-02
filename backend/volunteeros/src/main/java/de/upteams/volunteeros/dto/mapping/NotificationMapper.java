@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.dto.mapping;
 
-import de.upteams.volunteeros.domain.Notification;
+import de.upteams.volunteeros.domain.model.Notification;
 import de.upteams.volunteeros.dto.notification.NotificationDto;
 import org.mapstruct.Mapper;
 

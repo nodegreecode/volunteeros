@@ -124,6 +124,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/projects/all").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/projects/active").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/projects/pending-moderation").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/search").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/complete").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.DELETE, "/api/projects/{projectId:\\d+}/remove").hasRole("ORGANIZATION")

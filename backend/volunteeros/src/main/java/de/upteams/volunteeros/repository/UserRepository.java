@@ -1,7 +1,6 @@
 package de.upteams.volunteeros.repository;
 
-import de.upteams.volunteeros.domain.User;
-import de.upteams.volunteeros.domain.enums.Role;
+import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.domain.enums.UserRoleType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

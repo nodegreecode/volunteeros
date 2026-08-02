@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.repository;
 
-import de.upteams.volunteeros.domain.Skill;
+import de.upteams.volunteeros.domain.model.Skill;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

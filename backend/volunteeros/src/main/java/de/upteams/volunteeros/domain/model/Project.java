@@ -1,6 +1,6 @@
-package de.upteams.volunteeros.domain;
+package de.upteams.volunteeros.domain.model;
 
-import de.upteams.volunteeros.domain.enums.ParticipationStatus;
+import de.upteams.volunteeros.domain.contracts.IModeratable;
 import de.upteams.volunteeros.domain.enums.ProjectStatus;
 import de.upteams.volunteeros.exceptions.types.ProjectStatusUpdateException;
 import jakarta.persistence.*;
@@ -21,7 +21,7 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
-public class Project {
+public class Project implements IModeratable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,9 +65,6 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProjectParticipation> participations = new HashSet<>();
-
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ContentItem> contentItems = new HashSet<>();
 
     @OneToOne
     @JoinColumn(name = "image_id")
@@ -116,5 +113,10 @@ public class Project {
         }
 
         status = ProjectStatus.CANCELLED;
+    }
+
+    @Override
+    public ContentItem toContentItem() {
+        return ContentItem.fromProject(this);
     }
 }

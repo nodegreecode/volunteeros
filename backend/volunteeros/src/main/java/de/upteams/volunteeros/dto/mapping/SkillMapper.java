@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.dto.mapping;
 
-import de.upteams.volunteeros.domain.Skill;
+import de.upteams.volunteeros.domain.model.Skill;
 import de.upteams.volunteeros.dto.skill.SkillCreateResponseDto;
 import de.upteams.volunteeros.dto.skill.SkillEditResponseDto;
 import de.upteams.volunteeros.dto.skill.SkillResponseDto;

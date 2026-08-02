@@ -1,10 +1,10 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.*;
 import de.upteams.volunteeros.domain.enums.ParticipationStatus;
 
 import de.upteams.volunteeros.domain.enums.ProjectStatus;
 import de.upteams.volunteeros.domain.enums.UserRoleType;
+import de.upteams.volunteeros.domain.model.*;
 import de.upteams.volunteeros.dto.image.ImageUploadResponseDto;
 import de.upteams.volunteeros.dto.mapping.ProjectMapper;
 import de.upteams.volunteeros.dto.mapping.ProjectParticipationMapper;
@@ -14,6 +14,7 @@ import de.upteams.volunteeros.dto.project.*;
 import de.upteams.volunteeros.event.ProjectCreatedEvent;
 import de.upteams.volunteeros.exceptions.types.*;
 import de.upteams.volunteeros.repository.*;
+import de.upteams.volunteeros.service.interfaces.ProjectSearchService;
 import de.upteams.volunteeros.service.interfaces.ProjectService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -46,12 +47,13 @@ public class ProjectServiceImpl implements ProjectService {
     private final ApplicationEventPublisher eventPublisher;
     private final ImageService imageService;
     private final ImageRepository imageRepository;
+    private final ProjectSearchService projectSearchService;
 
     public ProjectServiceImpl(OrganizationRepository organizationRepository, ProjectRepository projectRepository,
                               ProjectMapper projectMapper,
                               ProjectParticipationRepository participationRepository,
                               ProjectParticipationMapper projectParticipationMapper,
-                              UserRepository userRepository, ProjectParticipationRepository projectParticipationRepository, ApplicationEventPublisher eventPublisher, ImageService imageService, ImageRepository imageRepository) {
+                              UserRepository userRepository, ProjectParticipationRepository projectParticipationRepository, ApplicationEventPublisher eventPublisher, ImageService imageService, ImageRepository imageRepository, ProjectSearchService projectSearchService) {
         this.organizationRepository = organizationRepository;
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
@@ -62,6 +64,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.eventPublisher = eventPublisher;
         this.imageService = imageService;
         this.imageRepository = imageRepository;
+        this.projectSearchService = projectSearchService;
     }
 
     @Override
@@ -91,8 +94,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         eventPublisher
                 .publishEvent(
-                        new ProjectCreatedEvent(project,
-                                project.getDescription())
+                        new ProjectCreatedEvent(project.getId())
                 );
 
         return projectMapper.mapEntityToProjectCreateResponseDto(project);
@@ -118,6 +120,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectMapper.updateEntityFromDto(requestDto, entity);
         logger.info("Project updated {}", projectId);
+
+        projectSearchService.index(entity); // Update elastic search ProjectDocument
+
         return projectMapper.mapEntityToEditResponseDto(entity);
     }
 
@@ -182,6 +187,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         entity.activate();
 
+        projectSearchService.index(entity); // Update elastic search ProjectDocument
+
         return projectMapper.mapEntityToEditResponseDto(entity);
     }
 
@@ -196,7 +203,10 @@ public class ProjectServiceImpl implements ProjectService {
             logger.warn("Project not found: {}", projectId);
             return new EntityNotFoundException("Entity not found");
         });
+
         entity.cancel();
+
+        projectSearchService.index(entity); // Update elastic search ProjectDocument
 
         return projectMapper.mapEntityToEditResponseDto(entity);
     }
@@ -215,6 +225,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         entity.complete();
 
+        projectSearchService.index(entity); // Update elastic search ProjectDocument
+
         logger.info("Project status updated {}", projectId);
         return projectMapper.mapEntityToEditResponseDto(entity);
     }
@@ -232,6 +244,9 @@ public class ProjectServiceImpl implements ProjectService {
         });
 
         projectRepository.delete(entity);
+
+        projectSearchService.index(entity); // Update elastic search ProjectDocument
+
         logger.info("Project deleted: {}", projectId);
     }
 
@@ -254,6 +269,7 @@ public class ProjectServiceImpl implements ProjectService {
         });
 
         participation.setStatus(newStatus);
+
         return newStatus.name();
     }
 
@@ -328,7 +344,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional
-    public void uploadProjectImage(Long projectId, MultipartFile file)  {
+    public void uploadProjectImage(Long projectId, MultipartFile file) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
 
@@ -373,6 +389,11 @@ public class ProjectServiceImpl implements ProjectService {
         image.setUploadedAt(Instant.now());
 
         imageRepository.save(image);
+    }
+
+    @Override
+    public List<ProjectResponseDto> searchActiveProjectsByTitle(String title) {
+        return projectSearchService.search(title);
     }
 
 }

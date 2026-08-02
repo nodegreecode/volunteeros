@@ -1,4 +1,4 @@
-package de.upteams.volunteeros.domain;
+package de.upteams.volunteeros.domain.model;
 
 import de.upteams.volunteeros.domain.enums.UserRoleType;
 import jakarta.persistence.*;
@@ -8,8 +8,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Setter

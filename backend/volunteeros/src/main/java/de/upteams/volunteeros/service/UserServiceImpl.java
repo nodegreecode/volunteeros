@@ -1,31 +1,20 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.*;
-
-import de.upteams.volunteeros.domain.enums.UserStatus;
+import de.upteams.volunteeros.domain.model.User;
+import de.upteams.volunteeros.domain.model.UserProfile;
+import de.upteams.volunteeros.domain.model.UserRole;
 import de.upteams.volunteeros.dto.mapping.ProfileMapper;
-import de.upteams.volunteeros.dto.mapping.SkillMapper;
 import de.upteams.volunteeros.dto.me.MeResponseDto;
 import de.upteams.volunteeros.dto.me.ProfileEditRequestDto;
 import de.upteams.volunteeros.dto.me.ProfileEditResponseDto;
-import de.upteams.volunteeros.dto.skill.SkillCreateRequestDto;
-import de.upteams.volunteeros.dto.skill.SkillCreateResponseDto;
-import de.upteams.volunteeros.dto.skill.SkillEditRequestDto;
-import de.upteams.volunteeros.dto.skill.SkillEditResponseDto;
-import de.upteams.volunteeros.dto.volunteer.UserRegistrationDto;
-import de.upteams.volunteeros.dto.volunteer.UserResponseDto;
 
-import de.upteams.volunteeros.exceptions.types.AuthorizationException;
 import de.upteams.volunteeros.exceptions.types.PhoneAlreadyExistsException;
-import de.upteams.volunteeros.exceptions.types.RegistrationException;
 import de.upteams.volunteeros.repository.*;
 import de.upteams.volunteeros.service.interfaces.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

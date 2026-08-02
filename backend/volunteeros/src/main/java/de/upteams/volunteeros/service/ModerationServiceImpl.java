@@ -1,6 +1,6 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.ModerationCase;
+import de.upteams.volunteeros.domain.model.ModerationCase;
 import de.upteams.volunteeros.domain.enums.ModerationCaseStatus;
 import de.upteams.volunteeros.dto.mapping.ModerationCasesMapper;
 import de.upteams.volunteeros.dto.moderation.ModerationCaseResponseDto;
