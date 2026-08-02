@@ -32,6 +32,14 @@ spring:
           options:
             model: gemini-2.5-flash
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+  elasticsearch:
+    uris: http://elasticsearch:9200
+
 logging:
   file:
     name: logs/log.log
@@ -50,3 +58,8 @@ jwt:
 
   access-expiration: 900000
   refresh-expiration: 604800000
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
