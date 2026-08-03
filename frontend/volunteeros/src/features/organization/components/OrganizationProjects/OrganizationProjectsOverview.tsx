@@ -49,6 +49,19 @@ const validationSchema = Yup.object({
     .required("Required volunteers is required"),
 });
 
+const getStatusColor = (status) =>{
+  switch (status) {
+    case "ACTIVE":
+      return "success";
+    case "PENDING_MODERATION":
+      return "warning"; // orange
+    case "CANCELLED":
+      return "error"; // red
+    default:
+      return "default";
+  }
+}
+
 export default function OrganizationProjectsOverview({
   projects,
 }: OrganizationProjectsOverviewProps) {
@@ -132,6 +145,13 @@ export default function OrganizationProjectsOverview({
                   borderRadius: 3,
                   boxShadow: 3,
                   padding: "10px",
+
+                  opacity: project.status === "PENDING_MODERATION" ? 0.7 : 1,
+                  backgroundColor:
+                      project.status === "PENDING_MODERATION"
+                          ? "action.hover"
+                          : "background.paper",
+                  transition: "all 0.2s ease",
                 }}
               >
                 <CardContent sx={{ flexGrow: 1 }}>
@@ -176,6 +196,15 @@ export default function OrganizationProjectsOverview({
                       sx={{
                         px: 2,
                       }}
+                    />
+                    <Chip
+                        label={project.status}
+                        size="small"
+                        color= {getStatusColor(project.status)}
+                        variant="outlined"
+                        sx={{
+                          px: 2,
+                        }}
                     />
                   </Stack>
 

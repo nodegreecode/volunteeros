@@ -45,7 +45,7 @@ export default function LoginForm() {
         onSubmit: async (values, helper: FormikHelpers<LoginRequestPayload>) => {
             try {
                 await loginMutation.mutateAsync(values);
-                await navigate("/dashboard");
+                navigate("/app");
                 helper.resetForm();
             } catch (error) {
                 if (error instanceof Error) {

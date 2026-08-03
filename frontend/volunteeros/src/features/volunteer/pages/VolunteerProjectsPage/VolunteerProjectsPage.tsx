@@ -8,8 +8,8 @@ import ProjectCard from "@/features/volunteer/components/ProjectCard.tsx";
 
 
 export default function VolunteerProjectsPage() {
-    const {data: projects} = useAllActiveProjects();
 
+    const {data: projects} = useAllActiveProjects();
 
     return (
         <Container maxWidth="xl">

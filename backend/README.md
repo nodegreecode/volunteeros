@@ -46,6 +46,7 @@ The backend exposes a secured REST API consumed by the React frontend and is res
 - PostgreSQL
 - Liquibase
 - Redis
+- Elasticsearch
 - Spring AI
 - Google Gemini
 - Maven
@@ -104,6 +105,7 @@ src/main/java/de/upteams/volunteeros
 ├── repository/       Spring Data repositories
 ├── security/         Authentication and authorization
 ├── service/          Business logic
+├── utils/            Utils
 └── VolunteerosApplication
 ```
 
@@ -320,7 +322,6 @@ The platform supports real-time administrative notifications.
 Use cases:
 
 - Moderation updates
-- Organization application events
 - Monitoring events
 
 Flow:
@@ -384,6 +385,7 @@ Spring Boot Container
            │
            ├── PostgreSQL
            ├── Redis
+           ├── Elasticsearch
            └── Google Gemini API
 ```
 
@@ -393,48 +395,46 @@ Spring Boot Container
 
 ## Prerequisites
 
-- Java 21
-- Maven
-- Docker
-- PostgreSQL
-- Redis
+Before running the application, ensure you have the following installed:
+
+* Java 21
+* Maven
+* Docker (Docker Desktop or Docker Engine)
+
+> **Note:** This project uses Spring Boot's Docker Compose integration. PostgreSQL, Redis, and Elasticsearch are automatically started using the project's `docker-compose.yml`. No manual database or infrastructure setup is required.
 
 ---
 
-## Start PostgreSQL
+## Getting Started
 
-```bash
-docker run --name volunteeros-postgres \
--e POSTGRES_DB=volunteeros_db_dev \
--e POSTGRES_USER=volunteer \
--e POSTGRES_PASSWORD=volunteer_password \
--p 5432:5432 \
--d postgres:16
-```
+1. Clone the repository.
 
----
-
-## Start Redis
-
-```bash
-docker run --name volunteeros-redis \
--p 6379:6379 \
--d redis:7
-```
-
----
-
-## Run Application
+2. Start the application:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Application starts at:
+On startup, Spring Boot automatically detects the `docker-compose.yml` file and starts the required infrastructure services:
+
+* PostgreSQL 17
+* Redis 8
+* Elasticsearch 9
+
+The application will be available at:
 
 ```text
 http://localhost:8080
 ```
+
+---
+
+## Notes
+
+* Docker must be running before starting the application.
+* If the required containers are not already running, Spring Boot will create and start them automatically.
+* Persistent Docker volumes are used for PostgreSQL, Redis, and Elasticsearch, so data is preserved between restarts.
+* When the application stops, Spring Boot also manages the lifecycle of the Docker Compose services it started.
 
 ---
 
@@ -468,18 +468,20 @@ http://localhost:8080
 
 ---
 
-# 🧪 Quality
+# 🧪 Testing
 
-The backend is tested through:
+Automated tests are planned as part of the project's ongoing development.
 
-- REST Assured API automation
-- Postman collections
-- Newman regression runs
-- JMeter performance testing
-- Database verification queries
+The testing strategy will include:
+
+* Unit tests
+* Integration tests
+
+Additional testing (such as performance and end-to-end testing) may be introduced as the project evolves.
 
 ---
 
 # 📜 License
 
-Educational project developed as part of the VolunteerOS platform.
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+

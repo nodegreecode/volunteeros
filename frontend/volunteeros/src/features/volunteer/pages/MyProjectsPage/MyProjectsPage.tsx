@@ -13,6 +13,7 @@ import ApplicationList from "@/features/volunteer/components/ApplicationList.tsx
 import ApprovedProjectList from "@/features/volunteer/components/ApprovedProjectList";
 
 export default function MyProjectsPage() {
+
   const [tab, setTab] = useState(0);
 
   return (
@@ -23,7 +24,6 @@ export default function MyProjectsPage() {
         <Card>
           <Tabs value={tab} onChange={(_, value) => setTab(value)}>
             <Tab label="Applications" />
-
             <Tab label="Approved Projects" />
           </Tabs>
 
@@ -31,10 +31,10 @@ export default function MyProjectsPage() {
 
           <Box sx={{ p: 3 }}>
             {tab === 0 && <ApplicationList />}
-
             {tab === 1 && <ApprovedProjectList />}
           </Box>
         </Card>
+
       </Stack>
     </Container>
   );

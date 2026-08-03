@@ -6,7 +6,6 @@ import {Toolbar} from "@mui/material";
 import {menuConfig} from "@/components/Sidebar/menuConfig.ts";
 import {useProfile} from "@/features/auth/authHooks.ts";
 
-//type Role = "ROLE_ORGANIZATION" | "ROLE_VOLUNTEER" | "ROLE_ADMIN";
 
 export default function DashboardLayout() {
 

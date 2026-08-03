@@ -19,6 +19,9 @@ import Organization from "@/features/organization/pages/Organization/Organizatio
 import RoleGuardRouteComponent from "@/routes/roleGuardRoute/RoleGuardRouteComponent.tsx";
 
 import DashboardHomePage from "@/pages/DashboardHomePage/DashboardHomePage.tsx";
+import AllProjects from "@/features/admin/pages/AllProjects/AllProjects.tsx";
+import OrganizationCreateProject
+    from "@/features/organization/components/OrganizationProjects/OrganizationCreateProject.tsx";
 
 export default [
     {
@@ -50,7 +53,13 @@ export default [
                                     },
                                     {
                                         path: "projects",
-                                        element: <OrganizationProjects/>,
+                                        children: [
+                                            {index: true, element: <OrganizationProjects/>},
+                                            {
+                                                path: "create",
+                                                element: <OrganizationCreateProject/>
+                                            }
+                                        ]
                                     }
                                     , {
                                         path: "participants",
@@ -103,7 +112,7 @@ export default [
                                     },
                                     {
                                         path: "projects",
-                                        element: <Projects/>,
+                                        element: <AllProjects/>,
                                     }
                                     , {
                                         path: "moderation",

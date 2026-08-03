@@ -25,16 +25,9 @@ interface User {
  *  UseRegister
  */
 export function useRegister() {
-    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: registerUser,
-
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: ["registration"],
-            });
-        },
     });
 }
 
@@ -46,7 +39,6 @@ export function useLogin() {
 
     return useMutation({
         mutationFn: loginUser,
-
         onSuccess: async () => {
             await queryClient.invalidateQueries({
                 queryKey: ["profile"],
@@ -88,12 +80,12 @@ export function useLogout() {
     return useMutation({
         mutationFn: logoutUser,
         onSuccess: async () => {
-          /*  await queryClient.cancelQueries({
-                queryKey: ["profile"],
-            });
-            queryClient.removeQueries({
-                queryKey: ["profile"],
-            })*/
+            /*  await queryClient.cancelQueries({
+                  queryKey: ["profile"],
+              });
+              queryClient.removeQueries({
+                  queryKey: ["profile"],
+              })*/
 
             await queryClient.cancelQueries();
 

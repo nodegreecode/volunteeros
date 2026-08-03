@@ -1,56 +1,54 @@
-import { useState } from "react";
+import {useState} from 'react';
 import {
-  useApplication,
-  useOrganization,
+    useApplication,
+    useOrganization,
 } from "@/features/organization/orgHooks";
 import OrganizationPending from "@/features/organization/components/OrganizationPending.tsx";
 import OrganizationEmpty from "@/features/organization/components/OrganizationEmpty.tsx";
 import OrganizationOverview from "@/features/organization/components/OrganizationOverview.tsx";
 import OrganizationRejected from "@/features/organization/components/OrganizationRejected.tsx";
 import Loading from "@/components/common/Loading.tsx";
+import {Typography} from "@mui/material";
+import OrganizationApplicationForm
+    from "@/features/organization/components/OrganizationApplicationForm/OrganizationApplicationForm.tsx";
 
 export default function MyOrganizationPage() {
-  const { organization, isLoading: organizationLoading } = useOrganization();
-  const { application, isLoading: applicationLoading } = useApplication();
 
-  const [showApplicationForm, setShowApplicationForm] = useState();
+    const {data: application, isLoading: applicationLoading} = useApplication();
+    const {data: organization, isLoading: organizationLoading} = useOrganization();
 
-  function handleSubmitAgain() {
-    setShowApplicationForm(false);
-  }
+    const [showApplicationForm, setShowApplicationForm] = useState(false);
 
-  function handleApplyAgain() {
-    setShowApplicationForm(true);
-  }
+    if (organizationLoading || applicationLoading) {
+        return <Loading/>;
+    }
 
-  if (organizationLoading || applicationLoading) {
-    return <Loading />;
-  }
+    if (showApplicationForm) {
+        return (<OrganizationApplicationForm onCancel={() => setShowApplicationForm(false)}/>)
+    }
 
-  if (!application && !organization) {
-    return <OrganizationEmpty onSubmitAgain={handleSubmitAgain} />;
-  }
+    if (!application) {
+        return <OrganizationEmpty onCreate={() => setShowApplicationForm(true)}/>;
+    }
 
-  if (showApplicationForm) {
-    return <OrganizationEmpty onSubmitAgain={handleSubmitAgain} />;
-  }
+    switch (application.applicationStatus) {
+        case "PENDING":
+            return <OrganizationPending application={application}/>;
 
-  switch (application?.applicationStatus) {
-    case "PENDING":
-      return <OrganizationPending application={application} />;
+        case "REJECTED":
+            return <OrganizationRejected application={application}
+                                         onApplyingAgain={() => setShowApplicationForm(true)}/>
 
-    case "APPROVED":
-      return <OrganizationOverview organization={organization} />;
+        case "APPROVED":
+            if (!organization) {
+                return <Typography>Error! Organization data not found.</Typography>;
+            }
 
-    case "REJECTED":
-      return (
-        <OrganizationRejected
-          application={application}
-          onApplyAgain={handleApplyAgain}
-        />
-      );
+            return <OrganizationOverview organization={organization}/>;
 
-    default:
-      return <OrganizationEmpty onSubmitAgain={handleSubmitAgain} />;
-  }
+        default:
+            return (<Typography color="error">
+                Unknown application status: {application.applicationStatus}
+            </Typography>);
+    }
 }

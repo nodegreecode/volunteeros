@@ -12,8 +12,8 @@ export const AuthUrls = {
 export const OrganizationEndpoints = {
     organization: BASE_URL + "/api/me/organization",
     application: BASE_URL + "/api/me/application",
-    applications: BASE_URL + "/api/organizations/applications",
-    applicationsByUser: BASE_URL + "/api/organizations/{userId}/applications",
+    applications: BASE_URL + "/api/applications",
+    applicationsByUser: BASE_URL + "/api/applications/{userId}",
     applicationStatus: (applicationId: number) =>
         `${BASE_URL}/api/organizations/applications/${applicationId}/status`,
     organizations: BASE_URL + "/api/organizations",

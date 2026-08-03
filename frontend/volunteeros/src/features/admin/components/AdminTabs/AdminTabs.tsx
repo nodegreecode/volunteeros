@@ -2,7 +2,7 @@ import {Tabs, Tab} from "@mui/material";
 import {useLocation, useNavigate} from "react-router-dom";
 import {NavLink} from "react-router-dom";
 
-export default function VolunteerTabs() {
+export default function AdminTabs() {
 
     //const navigate = useNavigate();
     const location = useLocation();
@@ -10,19 +10,19 @@ export default function VolunteerTabs() {
     const tabs = [
         {
             label: "Overview",
-            path: "/app/volunteer",
+            path: "/app/admin"
+        },
+        {
+            label: "Organizations",
+            path: "/app/admin/organizations",
         },
         {
             label: "Projects",
-            path: "/app/volunteer/projects",
+            path: "/app/admin/projects",
         },
         {
-            label: "My Projects",
-            path: "/app/volunteer/my-projects",
-        },
-        {
-            label: "My Skills",
-            path: "/app/volunteer/skills",
+            label: "Moderation",
+            path: "/app/admin/moderation",
         },
     ];
 

@@ -1,19 +1,20 @@
-import { useOrganizationProjects } from "@/features/organization/orgHooks.ts";
+import {useOrganizationProjects} from "@/features/organization/orgHooks.ts";
 import Loading from "@/components/common/Loading";
-import OrganizationProjectsEmpty from "@/features/organization/components/OrganizationProjects/OrganizationProjectsEmpty";
-import OrganizationProjectsOverview from "@/features/organization/components/OrganizationProjects/OrganizationProjectsOverview";
+import OrganizationProjectsEmpty
+    from "@/features/organization/components/OrganizationProjects/OrganizationProjectsEmpty";
+import OrganizationProjectsOverview
+    from "@/features/organization/components/OrganizationProjects/OrganizationProjectsOverview";
 
 export default function OrganizationProjectPage() {
-  const { projects, isLoading } = useOrganizationProjects();
+    const {data: projects, isLoading} = useOrganizationProjects();
 
+    if (isLoading) {
+        return <Loading/>;
+    }
 
-  if (isLoading) {
-    return <Loading />;
-  }
+    if (!projects || projects.length === 0) {
+        return <OrganizationProjectsEmpty/>;
+    }
 
-  if (!projects || projects.length === 0) {
-    return <OrganizationProjectsEmpty />;
-  }
-
-  return <OrganizationProjectsOverview projects={projects} />;
+    return <OrganizationProjectsOverview projects={projects}/>;
 }

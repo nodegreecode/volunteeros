@@ -147,13 +147,10 @@ Run instructions and documentation links are available in the [QA README](qa/REA
 ## 📁 Repository structure
 
 ```text
-67-mars/
+volunteeros/
 ├── backend/volunteeros/     Spring Boot application
 ├── frontend/volunteeros/    React application
-├── postman/                 Postman collections and CI environment
-├── qa/                      QA documentation and automated tests
-├── .github/workflows/       GitHub Actions workflows
-├── Jenkinsfile              Parameterized Newman regression pipeline
+├── LICENSE
 └── README.md
 ```
 
@@ -162,7 +159,6 @@ Run instructions and documentation links are available in the [QA README](qa/REA
 ### Prerequisites
 
 - Java 21
-- Node.js 20 or newer
 - Docker Desktop
 - Git
 
@@ -242,70 +238,84 @@ The API contains 37 routes.
 
 ### Authentication — 4 routes
 
-| Method | Endpoint | Access | Purpose |
-| --- | --- | --- | --- |
-| `POST` | `/api/auth/register` | Public | Register a user |
-| `POST` | `/api/auth/login` | Public | Log in and receive access and refresh cookies |
-| `POST` | `/api/auth/logout` | Authenticated | Log out and clear authentication |
-| `POST` | `/api/auth/refresh` | Public | Refresh the access token using the refresh cookie |
+| Method | Endpoint             | Access        | Purpose                                           |
+|--------|----------------------|---------------|---------------------------------------------------|
+| `POST` | `/api/auth/register` | Public        | Register a user                                   |
+| `POST` | `/api/auth/login`    | Public        | Log in and receive access and refresh cookies     |
+| `POST` | `/api/auth/logout`   | Authenticated | Log out and clear authentication                  |
+| `POST` | `/api/auth/refresh`  | Public        | Refresh the access token using the refresh cookie |
 
-### Current user — 11 routes
+### User — 2 routes
 
-| Method | Endpoint | Access | Purpose |
-| --- | --- | --- | --- |
-| `GET` | `/api/me/application` | Organization | Get the current user's organization application |
-| `GET` | `/api/me/projects` | Organization, Volunteer | Get projects related to the current user |
-| `GET` | `/api/me/participations` | Volunteer | Get the volunteer's own project applications |
-| `GET` | `/api/me/participants` | Organization | Get applicants to the organization's projects |
-| `GET` | `/api/me/profile` | Authenticated | Get the current user's profile |
-| `PATCH` | `/api/me/profile` | Authenticated | Update the current user's profile |
-| `GET` | `/api/me/skills` | Volunteer | Get the current volunteer's skills |
-| `POST` | `/api/me/skills` | Volunteer | Add a skill |
-| `PATCH` | `/api/me/skills/{skillId}` | Volunteer | Update a skill |
-| `DELETE` | `/api/me/skills/{skillId}` | Volunteer | Remove a skill |
-| `GET` | `/api/me/organization` | Organization | Get the current user's organization |
+| Method   | Endpoint                   | Access                  | Purpose                                         |
+|----------|----------------------------|-------------------------|-------------------------------------------------|
+| `GET`    | `/api/users/profile`       | Authenticated           | Get the current user's profile                  |
+| `PATCH`  | `/api/users/profile`       | Authenticated           | Update the current user's profile               |
 
-> `GET /api/me/participants` and `GET /api/me/participations` are different endpoints. The first returns applicants to an organization's projects; the second returns a volunteer's own participation applications.
+### Organization application — 6 routes
 
-### Organizations — 7 routes
+| Method  | Endpoint                                   | Access       | Purpose                                         |
+|---------|--------------------------------------------|--------------|-------------------------------------------------|
+| `GET`   | `/api/applications`                        | Organization | Get the current user's organization application |
+| `POST`  | `/api/applications`                        | Organization | Apply for organziation                          |
+| `PATCH` | `/api/applications/{applicationId}/reject` | Admin        | Reject application                              |
+| `PATCH` | `/api/applications/{applicationId}/approve`| Admin        | Approve application                             |
+| `GET`   | `/api/applications/{userId}`               | Admin        | Get all organization applications by user       |
+| `GET`   | `/api/applications/all`                    | Admin        | Get all organization applications               |
 
-| Method | Endpoint | Access | Purpose |
-| --- | --- | --- | --- |
-| `POST` | `/api/organizations/applications` | Organization | Submit an organization onboarding application |
-| `GET` | `/api/organizations/applications` | Admin | Get pending organization applications |
-| `GET` | `/api/organizations/{userId}/applications` | Admin | Get organization applications submitted by a user |
-| `PATCH` | `/api/organizations/applications/{applicationId}/status` | Admin | Approve or reject an organization application |
-| `GET` | `/api/organizations` | Admin | Get all organizations |
-| `PATCH` | `/api/organizations/{organizationId}` | Organization | Update an organization |
-| `POST` | `/api/organizations/{organizationId}` | Unavailable | Deprecated project-creation route |
+### Organizations — 3 routes
 
-This route is deprecated. Use `POST /api/projects/{organizationId}` instead.
+| Method  | Endpoint                                   | Access       | Purpose                         |
+|---------|--------------------------------------------|--------------|---------------------------------|
+| `PATCH` | `/api/organizations/{organizationId}`      | Organization | Update an organization          |
+| `GET`   | `/api/organizations`                       | Organization | Get current user's organization |
+| `GET`   | `/api/organizations/all`                   | Admin        | Get all organizations           |
 
-### Projects and participation — 12 routes
 
-| Method | Endpoint | Access | Purpose |
-| --- | --- | --- | --- |
-| `POST` | `/api/projects/{organizationId}` | Organization | Create a project |
-| `POST` | `/api/projects/{projectId}/participants` | Volunteer | Apply to participate in a project |
-| `PATCH` | `/api/projects/participants/{participationId}/status` | Organization | Approve or reject a participation application |
-| `PATCH` | `/api/projects/participants/{participationId}/withdraw` | Volunteer | Withdraw a participation application |
-| `GET` | `/api/projects` | Admin | Get all projects |
-| `GET` | `/api/projects/active` | Volunteer | Get active projects |
-| `GET` | `/api/projects/pending-moderation` | Admin | Get projects awaiting moderation |
-| `PATCH` | `/api/projects/{projectId}` | Organization | Update a project |
-| `PATCH` | `/api/projects/{projectId}/complete` | Organization | Complete a project |
-| `PATCH` | `/api/projects/{projectId}/active` | Admin | Activate a project after moderation |
-| `PATCH` | `/api/projects/{projectId}/cancel` | Admin | Cancel a project during moderation |
-| `DELETE` | `/api/projects/{projectId}/remove` | Organization | Remove a project |
+### Projects and participation — 18 routes
 
-### Moderation and administrator notifications — 3 routes
+| Method   | Endpoint                                                | Access                 | Purpose                                 |
+|----------|---------------------------------------------------------|------------------------|-----------------------------------------|
+| `PUT`    | `/api/projects/{projectId}/image`                       | Organization           | Edit project's picture                  | 
+| `POST`   | `/api/projects/{projectId}/image`                       | Organization           | Add project's picture                   | 
+| `POST`   | `/api/projects/{projectId}/participants`                | Volunteer              | Apply to participate in a project       |
+| `POST`   | `/api/projects/{organizationId}`                        | Organization           | Create project                          |
+| `PATCH`  | `/api/projects/{projectId}`                             | Organization           | Edit project                            |
+| `PATCH`  | `/api/projects/{projectId}/complete`                    | Organization           | Complete project                        |
+| `PATCH`  | `/api/projects/{projectId}/cancel`                      | Volunteer              | Gancel projects                         |
+| `PATCH`  | `/api/projects/{projectId}/active`                      | Admin                  | Activate project                        |
+| `PATCH`  | `/api/projects/participants/{participationId}/withdraw` | Organization           | Withdraw participation                  |
+| `PATCH`  | `/api/projects/participants/{participationId}/status`   | Organization           | Set project's status                    |
+| `GET`    | `/api/projects`                                         | Organization, Volunteer | Current user's projects                 |
+| `GET`    | `/api/projects/search`                                  | Volunteer              | Search projects by title                |
+| `GET`    | `/api/projects/pending-moderation`                      | Admin                  | Get all pending moderation projects     |
+| `GET`    | `/api/projects/participants/volunteer`                  | Volunteer              | Volunteer's participations applications |
+| `GET`    | `/api/projects/participants/organization`               | Organization           | Project participants applications       |
+| `GET`    | `/api/projects/all`                                     | Admin                  | All projects                            |
+| `GET`    | `/api/projects/active`                                  | Volunteer              | All active project                      |
+| `DELETE` | `/api/projects/{projectId}/remove`                      | Organization           | Remove a project                        |
 
-| Method | Endpoint | Access | Purpose                                                                            |
-| --- | --- |--------|------------------------------------------------------------------------------------|
-| `GET` | `/api/moderations/cases` | Admin  | Get moderation cases                                                               |
+### Skill — 4 routes
+
+| Method   | Endpoint               | Access    | Purpose        |
+|----------|------------------------|-----------|----------------|
+| `GET`    | `/api/skills/skills`   | Volunteer | Get all skills |
+| `POST`   | `/api/skills/skills`   | Volunteer | Add skill      |
+| `DELETE` | `/api/skills/skills`   | Volunteer | Delete skill   |
+| `PATCH`  | `/api/skills/skills`   | Volunteer | Edit skill     |  
+
+### Administrator notifications — 1 routes
+
+| Method  | Endpoint                                 | Access | Purpose                                                                            |
+|---------|------------------------------------------|--------|------------------------------------------------------------------------------------|
+| `GET`   | `/api/admin/monitoring/database`         | Admin  | Subscribe to the administrator SSE database state notification stream              | 
+
+### Moderation and administrator notifications — 2 routes
+
+| Method  | Endpoint                                 | Access | Purpose                                                                            |
+|---------|------------------------------------------|--------|------------------------------------------------------------------------------------|
+| `GET`   | `/api/moderations/cases`                 | Admin  | Get moderation cases                                                               |
 | `PATCH` | `/api/moderations/cases/{caseId}/status` | Admin  | Update a moderation case status                                                    |
-| `GET` | `/api/admin/events` | Admin  | Subscribe to the administrator SSE pending moderation projects notification stream |
-| `GET` |`/api/admin/events` | Admin  | Subscribe to the administrator SSE database state notification stream              |                                       |
 
 Request and response models are available in Swagger at `http://localhost:8080/swagger-ui/index.html`.
 
