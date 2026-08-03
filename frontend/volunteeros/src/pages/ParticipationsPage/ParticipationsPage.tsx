@@ -6,7 +6,8 @@ import { useMyParticipants } from "@/features/volunteer/volHooks.ts";
 import Loading from "@/components/common/Loading.tsx";
 
 export default function ParticipationsPage() {
-  const { myParticipants, isLoading } = useMyParticipants();
+
+    const { myParticipants, isLoading } = useMyParticipants();
 
   if (isLoading) {
     return <Loading />;

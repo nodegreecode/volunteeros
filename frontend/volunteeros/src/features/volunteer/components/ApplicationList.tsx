@@ -4,10 +4,10 @@ import Loading from "@/components/common/Loading";
 import ApplicationCard from "@/features/volunteer/components/ApplicationCard.tsx";
 
 export default function ApplicationList() {
-  const { myParticipations, isLoading: isLoadingParticipations } =
-    useMyParticipations();
 
-  if (isLoadingParticipations) {
+  const { data: myParticipations, isLoading  } = useMyParticipations();
+
+  if (isLoading) {
     return <Loading />;
   }
 

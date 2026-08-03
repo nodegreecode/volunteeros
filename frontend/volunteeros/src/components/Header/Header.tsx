@@ -33,7 +33,7 @@ export default function Header() {
             <Toolbar sx={{justifyContent: "space-between"}}>
                 <Button
                     component={Link}
-                    to={isAuthenticated ? "/dashboard" : "/"}
+                    to={isAuthenticated ? "/app" : "/"}
                     variant="text"
                     color="inherit"
                     sx={{

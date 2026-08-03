@@ -77,8 +77,8 @@ export default function SignUpForm() {
             };
 
             try {
-                const responseMessage = await registrationMutation.mutateAsync(payload);
-                setSuccessMessage(responseMessage);
+                await registrationMutation.mutateAsync(payload);
+                setSuccessMessage("Registration completed successfully.");
                 helper.resetForm();
             } catch (error) {
                 if (error instanceof Error) {

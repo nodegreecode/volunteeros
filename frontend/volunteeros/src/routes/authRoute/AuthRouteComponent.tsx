@@ -11,7 +11,7 @@ export default function AuthRouteComponent() {
         return  <Loading />;
     }
     if (user) {
-        return <Navigate to="/dashboard" replace/>;
+        return <Navigate to="/app" replace/>;
     }
 
     return <Outlet/>;

@@ -1,10 +1,11 @@
 import Loading from "@/components/common/Loading";
 import OrganizationProjectsEmpty from "./OrganizationProjectsEmpty";
 import OrganizationProjectsOverview from "./OrganizationProjectsOverview";
-import { useOrganizationProjects } from "../projectHooks";
+import {useOrganizationProjects} from "@/features/organization/orgHooks.ts";
+
 
 export default function OrganizationProjects() {
-  const { projects, isLoading } = useOrganizationProjects();
+  const {data: projects, isLoading } = useOrganizationProjects();
 
   if (isLoading) {
     return <Loading />;

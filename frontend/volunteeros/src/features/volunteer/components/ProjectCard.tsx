@@ -30,8 +30,6 @@ type ProjectCardProps = {
         endDate: string;
         requiredVolunteers: number;
     };
-
-
 };
 
 export default function ProjectCard({project}: ProjectCardProps) {
@@ -78,7 +76,7 @@ export default function ProjectCard({project}: ProjectCardProps) {
                     <Chip
                         icon={<CalendarMonthIcon/>}
                         label={`${new Date(project.startDate).toLocaleDateString()}
- ${new Date(project.endDate).toLocaleDateString()}`}
+                        ${new Date(project.endDate).toLocaleDateString()}`}
                     />
                     <Chip
                         icon={<GroupsIcon/>}

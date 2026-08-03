@@ -20,8 +20,10 @@ export interface ProjectResponseDto {
     requiredVolunteers: number;
 }
 
+const DEFAULT_STALE_TIME = 1000 * 60 * 5;
+
 /**
- *
+ * Fetch all active projects
  */
 export function useAllActiveProjects() {
     return useQuery<ProjectResponseDto[]>({
@@ -30,10 +32,11 @@ export function useAllActiveProjects() {
         staleTime: 1000 * 60 * 5,
     });
 
+
 }
 
 /**
- *
+ * Post an application for project participation
  */
 export function useApplyForProject() {
     const queryClient = useQueryClient();
@@ -54,28 +57,29 @@ export function useApplyForProject() {
 }
 
 /**
- * Fetch all participations
+ * Fetch all projects participation applications
  */
 export function useMyParticipations() {
-    const query = useQuery({
+    return useQuery({
         queryKey: ["my-participations"],
         queryFn: myParticipations,
+        staleTime: DEFAULT_STALE_TIME,
     });
 
-    return {...query, myParticipations: query.data};
+
 }
 
 /**
- * Fetch all participants
+ * Fetch all project participants
  */
 export function useMyParticipants() {
-    const query = useQuery({
+     return useQuery({
         queryKey: ["my-participants"],
         queryFn: myParticipants,
-        retry: false,
+        staleTime: DEFAULT_STALE_TIME,
     });
 
-    return {...query, myParticipants: query.data};
+
 }
 
 /**
@@ -98,10 +102,11 @@ export function useWithdrawParticipation() {
  *
  */
 export function useMyProjects() {
-    const query = useQuery({
+    return useQuery({
         queryKey: ["my-projects"],
         queryFn: myProjects,
+        staleTime: DEFAULT_STALE_TIME,
     });
 
-    return {...query, myProjects: query.data};
+
 }

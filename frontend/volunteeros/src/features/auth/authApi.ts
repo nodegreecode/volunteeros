@@ -5,6 +5,10 @@ import {
 } from "./types.ts";
 import type {Role} from "@/shared/types/types.ts";
 
+interface ApiError {
+    message: string;
+}
+
 interface User {
     id: number;
     roles: Role[];
@@ -22,7 +26,7 @@ interface User {
  *  Register new user
  * @param values
  */
-export async function registerUser(values: RegisterRequestPayload) {
+export async function registerUser(values: RegisterRequestPayload): Promise<void> {
     const registerResponse = await fetch(AuthUrls.signup, {
         method: "POST",
         headers: {"content-type": "application/json"},
@@ -31,10 +35,9 @@ export async function registerUser(values: RegisterRequestPayload) {
     });
 
     if (!registerResponse.ok) {
-        throw new Error("Register failed. Email already exists");
+        const error = await registerResponse.json() as ApiError;
+        throw new Error(error.message);
     }
-
-    return registerResponse.text();
 }
 
 /**
@@ -52,7 +55,8 @@ export async function loginUser(values: LoginRequestPayload) {
     });
 
     if (!loginResponse.ok) {
-        throw new Error("Login failed");
+        const error = await loginResponse.json() as ApiError;
+        throw new Error(error.message);
     }
 }
 
