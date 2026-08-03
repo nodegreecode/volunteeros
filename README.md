@@ -263,7 +263,7 @@ The API contains 37 routes.
 | `GET`   | `/api/applications/{userId}`               | Admin        | Get all organization applications by user       |
 | `GET`   | `/api/applications/all`                    | Admin        | Get all organization applications               |
 
-### Organizations — 3 routes
+### Organization — 3 routes
 
 | Method  | Endpoint                                   | Access       | Purpose                         |
 |---------|--------------------------------------------|--------------|---------------------------------|
@@ -310,7 +310,7 @@ The API contains 37 routes.
 |---------|------------------------------------------|--------|------------------------------------------------------------------------------------|
 | `GET`   | `/api/admin/monitoring/database`         | Admin  | Subscribe to the administrator SSE database state notification stream              | 
 
-### Moderation and administrator notifications — 2 routes
+### Moderation — 2 routes
 
 | Method  | Endpoint                                 | Access | Purpose                                                                            |
 |---------|------------------------------------------|--------|------------------------------------------------------------------------------------|
