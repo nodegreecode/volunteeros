@@ -62,6 +62,8 @@ public class User {
     @OneToOne(mappedBy = "owner")
     private Organization organization;
 
+    @OneToMany(mappedBy = "volunteer", fetch = FetchType.LAZY)
+    private Set<VolunteerEventRegistration> eventRegistrations = new HashSet<>();
 
     public User() {
     }
@@ -97,6 +99,16 @@ public class User {
     public void removeParticipation(ProjectParticipation participation) {
         participations.remove(participation);
         participation.setUser(null);
+    }
+
+    public void addEventRegistration(VolunteerEventRegistration registration) {
+        eventRegistrations.add(registration);
+        registration.setVolunteer(this);
+    }
+
+    public void removeEventRegistration(VolunteerEventRegistration registration) {
+        eventRegistrations.remove(registration);
+        registration.setVolunteer(null);
     }
 
 }
