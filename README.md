@@ -129,21 +129,6 @@ Core persisted entities include Account/User, UserProfile, UserRole, Organizatio
 | External integration | Spring AI integration with Google Gemini for moderation |
 | Delivery | Netlify frontend, GitHub Actions API gate, and Jenkins parameterized regression |
 
-## 🧪 Quality engineering
-
-| Layer | Coverage and tooling | Repository evidence |
-| --- | --- | --- |
-| Requirements and manual testing | User stories, requirements, checklists, test cases, test data, and coverage matrix | Shared Google Sheets |
-| API smoke gate | Short Postman/Newman collection executed by GitHub Actions | [Workflow](.github/workflows/api-smoke.yml) · [Smoke collection](postman/MARS_VolunteerOS_API_Smoke.postman_collection.json) |
-| API regression and E2E | Parameterized Postman scenarios executed with selectable scope in Jenkins | [Jenkinsfile](Jenkinsfile) · [Regression collection](postman/MARS_VolunteerOS_Regression.postman_collection.json) |
-| API automation | REST Assured, JUnit 5, Maven, and Allure | [`qa/API`](qa/API) |
-| Browser smoke | Five Selenium WebDriver checks | [`qa/GUI`](qa/GUI) |
-| Performance baseline | Authenticated JMeter scenario at 5, 25, 100, 250, and 500 virtual users | [Performance report](qa/performance/PERFORMANCE_TEST_REPORT.md) |
-| Database checks | PostgreSQL queries run in Beekeeper Studio | [Database checks](qa/database/db_checks.sql) |
-| Reports and defects | Allure reports and GitHub Issues | [Issues](https://github.com/upteam-edu/67-mars/issues) · [Test summary](qa/docs/TEST_SUMMARY.md) |
-
-Run instructions and documentation links are available in the [QA README](qa/README.md). Test results are recorded in the [Test Summary](qa/docs/TEST_SUMMARY.md).
-
 ## 📁 Repository structure
 
 ```text
@@ -247,10 +232,10 @@ The API contains 37 routes.
 
 ### User — 2 routes
 
-| Method   | Endpoint                   | Access                  | Purpose                                         |
-|----------|----------------------------|-------------------------|-------------------------------------------------|
-| `GET`    | `/api/users/profile`       | Authenticated           | Get the current user's profile                  |
-| `PATCH`  | `/api/users/profile`       | Authenticated           | Update the current user's profile               |
+| Method   | Endpoint                   | Access                  | Purpose                           |
+|----------|----------------------------|-------------------------|-----------------------------------|
+| `GET`    | `/api/users/profile`       | Authenticated           | Get the current user's profile    |
+| `PATCH`  | `/api/users/profile`       | Authenticated           | Update the current user's profile |
 
 ### Organization application — 6 routes
 
@@ -272,28 +257,55 @@ The API contains 37 routes.
 | `GET`   | `/api/organizations/all`                   | Admin        | Get all organizations           |
 
 
-### Projects and participation — 18 routes
+### Projects — 17 routes
 
-| Method   | Endpoint                                                | Access                 | Purpose                                 |
-|----------|---------------------------------------------------------|------------------------|-----------------------------------------|
-| `PUT`    | `/api/projects/{projectId}/image`                       | Organization           | Edit project's picture                  | 
-| `POST`   | `/api/projects/{projectId}/image`                       | Organization           | Add project's picture                   | 
-| `POST`   | `/api/projects/{projectId}/participants`                | Volunteer              | Apply to participate in a project       |
-| `POST`   | `/api/projects/{organizationId}`                        | Organization           | Create project                          |
-| `PATCH`  | `/api/projects/{projectId}`                             | Organization           | Edit project                            |
-| `PATCH`  | `/api/projects/{projectId}/complete`                    | Organization           | Complete project                        |
-| `PATCH`  | `/api/projects/{projectId}/cancel`                      | Volunteer              | Gancel projects                         |
-| `PATCH`  | `/api/projects/{projectId}/active`                      | Admin                  | Activate project                        |
-| `PATCH`  | `/api/projects/participants/{participationId}/withdraw` | Organization           | Withdraw participation                  |
-| `PATCH`  | `/api/projects/participants/{participationId}/status`   | Organization           | Set project's status                    |
-| `GET`    | `/api/projects`                                         | Organization, Volunteer | Current user's projects                 |
-| `GET`    | `/api/projects/search`                                  | Volunteer              | Search projects by title                |
-| `GET`    | `/api/projects/pending-moderation`                      | Admin                  | Get all pending moderation projects     |
-| `GET`    | `/api/projects/participants/volunteer`                  | Volunteer              | Volunteer's participations applications |
-| `GET`    | `/api/projects/participants/organization`               | Organization           | Project participants applications       |
-| `GET`    | `/api/projects/all`                                     | Admin                  | All projects                            |
-| `GET`    | `/api/projects/active`                                  | Volunteer              | All active project                      |
-| `DELETE` | `/api/projects/{projectId}/remove`                      | Organization           | Remove a project                        |
+| Method   | Endpoint                                    | Access                  | Purpose                               |
+|----------|---------------------------------------------|-------------------------|---------------------------------------|
+| `PUT`    | `/api/projects/{projectId}/image`           | Organization            | Edit project's picture                | 
+| `POST`   | `/api/projects/{projectId}/image`           | Organization            | Add project's picture                 | 
+| `POST`   | `/api/projects/{projectId}/participants`    | Volunteer               | Apply to participate in a project     |
+| `GET`    | `/api/projects/{projectId}/events`          | Organization, Volunteer | Get project's events                  |
+| `POST`   | `/api/projects/{projectId}/events`          | Organization            | Create event                          |
+| `POST`   | `/api/projects/{organizationId}`            | Organization            | Create project                        |
+| `PATCH`  | `/api/projects/{projectId}`                 | Organization            | Edit project                          |
+| `PATCH`  | `/api/projects/{projectId}/complete`        | Organization            | Complete project                      |
+| `PATCH`  | `/api/projects/{projectId}/cancel`          | Admin                   | Cancel project                        |
+| `PATCH`  | `/api/projects/{projectId}/active`          | Admin                   | Activate project                      |
+| `GET`    | `/api/projects`                             | Organization, Volunteer | Current user's projects               |
+| `GET`    | `/api/projects/{projectId}/events/upcoming` | Volunteer, Organization | List upcoming project's events        |
+| `GET`    | `/api/projects/search`                      | Volunteer               | Search projects by title              |
+| `GET`    | `/api/projects/pending-moderation`          | Admin                   | List all pending moderation proejects |
+| `GET`    | `/api/projects/all`                         | Admin                   | List all projects                     |
+| `GET`    | `/api/projects/active`                      | Volunteer               | List alll active projects             |
+| `DELETE` | `/api/projects/{projectId}/remove`          | Organization            | Remove a project                      |
+
+### Project participation — 4 routes
+
+| Method  | Endpoint                                                 | Access       | Purpose                     |
+|---------|----------------------------------------------------------|--------------|-----------------------------|
+| `PATCH` | `/api/project-participations/{participationId}/withdraw` | Volunteer    | Withdraw participation      |
+| `POST`  | `/api/project-participations/{participationId}/status`   | Organization | Set participation status    |
+| `GET`   | `/api/project-participations/volunteer`                  | Volunteer    | List project participations |
+| `GET`   | `/api/project-participations/organization`               | Organization | List projects participants  |
+
+### Project events — 4 routes
+
+| Method  | Endpoint                                      | Access       | Purpose            |
+|---------|-----------------------------------------------|--------------|--------------------|
+| `POST`  | `/api/project-events/{eventId}/registrations` | Volunteer    | Register for event |
+| `PATCH` | `/api/project-events/{eventId}`               | Organization | Edit event         |
+| `PATCH` | `/api/project-events/{eventId}/complete`      | Organization | Complete event     |
+| `PATCH` | `/api/project-events/{eventId}/cancel`        | Organization | Cancel event       |
+
+### Volunteer event registration — 5 routes
+
+| Method  | Endpoint                                            | Access       | Purpose                    |
+|---------|-----------------------------------------------------|--------------|----------------------------|
+| `POST`  | `/api/event-registrations/check-in`                 | Organization | Checkin a volunteer        |
+| `PATCH` | `/api/event-registrations/{registrationId}/no-show` | Organization | Set attendance to no-show  |
+| `PATCH` | `/api/event-registrations/{registrationId}/cancel`  | Volunteer    | Cancel participation       |
+| `GET`   | `/api/event-registrations/{registrationId}`         | Volunteer    | Get project's registration |
+| `GET`   | `/api/event-registrations/{registrationId}/qr`      | Organization | Get registration qr code   |
 
 ### Skill — 4 routes
 
@@ -302,20 +314,29 @@ The API contains 37 routes.
 | `GET`    | `/api/skills/skills`   | Volunteer | Get all skills |
 | `POST`   | `/api/skills/skills`   | Volunteer | Add skill      |
 | `DELETE` | `/api/skills/skills`   | Volunteer | Delete skill   |
-| `PATCH`  | `/api/skills/skills`   | Volunteer | Edit skill     |  
+| `PATCH`  | `/api/skills/skills`   | Volunteer | Edit skill     |
+
+### Notifications — 4 routes
+
+| Method  | Endpoint                          | Access | Purpose                           |
+|---------|-----------------------------------|--------|-----------------------------------|
+| `PATCH` | `/api/notifications/{id}/read`    | Admin  | Mark as read                      |
+| `GET`   | `/api/notifications`              | Admin  | List all notifications            |
+| `GET`   | `/api/notifications/unread`       | Admin  | List all unread notifications     |
+| `GET`   | `/api/notifications/unread-count` | Admin  | Get count of unread notifications |
 
 ### Administrator notifications — 1 routes
 
-| Method  | Endpoint                                 | Access | Purpose                                                                            |
-|---------|------------------------------------------|--------|------------------------------------------------------------------------------------|
-| `GET`   | `/api/admin/monitoring/database`         | Admin  | Subscribe to the administrator SSE database state notification stream              | 
+| Method  | Endpoint                                 | Access | Purpose                                                               |
+|---------|------------------------------------------|--------|-----------------------------------------------------------------------|
+| `GET`   | `/api/admin/monitoring/database`         | Admin  | Subscribe to the administrator SSE database state notification stream | 
 
 ### Moderation — 2 routes
 
-| Method  | Endpoint                                 | Access | Purpose                                                                            |
-|---------|------------------------------------------|--------|------------------------------------------------------------------------------------|
-| `GET`   | `/api/moderations/cases`                 | Admin  | Get moderation cases                                                               |
-| `PATCH` | `/api/moderations/cases/{caseId}/status` | Admin  | Update a moderation case status                                                    |
+| Method  | Endpoint                                 | Access | Purpose                         |
+|---------|------------------------------------------|--------|---------------------------------|
+| `GET`   | `/api/moderations/cases`                 | Admin  | Get moderation cases            |
+| `PATCH` | `/api/moderations/cases/{caseId}/status` | Admin  | Update a moderation case status |
 
 Request and response models are available in Swagger at `http://localhost:8080/swagger-ui/index.html`.
 

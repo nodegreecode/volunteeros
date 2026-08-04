@@ -153,11 +153,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/event-registrations/check-in").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/event-registrations/{registrationId:\\d+}/no-show").hasRole("ORGANIZATION")
 
-                        // MODERATION SSE
+                        // MODERATION
                         .requestMatchers(HttpMethod.GET, "/api/moderations/cases").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/moderations/cases/{caseId:\\d+}/status").hasRole("ADMIN")
 
-                        //.requestMatchers(HttpMethod.GET, "/api/admin/events").hasRole("ADMIN")
+                        // ADMIN NOTIFICATION SSE
                         .requestMatchers(HttpMethod.GET, "/api/admin/monitoring/database").hasRole("ADMIN")
 
                         // SWAGGER
