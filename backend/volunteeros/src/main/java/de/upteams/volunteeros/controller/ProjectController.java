@@ -3,6 +3,7 @@ package de.upteams.volunteeros.controller;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
 import de.upteams.volunteeros.dto.project.*;
+import de.upteams.volunteeros.service.interfaces.ProjectEventService;
 import de.upteams.volunteeros.service.interfaces.ProjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -17,9 +19,11 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectEventService projectEventService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, ProjectEventService projectEventService) {
         this.projectService = projectService;
+        this.projectEventService = projectEventService;
     }
 
     @PostMapping("/{organizationId}")
@@ -57,28 +61,6 @@ public class ProjectController {
         return projectService.apply(projectId, authentication.getName());
     }
 
-    @PatchMapping("participants/{participationId}/withdraw")
-    public ProjectParticipationStatusUpdateResponseDto withdraw(@PathVariable Long participationId) {
-        return projectService.withdraw(participationId);
-    }
-
-    @PatchMapping("/participants/{participationId}/status")
-    public String changeParticipantStatus(
-            @PathVariable Long participationId,
-            @RequestBody ParticipantStatusRequestDto requestDto) {
-        return projectService.updateParticipantStatus(participationId, requestDto);
-    }
-
-    @GetMapping("/participants/volunteer")
-    public List<ProjectParticipationResponseDto> myProjectParticipationApplications(Authentication authentication) {
-        return projectService.myProjectParticipationApplications(authentication.getName());
-    }
-
-    @GetMapping("/participants/organization")
-    public List<ParticipantsResponseDto> myParticipants(Authentication authentication) {
-        return projectService.myParticipants(authentication.getName());
-    }
-
     @GetMapping
     public List<ProjectCreateResponseDto> allMyProjects(Authentication authentication) {
         return projectService.allMyProjects(authentication.getName());
@@ -89,14 +71,14 @@ public class ProjectController {
         return projectService.allProjects();
     }
 
-    @GetMapping("/pending-moderation")
-    public List<ProjectResponseDto> allPendingModerationProjects() {
-        return projectService.allPendingModerationProjects();
-    }
-
     @GetMapping("/active")
     public List<ProjectResponseDto> allActiveProjects() {
         return projectService.allActiveProjects();
+    }
+
+    @GetMapping("/pending-moderation")
+    public List<ProjectResponseDto> allPendingModerationProjects() {
+        return projectService.allPendingModerationProjects();
     }
 
     @PostMapping("/{projectId}/image")
@@ -111,9 +93,23 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-
     @GetMapping("/search")
     public List<ProjectResponseDto> searchAllActiveProjects(@RequestParam String title) {
         return projectService.searchActiveProjectsByTitle(title);
+    }
+
+    @PostMapping("/{projectId}/events")
+    public ProjectEventCreatedResponseDto createEvent(@PathVariable Long projectId, @RequestBody ProjectEventCreateRequestDto requestDto) {
+        return projectEventService.createEvent(projectId, requestDto);
+    }
+
+    @GetMapping("/{projectId}/events")
+    public List<ProjectEventCreatedResponseDto> getEvents(@PathVariable Long projectId) {
+        return projectEventService.getProjectEventsByProject(projectId);
+    }
+
+    @GetMapping("/{projectId}/events/upcoming")
+    public List<ProjectEventCreatedResponseDto> getUpcomingEvents(@PathVariable Long projectId) {
+        return projectEventService.getUpcomingProjectEventsByProject(projectId);
     }
 }

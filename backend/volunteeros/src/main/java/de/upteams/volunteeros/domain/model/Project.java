@@ -70,6 +70,9 @@ public class Project implements IModeratable {
     @JoinColumn(name = "image_id")
     private Image image;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProjectEvent> projectEvents = new HashSet<>();
+
     public Project() {
     }
 
@@ -118,5 +121,15 @@ public class Project implements IModeratable {
     @Override
     public ContentItem toContentItem() {
         return ContentItem.fromProject(this);
+    }
+
+    public void addEvent(ProjectEvent event) {
+        projectEvents.add(event);
+        event.setProject(this);
+    }
+
+    public void removeEvent(ProjectEvent event) {
+        projectEvents.remove(event);
+        event.setProject(null);
     }
 }

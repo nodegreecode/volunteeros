@@ -6,9 +6,6 @@
 
     <include file="01_add-columns-to-organization-application.xml" relativeToChangelogFile="true"/>
     <include file="02_add-columns-to-organization.xml" relativeToChangelogFile="true"/>
-    <!--
-    <include file="03_add-geo-location-column-to-project.xml" relativeToChangelogFile="true"/>
-    -->
     <include file="04_add-column-organization-id-to-organization-application.xml" relativeToChangelogFile="true"/>
     <include file="05_create-table-notification.xml" relativeToChangelogFile="true"/>
     <include file="06_create-table-image.xml" relativeToChangelogFile="true"/>

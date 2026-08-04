@@ -17,22 +17,22 @@ public class SkillController {
         this.skillService = skillService;
     }
 
-    @PostMapping("/skills")
+    @PostMapping
     public SkillCreateResponseDto addSkill(Authentication authentication, @RequestBody SkillCreateRequestDto requestDto) {
         return skillService.addSkill(authentication, requestDto);
     }
 
-    @PatchMapping("/skills/{skillId}")
+    @PatchMapping("/{skillId}")
     public SkillEditResponseDto editSkill(@PathVariable Long skillId, @RequestBody SkillEditRequestDto requestDto) {
         return skillService.editSkill(skillId, requestDto);
     }
 
-    @DeleteMapping("/skills/{skillId}")
+    @DeleteMapping("/{skillId}")
     public void removeSkill(@PathVariable Long skillId, Authentication authentication) {
         skillService.removeSkill(skillId, authentication);
     }
 
-    @GetMapping("/skills")
+    @GetMapping
     public List<SkillResponseDto> getSkills(Authentication authentication) {
         return skillService.getSkills(authentication);
     }

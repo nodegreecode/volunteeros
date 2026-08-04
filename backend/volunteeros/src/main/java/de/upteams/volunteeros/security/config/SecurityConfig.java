@@ -118,8 +118,6 @@ public class SecurityConfig {
                         // PROJECTS
                         .requestMatchers(HttpMethod.POST, "/api/projects/{organizationId:\\d+}").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.POST, "/api/projects/{projectId:\\d+}/participants").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/projects/participants/{participationId:\\d+}/status").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.PATCH, "/api/projects/participants/{participationId:\\d+}/withdraw").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/projects").hasAnyRole("ORGANIZATION", "VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/projects/all").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/projects/active").hasRole("VOLUNTEER")
@@ -130,10 +128,30 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/projects/{projectId:\\d+}/remove").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/active").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/cancel").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/projects/participants/volunteer").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.GET, "/api/projects/participants/organization").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.POST, "/api/projects/{projectId:\\d+}/image").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PUT, "/api/projects/{projectId:\\d+}/image").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.POST, "/api/projects/{projectId:\\d+}/events").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/{projectId:\\d+}/events").hasAnyRole("ORGANIZATION", "VOLUNTEER")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/{projectId:\\d+}/events/upcoming").hasAnyRole("ORGANIZATION", "VOLUNTEER")
+
+                        // PROJECTS PARTICIPATION
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-participations/{participationId:\\d+}/status").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-participations/{participationId:\\d+}/withdraw").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.GET, "/api/project-participations/volunteer").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.GET, "/api/project-participations/organization").hasRole("ORGANIZATION")
+
+                        // PROJECT EVENTS
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/cancel").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/complete").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.POST, "/api/project-events/{eventId:\\d+}/registrations").hasRole("VOLUNTEER")
+
+                        // EVENT REGISTRATION
+                        .requestMatchers(HttpMethod.GET, "/api/event-registrations/{registrationId:\\d+}").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.GET, "/api/event-registrations/{registrationId:\\d+}/qr").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/event-registrations/{registrationId:\\d+}/cancel").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.POST, "/api/event-registrations/check-in").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/event-registrations/{registrationId:\\d+}/no-show").hasRole("ORGANIZATION")
 
                         // MODERATION SSE
                         .requestMatchers(HttpMethod.GET, "/api/moderations/cases").hasRole("ADMIN")

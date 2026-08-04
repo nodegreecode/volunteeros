@@ -7,7 +7,7 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
-      maximum-pool-size: 30
+      maximum-pool-size: ${DB_POOL_SIZE}
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
@@ -34,20 +34,20 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: ${MAX_FILE_SIZE}
+      max-request-size: ${MAX_REQUEST_SIZE}
 
   elasticsearch:
-    uris: http://elasticsearch:9200
+    uris: ${ELASTICSEARCH_URI}
 
 logging:
   file:
     name: logs/log.log
   level:
-    root: debug
+    root: ${LOG_LEVEL}
 
 server:
-  port: 8080
+  port: ${SERVER_PORT}
 
 security:
   csrf-enabled: false
@@ -56,8 +56,8 @@ jwt:
   access-secret: ${JWT_ACCESS_SECRET}
   refresh-secret: ${JWT_REFRESH_SECRET}
 
-  access-expiration: 900000
-  refresh-expiration: 604800000
+  access-expiration:  ${JWT_ACCESS_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 cloudinary:
   cloud-name: ${CLOUDINARY_NAME}

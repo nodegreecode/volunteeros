@@ -123,7 +123,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ApiError(message));
-
     }
 
     @ExceptionHandler(OrganizationAlreadyExistsException.class)
@@ -133,7 +132,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ApiError(message));
-
     }
 
     @ExceptionHandler(DuplicateOrganizationException.class)
@@ -143,7 +141,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(new ApiError(message));
-
     }
 
     @ExceptionHandler(ImageUploadException.class)
@@ -153,7 +150,42 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiError(message));
+    }
 
+    @ExceptionHandler(ProjectNotActiveException.class)
+    public ResponseEntity<ApiError> handleException(ProjectNotActiveException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ApiError(message));
+    }
+
+    @ExceptionHandler(ProjectEventStatusException.class)
+    public ResponseEntity<ApiError> handleException(ProjectEventStatusException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ApiError(message));
+    }
+
+    @ExceptionHandler(QrCodeServiceException.class)
+    public ResponseEntity<ApiError> handleException(QrCodeServiceException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiError(message));
+    }
+
+    @ExceptionHandler(VolunteerEventRegistrationException.class)
+    public ResponseEntity<ApiError> handleException(VolunteerEventRegistrationException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ApiError(message));
     }
 
 }
