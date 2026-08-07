@@ -6,9 +6,10 @@ import java.time.Instant;
 import java.util.List;
 
 public record MeResponseDto(Long id,
-                            List<UserRoleType> roles,
                             String firstName,
                             String lastName,
+                            String email,
+                            List<UserRoleType> roles,
                             String city,
                             String phone,
                             String avatar,

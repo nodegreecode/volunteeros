@@ -22,6 +22,16 @@ public class ProjectEventController {
         return projectEventService.editEvent(eventId, requestDto, authentication.getName());
     }
 
+    @PatchMapping({"/{eventId}/start-check-in"})
+    public ProjectEventCreatedResponseDto startCheckIn(@PathVariable Long eventId, Authentication authentication) {
+        return projectEventService.startCheckIn(eventId, authentication.getName());
+    }
+
+    @PatchMapping({"/{eventId}/start"})
+    public ProjectEventCreatedResponseDto startEvent(@PathVariable Long eventId, Authentication authentication) {
+        return projectEventService.startEvent(eventId, authentication.getName());
+    }
+
     @PatchMapping({"/{eventId}/cancel"})
     public ProjectEventCreatedResponseDto cancelEvent(@PathVariable Long eventId, Authentication authentication) {
         return projectEventService.cancelEvent(eventId, authentication.getName());

@@ -3,8 +3,16 @@ import {AppBar, Toolbar, Typography, Button, Box} from "@mui/material";
 import {useLogout} from "@/features/auth/authHooks.ts";
 import {useProfile} from "@/features/auth/authHooks.ts";
 import {useNavigate} from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import {useMatches} from "react-router-dom";
 
-export default function Header() {
+
+
+export default function Header({drawerOpen, toggleDrawer}) {
+
+    const matches = useMatches();
+
     const navigate = useNavigate();
 
     const {data: user, isLoading} = useProfile();
@@ -13,45 +21,76 @@ export default function Header() {
 
     const logoutMutation = useLogout();
 
-    function handleLogout() {
+    const title = matches.map(match => match.handle?.title)
+        .filter(Boolean)
+        .pop() || "VolunteerOS";
+
+    /*function handleLogout() {
         logoutMutation.mutate(undefined, {
             onSuccess: () => {
                 navigate("/auth/login");
             },
         });
-    }
+    }*/
 
     return (
         <AppBar
-            //position="static"
+            position="static"
             elevation={0}
             sx={{
                 width: "100%",
                 borderBottom: "1px solid #eee",
+                color: "inherit",
+                backgroundColor: "#fff",
             }}
         >
             <Toolbar sx={{justifyContent: "space-between"}}>
-                <Button
-                    component={Link}
-                    to={isAuthenticated ? "/app" : "/"}
-                    variant="text"
-                    color="inherit"
+                <Box
                     sx={{
-                        "&:hover": {
-                            backgroundColor: "transparent",
-                        },
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
                     }}
                 >
-                    <Typography
-                        variant="h6"
+                    {isAuthenticated && (
+                        <>
+                            <IconButton
+                                edge="start"
+                                color="inherit"
+                                onClick={toggleDrawer}
+                                sx={{mr: 2}}
+                            >
+                                <MenuIcon/>
+                            </IconButton>
+                            <Typography variant="h6" component="h1">
+                                {title}
+                            </Typography>
+                        </>
+                    )}
+                </Box>
+                {!isAuthenticated && (
+                    <Button
+                        component={Link}
+                        to={isAuthenticated ? "/app" : "/"}
+                        variant="text"
+                        color="inherit"
                         sx={{
-                            fontWeight: "bold",
-                            cursor: "pointer",
+                            "&:hover": {
+                                backgroundColor: "transparent",
+                            },
                         }}
                     >
-                        VolunteerOS
-                    </Typography>
-                </Button>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                            }}
+                        >
+                            VolunteerOS
+                        </Typography>
+                    </Button>
+                )}
                 {/* Navigation Links */}
                 {!isLoading && !isAuthenticated && (
                     <Box>
@@ -71,7 +110,7 @@ export default function Header() {
                 )}
 
                 {/* Right Buttons */}
-                {!isLoading && !isAuthenticated ? (
+                {/*!isLoading && !isAuthenticated ? (
                     <Box
                         sx={{
                             display: "flex",
@@ -104,7 +143,32 @@ export default function Header() {
                     >
                         LogOut
                     </Button>
-                )}
+                )*/}
+                {
+                    !isLoading && !isAuthenticated && (<Box
+                        sx={{
+                            display: "flex",
+                            gap: 2,
+                        }}
+                    >
+                        <Button component={Link} to="/auth/login" color="inherit">
+                            Login
+                        </Button>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                color: "black",
+                                borderRadius: 3,
+                                textTransform: "none",
+                            }}
+
+                            href="#call-to-action"
+                            color="inherit"
+                        >
+                            Get Started
+                        </Button>
+                    </Box>)
+                }
             </Toolbar>
         </AppBar>
     );

@@ -12,9 +12,7 @@ interface OrganizationPendingProps {
 }
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 
-export default function OrganizationPending({
-  application,
-}: OrganizationPendingProps) {
+export default function OrganizationPending({application} ) {
   return (
     <>
       <Box

@@ -69,7 +69,10 @@ export default function LoginForm() {
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <Stack spacing={3}>
                         <Typography variant="h4" align="left">
-                            Login into your account
+                            Welcome back
+                        </Typography>
+                        <Typography component="p">
+                            Sign in with your email to access your data.
                         </Typography>
 
                         <TextField

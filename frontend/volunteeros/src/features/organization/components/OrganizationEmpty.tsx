@@ -6,6 +6,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import {NavLink} from "react-router-dom";
 
 interface OrganizationEmptyProps {
     onCreate: () => void;
@@ -18,8 +19,8 @@ export default function OrganizationEmpty({onCreate}: OrganizationEmptyProps) {
             sx={{
                 display: "flex",
                 justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
+                //alignItems: "center",
+                //height: "100vh",
             }}
         >
             <Card
@@ -27,7 +28,7 @@ export default function OrganizationEmpty({onCreate}: OrganizationEmptyProps) {
                 sx={{
                     maxWidth: 600,
                     width: "100%",
-                    borderStyle: "dashed",
+                    //borderStyle: "dashed",
                     borderColor: "grey.400",
                     backgroundColor: "grey.50",
                 }}
@@ -35,26 +36,11 @@ export default function OrganizationEmpty({onCreate}: OrganizationEmptyProps) {
                 <CardContent>
                     <Stack
                         spacing={2}
-                        alignItems="center"
-                        justifyContent="center"
-                        sx={{py: 5}}
+                        sx={{py: 5,
+                            justifyContent: "center",
+                            alignItems: "center"}}
                     >
-                        <Button
-                            variant="outlined"
-                            onClick={onCreate}
-                            sx={{
-                                minWidth: 56,
-                                width: 56,
-                                height: 56,
-                                borderRadius: "50%",
-                                fontSize: "2rem",
-                                lineHeight: 1,
-                            }}
-                        >
-                            +
-                        </Button>
-
-                        <Typography variant="h6">Create your organization</Typography>
+                        <Typography variant="h4">You don't have an organization yet</Typography>
 
                         <Typography
                             variant="body2"
@@ -64,6 +50,14 @@ export default function OrganizationEmpty({onCreate}: OrganizationEmptyProps) {
                             Start by submitting an application to create or join an
                             organization.
                         </Typography>
+                        <Button
+                            component={NavLink}
+                            variant="contained"
+                            //onClick={onCreate}
+                            to="create-organization"
+                        >
+                            Register my organization
+                        </Button>
                     </Stack>
                 </CardContent>
             </Card>

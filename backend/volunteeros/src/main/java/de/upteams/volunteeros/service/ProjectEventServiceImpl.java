@@ -13,6 +13,7 @@ import de.upteams.volunteeros.dto.project.ProjectEventCreateRequestDto;
 import de.upteams.volunteeros.dto.project.ProjectEventCreatedResponseDto;
 import de.upteams.volunteeros.dto.projectevent.ProjectEventUpdateRequestDto;
 import de.upteams.volunteeros.dto.volunteereventregistration.VolunteerEventRegistrationResponseDto;
+import de.upteams.volunteeros.event.ProjectEventStartedEvent;
 import de.upteams.volunteeros.exceptions.types.ProjectEventStatusException;
 import de.upteams.volunteeros.exceptions.types.ProjectNotActiveException;
 import de.upteams.volunteeros.exceptions.types.VolunteerEventRegistrationException;
@@ -24,6 +25,7 @@ import de.upteams.volunteeros.service.interfaces.ProjectEventService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -31,6 +33,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -46,14 +49,16 @@ public class ProjectEventServiceImpl implements ProjectEventService {
     private final UserRepository userRepository;
     private final VolunteerEventRegistrationMapper volunteerEventRegistrationMapper;
     private final VolunteerEventRegistrationRepository volunteerEventRegistrationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProjectEventServiceImpl(ProjectRepository projectRepository, ProjectEventRepository projectEventRepository, ProjectEventMapper projectEventMapper, UserRepository userRepository, VolunteerEventRegistrationMapper volunteerEventRegistrationMapper, VolunteerEventRegistrationRepository volunteerEventRegistrationRepository) {
+    public ProjectEventServiceImpl(ProjectRepository projectRepository, ProjectEventRepository projectEventRepository, ProjectEventMapper projectEventMapper, UserRepository userRepository, VolunteerEventRegistrationMapper volunteerEventRegistrationMapper, VolunteerEventRegistrationRepository volunteerEventRegistrationRepository, ApplicationEventPublisher eventPublisher) {
         this.projectRepository = projectRepository;
         this.projectEventRepository = projectEventRepository;
         this.projectEventMapper = projectEventMapper;
         this.userRepository = userRepository;
         this.volunteerEventRegistrationMapper = volunteerEventRegistrationMapper;
         this.volunteerEventRegistrationRepository = volunteerEventRegistrationRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -123,6 +128,7 @@ public class ProjectEventServiceImpl implements ProjectEventService {
     }
 
     @Override
+    @Transactional
     public ProjectEventCreatedResponseDto cancelEvent(Long eventId, String email) {
 
         Objects.requireNonNull(eventId, "EventId cannot be null");
@@ -146,6 +152,57 @@ public class ProjectEventServiceImpl implements ProjectEventService {
     }
 
     @Override
+    @Transactional
+    public ProjectEventCreatedResponseDto startCheckIn(Long eventId, String email) {
+
+        Objects.requireNonNull(eventId, "EventId cannot be null");
+        Objects.requireNonNull(email, "Current user email cannot be null");
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn(" User not found {}", email);
+            return new EntityNotFoundException("User not found");
+        });
+
+        ProjectEvent projectEvent = projectEventRepository.findByIdAndProjectOrganizationId(eventId, user.getOrganization().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Project event not found"));
+
+        if (!projectEvent.getStatus().canTransitionTo(ProjectEventStatus.CHECK_IN)) {
+            throw new ProjectEventStatusException("Invalid event status transition");
+        }
+
+        projectEvent.setStatus(ProjectEventStatus.CHECK_IN);
+
+        return projectEventMapper.mapEntityToProjectEventCreatedResponseDto(projectEvent);
+    }
+
+    @Override
+    @Transactional
+    public ProjectEventCreatedResponseDto startEvent(Long eventId, String email) {
+
+        Objects.requireNonNull(eventId, "EventId cannot be null");
+        Objects.requireNonNull(email, "Current user email cannot be null");
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn(" User not found {}", email);
+            return new EntityNotFoundException("User not found");
+        });
+
+        ProjectEvent projectEvent = projectEventRepository.findByIdAndProjectOrganizationId(eventId, user.getOrganization().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Project event not found"));
+
+        if (!projectEvent.getStatus().canTransitionTo(ProjectEventStatus.IN_PROGRESS)) {
+            throw new ProjectEventStatusException("Invalid event status transition");
+        }
+
+        projectEvent.setStatus(ProjectEventStatus.IN_PROGRESS);
+
+        eventPublisher.publishEvent(new ProjectEventStartedEvent(projectEvent.getId()));
+
+        return projectEventMapper.mapEntityToProjectEventCreatedResponseDto(projectEvent);
+    }
+
+    @Override
+    @Transactional
     public ProjectEventCreatedResponseDto completeEvent(Long eventId, String email) {
 
         Objects.requireNonNull(eventId, "EventId cannot be null");
@@ -164,6 +221,7 @@ public class ProjectEventServiceImpl implements ProjectEventService {
         }
 
         projectEvent.setStatus(ProjectEventStatus.COMPLETED);
+        projectEvent.setEndTime(LocalTime.now());
 
         return projectEventMapper.mapEntityToProjectEventCreatedResponseDto(projectEvent);
     }
