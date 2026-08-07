@@ -19,9 +19,9 @@ export default function Organization() {
         return <Loading/>;
     }
 
-    if (showApplicationForm) {
+  /*  if (showApplicationForm) {
         return (<OrganizationApplicationForm onCancel={() => setShowApplicationForm(false)}/>)
-    }
+    }*/
 
     if (!application) {
         return <OrganizationEmpty onCreate={() => setShowApplicationForm(true)}/>;

@@ -96,7 +96,10 @@ export default function SignUpForm() {
                 <Box component="form" onSubmit={formik.handleSubmit}>
                     <Stack spacing={3}>
                         <Typography variant="h4" align="left">
-                            Please register to continue
+                            Sign up
+                        </Typography>
+                        <Typography component="p">
+                            Take control of volunteering
                         </Typography>
 
                         <Grid container spacing={2}>

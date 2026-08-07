@@ -145,6 +145,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/cancel").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/complete").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.POST, "/api/project-events/{eventId:\\d+}/registrations").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/start-check-in").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/start").hasRole("ORGANIZATION")
 
                         // EVENT REGISTRATION
                         .requestMatchers(HttpMethod.GET, "/api/event-registrations/{registrationId:\\d+}").hasRole("VOLUNTEER")

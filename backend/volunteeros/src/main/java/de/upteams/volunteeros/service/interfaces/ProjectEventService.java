@@ -19,6 +19,10 @@ public interface ProjectEventService {
 
     ProjectEventCreatedResponseDto cancelEvent(Long eventId, String email);
 
+    ProjectEventCreatedResponseDto startCheckIn(Long eventId, String email);
+
+    ProjectEventCreatedResponseDto startEvent(Long eventId, String email);
+
     ProjectEventCreatedResponseDto completeEvent(Long eventId, String email);
 
     VolunteerEventRegistrationResponseDto register(Long eventId, String email);

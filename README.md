@@ -17,12 +17,12 @@
 
 ## 🎯 Project at a glance
 
-| Product | Backend | Quality engineering |
-| --- | --- | --- |
-| 3 role-based user journeys | 37 REST/SSE routes | Postman smoke and regression |
+| Product | Backend                        | Quality engineering |
+| --- |--------------------------------| --- |
+| 3 role-based user journeys | 58 REST/SSE routes             | Postman smoke and regression |
 | 5 implemented MVP modules | JWT in secure HttpOnly cookies | REST Assured API automation |
-| Organization and project moderation | PostgreSQL, Liquibase, Redis | Selenium GUI smoke |
-| Deployed React frontend | Gemini moderation integration | JMeter baseline and SQL checks |
+| Organization and project moderation | PostgreSQL, Liquibase, Redis   | Selenium GUI smoke |
+| Deployed React frontend | Gemini moderation integration  | JMeter baseline and SQL checks |
 
 ## 🧭 Contents
 
@@ -219,7 +219,7 @@ npm run build
 
 ## 📡 API reference
 
-The API contains 56 routes.
+The API contains 58 routes.
 
 ### Authentication — 4 routes
 
@@ -290,12 +290,14 @@ The API contains 56 routes.
 
 ### Project events — 4 routes
 
-| Method  | Endpoint                                                                   | Access       | Purpose            |
-|---------|----------------------------------------------------------------------------|--------------|--------------------|
-| `POST`  | `/api/project-events/{eventId}/registrations`                              | Volunteer    | Register for event |
-| `PATCH` | `/api/project-events/{eventId}`                                            | Organization | Edit event         |
-| `PATCH` | `/api/project-events/{eventId}/complete`                                   | Organization | Complete event     |
-| `PATCH` | `/api/project-events/{eventId}/cancel`                                     | Organization | Cancel event       |
+| Method  | Endpoint                                                                  | Access       | Purpose              |
+|---------|---------------------------------------------------------------------------|--------------|----------------------|
+| `POST`  | `/api/project-events/{eventId}/registrations`                             | Volunteer    | Register for event   |
+| `PATCH` | `/api/project-events/{eventId}`                                           | Organization | Edit event           |
+| `PATCH` | `/api/project-events/{eventId}/complete`                                  | Organization | Complete event       |
+| `PATCH` | `/api/project-events/{eventId}/cancel`                                    | Organization | Cancel event         |
+| `PATCH` | `/api/project-events/{eventId}/start-check-in`                            | Organization | Start event check in |
+| `PATCH` | `/api/project-events/{eventId}/start`                                     | Organization | Start event          |
 
 ### Volunteer event registration — 5 routes
 

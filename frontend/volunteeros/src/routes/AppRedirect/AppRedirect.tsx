@@ -15,15 +15,15 @@ export default function AppRedirect() {
     }
 
     if (user.roles.includes("ROLE_ORGANIZATION")) {
-        return <Navigate to="/app/organization" replace />;
+        return <Navigate to="/app/organization/dashboard" replace />;
     }
 
     if (user.roles.includes("ROLE_VOLUNTEER")) {
-        return <Navigate to="/app/volunteer" replace />;
+        return <Navigate to="/app/volunteer/dashboard" replace />;
     }
 
     if (user.roles.includes("ROLE_ADMIN")) {
-        return <Navigate to="/app/admin" replace />;
+        return <Navigate to="/app/admin/dashboard" replace />;
     }
 
     return <Navigate to="/" replace />;

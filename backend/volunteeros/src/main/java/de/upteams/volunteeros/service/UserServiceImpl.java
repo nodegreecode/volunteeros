@@ -46,12 +46,13 @@ public class UserServiceImpl implements UserService {
 
         return new MeResponseDto(
                 user.getId(),
+                userProfile.getFirstName(),
+                userProfile.getLastName(),
+                user.getEmail(),
                 user.getRoles()
                         .stream()
                         .map(UserRole::getRole)
                         .toList(),
-                user.getUserProfile().getFirstName(),
-                user.getUserProfile().getLastName(),
                 userProfile.getCity(),
                 userProfile.getPhone(),
                 userProfile.getAvatar(),

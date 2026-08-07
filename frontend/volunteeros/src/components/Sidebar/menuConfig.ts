@@ -2,30 +2,28 @@ export const menuConfig = {
     ROLE_ORGANIZATION: [
         {
             label: "Dashboard",
-            path: "/app/organization",
+            path: "/app/organization/dashboard",
         },
         {
-            label: "Profile",
-            path: "/app/profile",
+            label: "Organization",
+            path: "/app/organization/organization",
         },
         {
-            label: "Setting",
-            path: "/app/settings",
+            label: "Projects",
+            path: "/app/organization/projects",
         },
     ],
 
-    ROLE_VOLUNTEER: [        {
-        label: "Dashboard",
-        path: "/app/volunteer",
-    },
+    ROLE_VOLUNTEER: [
         {
-            label: "Profile",
-            path: "/app/profile",
+            label: "Dashboard",
+            path: "/app/volunteer/dashboard",
         },
         {
-            label: "Setting",
-            path: "/app/settings",
-        },],
+            label: "Projects",
+            path: "/app/volunteer/projects",
+        },
+    ],
 
     ROLE_ADMIN: [
         {
