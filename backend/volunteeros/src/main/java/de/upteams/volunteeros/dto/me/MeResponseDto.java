@@ -1,6 +1,7 @@
 package de.upteams.volunteeros.dto.me;
 
 import de.upteams.volunteeros.domain.enums.UserRoleType;
+import de.upteams.volunteeros.domain.model.Image;
 
 import java.time.Instant;
 import java.util.List;
@@ -12,7 +13,7 @@ public record MeResponseDto(Long id,
                             List<UserRoleType> roles,
                             String city,
                             String phone,
-                            String avatar,
+                            Image avatar,
                             String bio,
                             Instant createdAt,
                             Instant updatedAt) {

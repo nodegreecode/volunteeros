@@ -4,6 +4,7 @@ import type {
     OrganizationUpdateRequestDto,
     ProjectCreateResponseDto,
 } from "@/features/organization/orgTypes.ts";
+import {apiFetch} from "@/features/auth/authApi.ts";
 
 export interface ApplicationRequestDto {
     userId: number;
@@ -50,7 +51,7 @@ export interface ProjectEditRequestDto {
  *
  */
 export async function fetchOrganization() {
-    const organizationResponse = await fetch(OrganizationEndpoints.organization, {
+    const organizationResponse = await apiFetch(OrganizationEndpoints.organization, {
         credentials: "include",
     });
 
@@ -67,7 +68,7 @@ export async function fetchOrganization() {
  *
  */
 export async function fetchApplication() {
-    const applicationResponse = await fetch(OrganizationEndpoints.application, {
+    const applicationResponse = await apiFetch(OrganizationEndpoints.application, {
         credentials: "include",
     });
 
@@ -85,7 +86,7 @@ export async function fetchApplication() {
  * @param values
  */
 export async function postApplication(values: ApplicationRequestDto) {
-    const applicationResponse = await fetch(OrganizationEndpoints.applications, {
+    const applicationResponse = await fetch(OrganizationEndpoints.application, {
         method: "POST",
         headers: {"content-type": "application/json"},
         credentials: "include",

@@ -6,7 +6,7 @@ export const menuConfig = {
         },
         {
             label: "Organization",
-            path: "/app/organization/organization",
+            path: "/app/organization",
         },
         {
             label: "Projects",
@@ -23,6 +23,10 @@ export const menuConfig = {
             label: "Projects",
             path: "/app/volunteer/projects",
         },
+        {
+            label: "Skills",
+            path: "/app/volunteer/skills",
+        },
     ],
 
     ROLE_ADMIN: [
@@ -31,12 +35,16 @@ export const menuConfig = {
             path: "/app/admin",
         },
         {
-            label: "Profile",
-            path: "/app/profile",
+            label: "Organizations",
+            path: "/app/admin/organizations",
         },
         {
-            label: "Setting",
-            path: "/app/settings",
+            label: "Users",
+            path: "/app/admin/users",
+        },
+        {
+            label: "Moderation",
+            path: "/app/admin/moderation",
         },
     ],
 };

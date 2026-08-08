@@ -1,5 +1,7 @@
 package de.upteams.volunteeros.dto.organization;
 
+import de.upteams.volunteeros.domain.model.Image;
+
 import java.time.Instant;
 
 public record OrganizationResponseDto(String id,
@@ -14,7 +16,7 @@ public record OrganizationResponseDto(String id,
                                       String street,
                                       String phone,
                                       String email,
-                                      String avatar,
+                                      Image avatar,
                                       int applicationsCount,
                                       Instant createdAt,
                                       Instant updatedAt) {

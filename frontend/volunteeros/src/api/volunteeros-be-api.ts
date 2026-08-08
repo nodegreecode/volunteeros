@@ -9,6 +9,12 @@ export const AuthUrls = {
     refresh: BASE_URL + "/api/auth/refresh",
 } as const;
 
+
+export const UsersUrls = {
+    profile: BASE_URL + "/api/users/profile",
+    editProfile: BASE_URL + "/api/users/profile",
+}
+
 export const OrganizationEndpoints = {
     organization: BASE_URL + "/api/organizations",
     application: BASE_URL + "/api/applications",

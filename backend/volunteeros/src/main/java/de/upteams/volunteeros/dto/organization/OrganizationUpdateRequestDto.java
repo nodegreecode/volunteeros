@@ -14,8 +14,6 @@ public record OrganizationUpdateRequestDto(
 
         String phone,
 
-        String avatar,
-
         @NotBlank
         String description,
 

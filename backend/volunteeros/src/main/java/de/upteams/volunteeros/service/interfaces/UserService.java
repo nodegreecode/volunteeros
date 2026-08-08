@@ -12,6 +12,7 @@ import de.upteams.volunteeros.dto.volunteer.UserRegistrationDto;
 import de.upteams.volunteeros.dto.volunteer.UserResponseDto;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -19,4 +20,5 @@ public interface UserService {
 
     ProfileEditResponseDto editProfile(String email, ProfileEditRequestDto requestDto);
 
+    void uploadUserImage(String email, MultipartFile file);
 }

@@ -91,6 +91,7 @@ public class SecurityConfig {
                         //USER
                         .requestMatchers(HttpMethod.GET, "/api/users/profile").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/users/profile").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/users/image").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
                         //SKILL
                         .requestMatchers(HttpMethod.POST, "/api/skills").hasAnyRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/skills").hasAnyRole("VOLUNTEER")
@@ -114,6 +115,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/organizations").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/organizations/{organizationId:\\d+}").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.GET, "/api/organizations/all").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/organizations/image").hasRole("ORGANIZATION")
 
                         // PROJECTS
                         .requestMatchers(HttpMethod.POST, "/api/projects/{organizationId:\\d+}").hasRole("ORGANIZATION")

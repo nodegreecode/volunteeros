@@ -8,6 +8,7 @@ import {
     Button,
 } from "@mui/material";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
+import {NavLink} from "react-router-dom";
 
 interface OrganizationPendingProps {
     application: {
@@ -20,10 +21,10 @@ interface OrganizationPendingProps {
         submittedAt: string;
         reviewedAt: string;
     }
-    onApplyingAgain: () => void;
+
 }
 
-export default function OrganizationRejected({application, onApplyingAgain}: OrganizationPendingProps) {
+export default function OrganizationRejected({application}: OrganizationPendingProps) {
 
     return (
         <>
@@ -71,8 +72,12 @@ export default function OrganizationRejected({application, onApplyingAgain}: Org
                                 feedback and submit again.
                             </Typography>
 
-                            <Button variant="contained" onClick={onApplyingAgain}>
-                                Apply Again
+                            <Button
+                                component={NavLink}
+                                variant="contained"
+                                to="create-organization"
+                            >
+                                Apply again
                             </Button>
                         </Stack>
                     </CardContent>

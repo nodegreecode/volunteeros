@@ -7,5 +7,7 @@
     <include file="01_create-project-event-table.xml" relativeToChangelogFile="true"/>
     <include file="02_create-volunteer-event-registration-table.xml" relativeToChangelogFile="true"/>
     <include file="03_add-checkin-and-in-progress-status-to-project-event.xml" relativeToChangelogFile="true"/>
+    <include file="04_rename-avatar-to-image-id.xml" relativeToChangelogFile="true"/>
+    <include file="05_rename-avatar-to-image-id-organization-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

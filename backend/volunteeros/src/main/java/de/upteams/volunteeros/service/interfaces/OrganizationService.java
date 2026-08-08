@@ -4,6 +4,7 @@ import de.upteams.volunteeros.domain.model.Organization;
 import de.upteams.volunteeros.domain.model.OrganizationApplication;
 import de.upteams.volunteeros.dto.organization.OrganizationResponseDto;
 import de.upteams.volunteeros.dto.organization.OrganizationUpdateRequestDto;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -15,5 +16,7 @@ public interface OrganizationService {
     OrganizationResponseDto getOrganization(String email);
 
     List<OrganizationResponseDto> allOrganizations();
+
+    void uploadOrganizationImage(String email, MultipartFile file);
 }
 

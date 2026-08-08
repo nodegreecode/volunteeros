@@ -6,6 +6,7 @@ import Loading from "@/components/common/Loading.tsx";
 export default function ProtectedRouteComponent() {
 
     const {data: user, isLoading} = useProfile();
+
     if (isLoading) {
         return <Loading/>;
     }
@@ -14,5 +15,5 @@ export default function ProtectedRouteComponent() {
         return <Navigate to="/auth" replace/>;
     }
 
-    return <Outlet/>;
+    return <Outlet context={{user}}/>;
 }

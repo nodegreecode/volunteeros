@@ -14,6 +14,7 @@ public interface OrganizationMapper {
     @Mapping(source = "owner.id", target = "ownerId")
     @Mapping(source = "owner.email", target = "email")
     @Mapping(expression = "java(entity.getOwner().getOrganizationApplications().size())", target = "applicationsCount")
+    @Mapping(source = "image", target = "avatar")
     OrganizationResponseDto mapEntityToOrganizationResponseDto(Organization entity);
 
     List<OrganizationResponseDto> mapEntityToOrganizationResponseDtoList(Collection<Organization> entity);
