@@ -10,16 +10,30 @@ export default function AddressStep({formik}) {
                         <TextField
                             name="registrationNumber"
                             label="Registration Number"
-                            fullWidth
                             value={formik.values.registrationNumber}
                             onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={Boolean(
+                                formik.touched.registrationNumber && formik.errors.registrationNumber,
+                            )}
+                            helperText={
+                                formik.touched.registrationNumber && formik.errors.registrationNumber
+                            }
+                            fullWidth
                         />
                         <TextField
                             name="registrationCountry"
                             label="Registration Country"
-                            fullWidth
                             value={formik.values.registrationCountry}
                             onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={Boolean(
+                                formik.touched.registrationCountry && formik.errors.registrationCountry,
+                            )}
+                            helperText={
+                                formik.touched.registrationCountry && formik.errors.registrationCountry
+                            }
+                            fullWidth
                         />
                     </Box>
                     <Box sx={{display: "flex", gap: 2,}}>
@@ -27,17 +41,31 @@ export default function AddressStep({formik}) {
                         <TextField
                             name="city"
                             label="City"
-                            fullWidth
                             value={formik.values.city}
                             onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={Boolean(
+                                formik.touched.city && formik.errors.city,
+                            )}
+                            helperText={
+                                formik.touched.city && formik.errors.city
+                            }
+                            fullWidth
                         />
 
                         <TextField
                             name="street"
                             label="Street"
-                            fullWidth
                             value={formik.values.street}
                             onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={Boolean(
+                                formik.touched.street && formik.errors.street,
+                            )}
+                            helperText={
+                                formik.touched.street && formik.errors.street
+                            }
+                            fullWidth
                         />
 
 

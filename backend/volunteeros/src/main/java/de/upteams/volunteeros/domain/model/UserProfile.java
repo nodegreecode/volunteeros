@@ -38,8 +38,6 @@ public class UserProfile {
 
     private String phone;
 
-    private String avatar;
-
     private String bio;
 
     private Instant createdAt;
@@ -48,6 +46,10 @@ public class UserProfile {
 
     @OneToMany(mappedBy = "volunteer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Skill> skills = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     public UserProfile() {
     }

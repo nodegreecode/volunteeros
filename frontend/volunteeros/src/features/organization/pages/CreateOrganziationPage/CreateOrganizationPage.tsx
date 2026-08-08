@@ -13,12 +13,33 @@ import AddressStep from "@/features/organization/components/ AddressStep/ Addres
 import ContactStep from "@/features/organization/components/ContactStep/ContactStep.tsx";
 import ReviewStep from "@/features/organization/components/ReviewStep/ReviewStep.tsx";
 import * as Yup from "yup";
+import {useNavigate} from "react-router-dom";
 
 const stepLabels = [
     "General information",
     "Address details",
     "Contact details",
     "Submit",
+];
+
+const stepFields = [
+    [
+        "organizationForm",
+        "organizationName",
+        "description",
+    ],
+    [
+        "registrationCountry",
+        "city",
+        "street",
+        "registrationNumber",
+    ],
+    [
+        "phone",
+        "email",
+        "website",
+        "memberRole",
+    ],
 ];
 
 const OrganizationApplicationSchema = Yup.object({
@@ -40,18 +61,36 @@ const OrganizationApplicationSchema = Yup.object({
 
 const steps = [GeneralInformationStep, AddressStep, ContactStep, ReviewStep];
 
+
 export default function CreateOrganizationPage() {
 
     const {data: user} = useProfile();
 
     const applyMutation = useApplyApplication();
 
+    const navigate = useNavigate();
+
     const [activeStep, setActiveStep] = useState(0);
 
     const [errorMessage, setErrorMessage] = useState();
 
-    function handleNext() {
-        console.log("Next clicked");
+    async function handleNext() {
+
+        const fields = stepFields[activeStep];
+
+        const errors = await formik.validateForm();
+
+        const hasErrors = fields.some(field => errors[field]);
+
+        if (hasErrors) {
+            const touchedFields = fields.reduce((acc, field) => ({...acc, [field]: true}), {});
+
+            formik.setTouched({
+                ...formik.touched, ...touchedFields
+            })
+            return;
+        }
+
         setActiveStep((prev) => prev + 1);
     }
 
@@ -98,6 +137,7 @@ export default function CreateOrganizationPage() {
             try {
                 await applyMutation.mutateAsync(payload);
                 helper.resetForm();
+                navigate("/app/organization")
             } catch (error) {
                 if (error instanceof Error) {
                     setErrorMessage(error.message);

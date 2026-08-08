@@ -41,8 +41,6 @@ public class Organization {
 
     private String registrationNumber;
 
-    private String avatar;
-
     @NotNull(message = "Description cannot be null")
     @NotBlank(message = "Description cannot be empty")
     private String description;
@@ -62,6 +60,10 @@ public class Organization {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false, unique = true)
     private User owner;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     public Organization() {
     }

@@ -127,7 +127,8 @@ const refreshAccessToken = createTokenRefresher();
  * @param options
  * @param retry
  */
-async function apiFetch(url: string, options: RequestInit = {}, retry = true) {
+export async function apiFetch(url: string, options: RequestInit = {}, retry = true) {
+
     const response = await fetch(url, {...options, credentials: 'include'});
 
     if (response.status !== 401) {
@@ -144,9 +145,7 @@ async function apiFetch(url: string, options: RequestInit = {}, retry = true) {
         return response;
     }
 
-    return apiFetch(url,
-        options,
-        false);
+    return apiFetch(url, options, false);
 
 }
 

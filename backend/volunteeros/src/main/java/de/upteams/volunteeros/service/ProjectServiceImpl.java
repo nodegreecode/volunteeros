@@ -1,5 +1,6 @@
 package de.upteams.volunteeros.service;
 
+import de.upteams.volunteeros.domain.enums.ImageFolder;
 import de.upteams.volunteeros.domain.enums.ParticipationStatus;
 
 import de.upteams.volunteeros.domain.enums.ProjectStatus;
@@ -345,10 +346,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     public void uploadProjectImage(Long projectId, MultipartFile file) {
+
+        Objects.requireNonNull(projectId , "ProjectId cannot be null");
+        Objects.requireNonNull(file , "Image cannot be null");
+
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
 
-        ImageUploadResponseDto upload = imageService.upload(file);
+        ImageUploadResponseDto upload = imageService.upload(file, ImageFolder.PROJECT);
 
         Image image = new Image();
         image.setPublicId(upload.publicId());
@@ -378,7 +383,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         ImageUploadResponseDto upload = imageService.replace(
                 file,
-                image.getPublicId()
+                image.getPublicId(),
+                ImageFolder.PROJECT
         );
 
         image.setPublicId(upload.publicId());

@@ -1,8 +1,7 @@
-import Loading from "@/components/common/Loading";
-import {Navigate, Outlet} from "react-router-dom";
-import {hasRole} from "@/utils/permissionsResolver.ts";
+import {Navigate, Outlet, useOutletContext} from "react-router-dom";
+import {hasRoles} from "@/utils/permissionsResolver.ts";
 import type {Role} from "@/shared/types/types.ts";
-import {useProfile} from "@/features/auth/authHooks.ts";
+
 
 interface RoleGuardRouteProps {
     allowedRoles: Role[];
@@ -12,17 +11,9 @@ interface RoleGuardRouteProps {
 export default function RoleGuardRouteComponent({
                                                     allowedRoles,
                                                 }: RoleGuardRouteProps) {
-    const {data: user, isLoading} = useProfile();
+    const {user} = useOutletContext();
 
-    if (isLoading) {
-        return <Loading/>;
-    }
-
-    if (!user) {
-        return <Navigate to="/auth"/>;
-    }
-
-    if (!hasRole(user, allowedRoles[0])) {
+    if (!hasRoles(user, allowedRoles)) {
         return <Navigate to="/app"/>;
     }
 

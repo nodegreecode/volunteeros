@@ -9,9 +9,10 @@ import type {Role} from "@/shared/types/types.ts";
 
 interface User {
     id: number;
-    roles: Role[];
     firstName: string;
     lastName: string;
+    email:string;
+    roles: Role[];
     city: string;
     phone: string;
     avatar: string;

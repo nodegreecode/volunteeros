@@ -1,8 +1,11 @@
 package de.upteams.volunteeros.service;
 
+import de.upteams.volunteeros.domain.enums.ImageFolder;
+import de.upteams.volunteeros.domain.model.Image;
 import de.upteams.volunteeros.domain.model.User;
 import de.upteams.volunteeros.domain.model.UserProfile;
 import de.upteams.volunteeros.domain.model.UserRole;
+import de.upteams.volunteeros.dto.image.ImageUploadResponseDto;
 import de.upteams.volunteeros.dto.mapping.ProfileMapper;
 import de.upteams.volunteeros.dto.me.MeResponseDto;
 import de.upteams.volunteeros.dto.me.ProfileEditRequestDto;
@@ -16,6 +19,7 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -28,11 +32,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final ProfileMapper profileMapper;
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
-    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository, ProfileMapper profileMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository, ProfileMapper profileMapper, ImageService imageService, ImageRepository imageRepository) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.profileMapper = profileMapper;
+        this.imageService = imageService;
+        this.imageRepository = imageRepository;
     }
 
     @Override
@@ -55,7 +63,7 @@ public class UserServiceImpl implements UserService {
                         .toList(),
                 userProfile.getCity(),
                 userProfile.getPhone(),
-                userProfile.getAvatar(),
+                userProfile.getImage(),
                 userProfile.getBio(),
                 userProfile.getCreatedAt(),
                 userProfile.getUpdatedAt());
@@ -64,6 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ProfileEditResponseDto editProfile(String email, ProfileEditRequestDto requestDto) {
+
         Objects.requireNonNull(requestDto, "requestDto cannot be null");
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> {
@@ -84,6 +93,34 @@ public class UserServiceImpl implements UserService {
         profileMapper.updateEntityFromDto(requestDto, userProfile);
         userProfile.setUpdatedAt(Instant.now());
         return profileMapper.mapEntityToProfileEditResponseDto(userProfile);
+    }
+
+    @Override
+    @Transactional
+    public void uploadUserImage(String email, MultipartFile file) {
+
+        Objects.requireNonNull(file, "Image cannot be null");
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn("User not found{}", email);
+            return new EntityNotFoundException("User not found");
+        });
+
+        UserProfile userProfile = user.getUserProfile();
+
+        ImageUploadResponseDto upload = imageService.upload(file, ImageFolder.USER);
+
+        Image userImage = new Image();
+        userImage.setPublicId(upload.publicId());
+        userImage.setUrl(upload.secureUrl());
+        userImage.setContentType(file.getContentType());
+        userImage.setOriginalFilename(file.getOriginalFilename());
+        userImage.setSize(file.getSize());
+        userImage.setUploadedAt(Instant.now());
+
+        userProfile.setImage(userImage);
+
+        // imageRepository.save(userImage);
     }
 
 }

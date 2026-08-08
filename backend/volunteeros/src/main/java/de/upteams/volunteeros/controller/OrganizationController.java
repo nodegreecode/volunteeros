@@ -6,9 +6,11 @@ import de.upteams.volunteeros.dto.project.ProjectCreateResponseDto;
 import de.upteams.volunteeros.service.interfaces.OrganizationApplicationService;
 import de.upteams.volunteeros.service.interfaces.OrganizationService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -35,6 +37,12 @@ public class OrganizationController {
     @GetMapping("/all")
     public List<OrganizationResponseDto> getOrganizations() {
         return organizationService.allOrganizations();
+    }
+
+    @PostMapping("/image")
+    public ResponseEntity<?> uploadImage(@RequestParam MultipartFile image, Authentication authentication) {
+        organizationService.uploadOrganizationImage(authentication.getName(), image);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

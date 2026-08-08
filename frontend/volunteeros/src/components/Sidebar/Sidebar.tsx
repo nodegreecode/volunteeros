@@ -159,7 +159,7 @@ export default function Sidebar({items, isOpen, user}: SidebarProps) {
                             <ListItem disablePadding>
                                 <ListItemButton
                                     sx={{
-                                        gap: 2,
+                                        gap: 1,
                                     }}
                                     onClick={handleOpenMenu}>
                                     <ListItemIcon>
@@ -168,6 +168,23 @@ export default function Sidebar({items, isOpen, user}: SidebarProps) {
                                     <ListItemText
                                         primary={`${user.firstName} ${user.lastName}`}
                                         secondary={user.email}
+                                        sx={{
+                                            minWidth: 0, // important inside flex layouts
+                                            "& .MuiListItemText-primary": {
+                                                fontSize: "0.85rem",
+                                                fontWeight: 500,
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "nowrap",
+                                            },
+                                            "& .MuiListItemText-secondary": {
+                                                fontSize: "0.75rem",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "nowrap",
+                                            },
+                                        }}
+
                                     />
                                 </ListItemButton>
                             </ListItem>

@@ -4,8 +4,11 @@ import de.upteams.volunteeros.dto.me.ProfileEditRequestDto;
 import de.upteams.volunteeros.dto.me.ProfileEditResponseDto;
 import de.upteams.volunteeros.dto.me.MeResponseDto;
 import de.upteams.volunteeros.service.interfaces.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,6 +28,12 @@ public class UserController {
     @PatchMapping("/profile")
     public ProfileEditResponseDto editMyProfile(Authentication authentication, @RequestBody ProfileEditRequestDto requestDto) {
         return userService.editProfile(authentication.getName(), requestDto);
+    }
+
+    @PostMapping("/image")
+    public ResponseEntity<?> uploadImage(@RequestParam MultipartFile image, Authentication authentication) {
+        userService.uploadUserImage(authentication.getName(), image);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

@@ -1,19 +1,13 @@
-import {Outlet} from "react-router-dom";
+import {Outlet, useOutletContext} from "react-router-dom";
 import Header from "@/components/Header/Header.tsx";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import {Box} from "@mui/material";
-//import {Toolbar} from "@mui/material";
 import {menuConfig} from "@/components/Sidebar/menuConfig.ts";
-import {useProfile} from "@/features/auth/authHooks.ts";
 import {useState} from "react";
 
 export default function DashboardLayout() {
 
-    const {data: user} = useProfile();
-
-    if (!user) {
-        return null;
-    }
+    const {user} = useOutletContext();
 
     const [isOpen, setIsOpen] = useState(true);
 
@@ -31,9 +25,9 @@ export default function DashboardLayout() {
                 <Box sx={{display: "flex", flexDirection: "column", flex: 1,}}>
                     <Header drawerOpen={isOpen} toggleDrawer={toggleDrawer}/>
 
-                    <Box component="main" sx={{flex: 1, py: 3, px:10}}>
+                    <Box component="main" sx={{flex: 1, py: 3, px: 10}}>
                         <Box sx={{maxWidth: 1300, mx: "auto", width: "100%"}}>
-                            <Outlet/>
+                            <Outlet context={{user}}/>
                         </Box>
                     </Box>
                 </Box>

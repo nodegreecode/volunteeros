@@ -1,9 +1,8 @@
 package de.upteams.volunteeros.service;
 
-import de.upteams.volunteeros.domain.model.Organization;
-import de.upteams.volunteeros.domain.model.OrganizationApplication;
-import de.upteams.volunteeros.domain.model.OrganizationMember;
-import de.upteams.volunteeros.domain.model.User;
+import de.upteams.volunteeros.domain.enums.ImageFolder;
+import de.upteams.volunteeros.domain.model.*;
+import de.upteams.volunteeros.dto.image.ImageUploadResponseDto;
 import de.upteams.volunteeros.dto.mapping.OrganizationMapper;
 import de.upteams.volunteeros.dto.organization.OrganizationResponseDto;
 import de.upteams.volunteeros.dto.organization.OrganizationUpdateRequestDto;
@@ -20,6 +19,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -33,12 +33,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final OrganizationMapper organizationMapper;
     private final UserRepository userRepository;
+    private final ImageService imageService;
 
 
-    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, UserRepository userRepository) {
+    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, UserRepository userRepository, ImageService imageService) {
         this.organizationRepository = organizationRepository;
         this.organizationMapper = organizationMapper;
         this.userRepository = userRepository;
+        this.imageService = imageService;
     }
 
 
@@ -114,7 +116,6 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setOrgName(requestDto.orgName());
         organization.setCity(requestDto.city());
         organization.setPhone(requestDto.phone());
-        organization.setAvatar(requestDto.avatar());
         organization.setDescription(requestDto.description());
         organization.setWebsite(requestDto.website());
         logger.info("Organization information updated {}", organizationId);
@@ -125,5 +126,32 @@ public class OrganizationServiceImpl implements OrganizationService {
     public List<OrganizationResponseDto> allOrganizations() {
         List<Organization> organizations = organizationRepository.findAll();
         return organizationMapper.mapEntityToOrganizationResponseDtoList(organizations);
+    }
+
+    @Override
+    @Transactional
+    public void uploadOrganizationImage(String email, MultipartFile file) {
+
+        Objects.requireNonNull(file, "Image cannot be null");
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn("User not found{}", email);
+            return new EntityNotFoundException("User not found");
+        });
+
+        Organization organization = user.getOrganization();
+
+        ImageUploadResponseDto upload = imageService.upload(file, ImageFolder.ORGANIZATION);
+
+        Image organizationImage = new Image();
+        organizationImage.setPublicId(upload.publicId());
+        organizationImage.setUrl(upload.secureUrl());
+        organizationImage.setContentType(file.getContentType());
+        organizationImage.setOriginalFilename(file.getOriginalFilename());
+        organizationImage.setSize(file.getSize());
+        organizationImage.setUploadedAt(Instant.now());
+
+        organization.setImage(organizationImage);
+
     }
 }

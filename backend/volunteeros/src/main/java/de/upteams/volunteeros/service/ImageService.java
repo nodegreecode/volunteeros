@@ -2,6 +2,7 @@ package de.upteams.volunteeros.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import de.upteams.volunteeros.domain.enums.ImageFolder;
 import de.upteams.volunteeros.dto.image.ImageUploadResponseDto;
 import de.upteams.volunteeros.exceptions.types.ImageUploadException;
 import net.coobird.thumbnailator.Thumbnails;
@@ -21,19 +22,19 @@ public class ImageService {
         this.cloudinary = cloudinary;
     }
 
-    public ImageUploadResponseDto upload(MultipartFile file) {
-
-        byte[] compressedImage = compressImage(file);
+    public ImageUploadResponseDto upload( MultipartFile file, ImageFolder folder) {
 
         if (file.isEmpty()) {
             throw new ImageUploadException("Image file is empty");
         }
 
+        byte[] compressedImage = compressImage(file);
+
         try {
             Map<String, Object> uploadResult = cloudinary.uploader().upload(
                     compressedImage,
                     ObjectUtils.asMap(
-                            "folder", "projects"
+                            "folder", folder.name().toLowerCase()
                     )
             );
 
@@ -48,7 +49,7 @@ public class ImageService {
         cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     }
 
-    public ImageUploadResponseDto replace(MultipartFile newFile, String oldPublicId) {
+    public ImageUploadResponseDto replace(MultipartFile newFile, String oldPublicId, ImageFolder folder) {
 
         if (newFile.isEmpty()) {
             throw new ImageUploadException("Image file is empty");
@@ -64,7 +65,7 @@ public class ImageService {
 
         }
 
-        return upload(newFile);
+        return upload(newFile, folder);
 
     }
 
