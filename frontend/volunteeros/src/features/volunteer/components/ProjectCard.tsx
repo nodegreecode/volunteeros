@@ -7,7 +7,7 @@ import {
     Typography,
     Button,
     Stack,
-    Chip,
+    Chip, Box, Collapse,
 } from "@mui/material";
 import {
 
@@ -17,6 +17,13 @@ import {
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import GroupsIcon from "@mui/icons-material/Groups";
+import IconButton from "@mui/material/IconButton";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Divider from "@mui/material/Divider";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {NavLink, useSearchParams} from "react-router-dom";
+import {useState} from "react";
 
 type ProjectCardProps = {
     project: {
@@ -34,67 +41,135 @@ type ProjectCardProps = {
 
 export default function ProjectCard({project}: ProjectCardProps) {
 
+    const [showActions, setShowActions] = useState(false);
+
     const {mutate: applyForProject, isPending} = useApplyForProject();
+
+    const [, setSearchParams] = useSearchParams();
 
     function handleApplyForProject() {
         applyForProject({projectId: project.id});
     }
 
+    const handleViewDetails = () => {
+        setSearchParams({
+            projectId: String(project.id),
+        });
+    };
+
+    const handleViewEvents = () => {
+        setSearchParams({
+            eventsProjectId: String(project.id),
+        });
+    };
+
     return (
-        <Card
-            sx={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-            }}
-        >
-            <CardMedia
-                component="img"
-                width="100%"
-                height="180"
-                image={project.imageUrl ?? imagePlaceholder}
-            />
-
-            <CardContent sx={{flexGrow: 1}}>
-                <Typography variant="h6" gutterBottom>
-                    {project.title}
-                </Typography>
-
-                <Typography variant="subtitle2" color="primary">
-                    {project.organizationName}
-                </Typography>
-
-                <Typography variant="body2" color="text.secondary" sx={{mt: 2}}>
-                    {project.description.length > 120
-                        ? project.description.substring(0, 120) + "..."
-                        : project.description}
-                </Typography>
-
-                <Stack spacing={1} sx={{mt: 3}}>
-                    <Chip icon={<LocationOnIcon/>} label={project.location}/>
-
-                    <Chip
-                        icon={<CalendarMonthIcon/>}
-                        label={`${new Date(project.startDate).toLocaleDateString()}
-                        ${new Date(project.endDate).toLocaleDateString()}`}
-                    />
-                    <Chip
-                        icon={<GroupsIcon/>}
-                        label={`${project.requiredVolunteers} volunteers needed`}
-                    />
+        <Card sx={{backgroundColor: "#F1F2F7"}}>
+            <CardContent>
+                <Stack direction="row" alignItems="center" spacing={2}>
+                    <Box component="img"
+                         src={project.image?.secureUrl}
+                         alt={project.title}
+                         sx={{
+                             width: 80,
+                             height: 60,
+                             borderRadius: 1,
+                             objectFit: "cover",
+                             flexShrink: 0,
+                         }}/>
+                    <Typography variant="h6" sx={{fontWeight: 600, flex: 1}}>{project.title}</Typography>
+                    <IconButton>
+                        <MoreVertIcon/>
+                    </IconButton>
                 </Stack>
             </CardContent>
 
-            <CardActions>
+            <Divider/>
+
+            <CardContent sx={{py: 2}}>
+                <Stack direction="row" spacing={8}>
+                    <Stack spacing={1}>
+                        <Typography variant="caption" color="text.secondary">Start Date</Typography>
+                        <Typography sx={{fontSize: "1.1rem", fontWeight: 600}}>
+                            {new Date(project.startDate).toLocaleDateString()}
+                        </Typography>
+                    </Stack>
+                    <Stack spacing={1}>
+                        <Typography variant="caption" color="text.secondary">Start Date</Typography>
+                        <Typography sx={{fontSize: "1.1rem", fontWeight: 600}}>
+                            {new Date(project.endDate).toLocaleDateString()}
+                        </Typography>
+                    </Stack>
+                    <Stack spacing={1}>
+                        <Typography variant="caption" color="text.secondary">Status</Typography>
+                        <Typography sx={{fontSize: "1.1rem", fontWeight: 600}}>
+                            <Chip label="Approved" color="success"/>
+                        </Typography>
+                    </Stack>
+                    <Stack spacing={1}>
+                        <Typography variant="caption" color="text.secondary">Location</Typography>
+                        <Typography sx={{fontSize: "1.1rem", fontWeight: 600}}>
+                            {project.location}
+                        </Typography>
+                    </Stack>
+                </Stack>
+            </CardContent>
+
+            <Divider/>
+
+            <CardContent sx={{display: "flex", justifyContent: "center", py: 1}}>
                 <Button
-                    fullWidth
-                    variant="contained"
-                    onClick={handleApplyForProject}
-                    disabled={isPending}
+                    size="small"
+                    onClick={() => setShowActions((prev) => !prev)}
+                    endIcon={
+                        showActions ? <ExpandLessIcon/> : <ExpandMoreIcon/>
+                    }
+                    sx={{textTransform: "none", color: "inherit"}}
                 >
-                    Apply
+                    {showActions ? "Hide Details" : "View Details"}
                 </Button>
-            </CardActions>
+            </CardContent>
+
+            <Collapse in={showActions}>
+
+                <CardContent>
+                    <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                    >
+                        Description
+                    </Typography>
+
+                    <Typography variant="body2">
+                        {project.description}
+                    </Typography>
+                </CardContent>
+
+
+                <Divider/>
+
+                <CardActions sx={{justifyContent: "flex-end", px: 2, pb: 2}}>
+                    <Button variant="contained"
+                        onClick={handleApplyForProject}
+                    >
+                        Apply
+                    </Button>
+                    <Button variant="outlined"
+                            onClick={handleViewDetails}
+                    >
+                        Details
+                    </Button>
+                    <Button variant="outlined"
+                            onClick={handleViewEvents}
+                    >
+                        Events
+                    </Button>
+                </CardActions>
+            </Collapse>
         </Card>
+
+
+
     );
 }

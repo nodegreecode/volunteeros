@@ -1,5 +1,6 @@
 package de.upteams.volunteeros.service.interfaces;
 
+import de.upteams.volunteeros.domain.model.ProjectParticipation;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
 import de.upteams.volunteeros.dto.project.*;
@@ -34,6 +35,8 @@ public interface ProjectService {
 
     List<ProjectResponseDto> allProjects();
 
+    ProjectResponseDto getProjectById(Long projectId);
+
     List<ProjectResponseDto> allPendingModerationProjects();
 
     List<ProjectResponseDto> allActiveProjects();
@@ -48,6 +51,12 @@ public interface ProjectService {
 
     void replaceProjectImage(Long projectId, MultipartFile file);
 
-    List<ProjectResponseDto> searchActiveProjectsByTitle(String title);
+    CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit);
+
+    List<ParticipantsResponseDto> getApprovedProjectParticipants(Long projectId);
+
+    CursorPage<ProjectResponseDto> nextPage( String cursor, int limit);
+
+    CursorPage<ProjectResponseDto> previousPage(String cursor, int limit);
 
 }

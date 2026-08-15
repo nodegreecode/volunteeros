@@ -22,6 +22,11 @@ export interface OrganizationUpdateRequestDto {
   phone: string;
 }
 
+interface Image {
+  publicId: string;
+  secureUrl: string;
+}
+
 export interface ProjectCreateResponseDto {
   id: string;
   title: string;
@@ -31,5 +36,6 @@ export interface ProjectCreateResponseDto {
   endDate: string;
   status: string;
   requiredVolunteers: string;
+  image: Image;
   createdAt: string;
 }

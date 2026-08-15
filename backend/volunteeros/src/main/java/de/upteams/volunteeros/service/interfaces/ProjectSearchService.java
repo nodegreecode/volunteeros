@@ -1,6 +1,7 @@
 package de.upteams.volunteeros.service.interfaces;
 
 import de.upteams.volunteeros.domain.model.Project;
+import de.upteams.volunteeros.dto.project.CursorPage;
 import de.upteams.volunteeros.dto.project.ProjectResponseDto;
 
 import java.util.List;
@@ -11,5 +12,9 @@ public interface ProjectSearchService {
 
     void delete(Long id);
 
-    List<ProjectResponseDto> search(String title);
+    CursorPage<ProjectResponseDto> search(String title, String cursor, int limit);
+
+    void reindexAll();
+
+    void deleteIndex();
 }

@@ -4,8 +4,5 @@ import java.time.Instant;
 
 public record ProjectEditRequestDto(String title,
                                     String description,
-                                    String location,
-                                    Instant startDate,
-                                    Instant endDate,
-                                    int requiredVolunteers) {
+                                    String location) {
 }

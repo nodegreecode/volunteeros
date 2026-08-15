@@ -7,6 +7,8 @@ import de.upteams.volunteeros.service.interfaces.ProjectEventService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/project-events")
 public class ProjectEventController {
@@ -45,6 +47,16 @@ public class ProjectEventController {
     @PostMapping({"/{eventId}/registrations"})
     public VolunteerEventRegistrationResponseDto register(@PathVariable Long eventId, Authentication authentication) {
         return projectEventService.register(eventId, authentication.getName());
+    }
+
+    @GetMapping("/{eventId}")
+    public ProjectEventCreatedResponseDto getEvent(@PathVariable Long eventId) {
+        return projectEventService.getProjectEvent(eventId);
+    }
+
+    @GetMapping("/{eventId}/registrations")
+    public List<VolunteerEventRegistrationResponseDto> getEventRegistrations(@PathVariable Long eventId) {
+        return projectEventService.getAllProjectEventRegistrations(eventId);
     }
 
 }

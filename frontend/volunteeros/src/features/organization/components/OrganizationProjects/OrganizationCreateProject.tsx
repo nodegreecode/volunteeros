@@ -53,6 +53,7 @@ export default function OrganizationCreateProject() {
                 sx={{
                     px: 3,
                     py: 3,
+                    backgroundColor: "#F1F2F7"
                 }}
             >
                 <Box
@@ -141,20 +142,19 @@ export default function OrganizationCreateProject() {
                         inputProps={{min: 1}}
                     />
 
-                    <Box mt={3}>
+                    <Box mt={3} sx={{display: "flex", gap: 2}}>
+                        <Button
+                            variant="contained"
+                            onClick={() => navigate(-1)}
+                        >
+                            Back
+                        </Button>
                         <Button
                             type="submit"
                             variant="contained"
                             disabled={createProject.isPending}
                         >
                             {createProject.isPending ? "Creating..." : "Create Project"}
-                        </Button>
-                        <Button
-
-                            variant="contained"
-                            onClick={() => navigate(-1)}
-                        >
-                            Back
                         </Button>
                     </Box>
                 </Box>

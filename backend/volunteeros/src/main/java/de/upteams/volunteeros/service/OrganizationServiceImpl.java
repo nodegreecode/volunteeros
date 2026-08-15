@@ -7,6 +7,7 @@ import de.upteams.volunteeros.dto.mapping.OrganizationMapper;
 import de.upteams.volunteeros.dto.organization.OrganizationResponseDto;
 import de.upteams.volunteeros.dto.organization.OrganizationUpdateRequestDto;
 import de.upteams.volunteeros.exceptions.types.OrganizationAlreadyExistsException;
+import de.upteams.volunteeros.exceptions.types.OrganizationImageUploadException;
 import de.upteams.volunteeros.exceptions.types.OrganizationNotFounException;
 import de.upteams.volunteeros.repository.OrganizationRepository;
 import de.upteams.volunteeros.repository.UserRepository;
@@ -141,17 +142,36 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         Organization organization = user.getOrganization();
 
+        Image organizationImage = organization.getImage();
+
+        String oldPublicId = organizationImage != null
+                ? organizationImage.getPublicId()
+                : null;
+
         ImageUploadResponseDto upload = imageService.upload(file, ImageFolder.ORGANIZATION);
 
-        Image organizationImage = new Image();
-        organizationImage.setPublicId(upload.publicId());
-        organizationImage.setUrl(upload.secureUrl());
-        organizationImage.setContentType(file.getContentType());
-        organizationImage.setOriginalFilename(file.getOriginalFilename());
-        organizationImage.setSize(file.getSize());
-        organizationImage.setUploadedAt(Instant.now());
+        try {
+            if (organizationImage == null) {
+                organizationImage = new Image();
+            }
 
-        organization.setImage(organizationImage);
+            organizationImage.setPublicId(upload.publicId());
+            organizationImage.setUrl(upload.secureUrl());
+            organizationImage.setContentType(file.getContentType());
+            organizationImage.setOriginalFilename(file.getOriginalFilename());
+            organizationImage.setSize(file.getSize());
+            organizationImage.setUploadedAt(Instant.now());
+
+            organization.setImage(organizationImage);
+
+        } catch (Exception e) {
+            imageService.delete(upload.publicId());
+            throw new OrganizationImageUploadException("Failed to save image");
+        }
+
+        if (oldPublicId != null) {
+            imageService.delete(oldPublicId);
+        }
 
     }
 }

@@ -4,6 +4,7 @@ import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
 import de.upteams.volunteeros.dto.project.*;
 import de.upteams.volunteeros.service.interfaces.ProjectEventService;
+import de.upteams.volunteeros.service.interfaces.ProjectSearchService;
 import de.upteams.volunteeros.service.interfaces.ProjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,12 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final ProjectEventService projectEventService;
+    private final ProjectSearchService projectSearchService;
 
-    public ProjectController(ProjectService projectService, ProjectEventService projectEventService) {
+    public ProjectController(ProjectService projectService, ProjectEventService projectEventService, ProjectSearchService projectSearchService) {
         this.projectService = projectService;
         this.projectEventService = projectEventService;
+        this.projectSearchService = projectSearchService;
     }
 
     @PostMapping("/{organizationId}")
@@ -66,14 +69,30 @@ public class ProjectController {
         return projectService.allMyProjects(authentication.getName());
     }
 
+    @GetMapping("/{projectId}")
+    public ProjectResponseDto getSingleProject(@PathVariable Long projectId) {
+        return projectService.getProjectById(projectId);
+    }
+
     @GetMapping("/all")
     public List<ProjectResponseDto> allProjects() {
         return projectService.allProjects();
     }
 
+    @Deprecated
     @GetMapping("/active")
     public List<ProjectResponseDto> allActiveProjects() {
         return projectService.allActiveProjects();
+    }
+
+    @GetMapping("/active-next")
+    public CursorPage<ProjectResponseDto> nextActiveProjects(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "5") int limit) {
+        return projectService.nextPage(cursor, limit);
+    }
+
+    @GetMapping("/active-previous")
+    public CursorPage<ProjectResponseDto> previousActiveProjects(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "5") int limit) {
+        return projectService.previousPage(cursor, limit);
     }
 
     @GetMapping("/pending-moderation")
@@ -87,6 +106,7 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Deprecated
     @PutMapping("/{projectId}/image")
     public ResponseEntity<?> replaceImage(@PathVariable Long projectId, @RequestParam MultipartFile image) {
         projectService.replaceProjectImage(projectId, image);
@@ -94,8 +114,10 @@ public class ProjectController {
     }
 
     @GetMapping("/search")
-    public List<ProjectResponseDto> searchAllActiveProjects(@RequestParam String title) {
-        return projectService.searchActiveProjectsByTitle(title);
+    public CursorPage<ProjectResponseDto> findProjectsByTitle(@RequestParam String title,
+                                                              @RequestParam(required = false) String cursor,
+                                                              @RequestParam(defaultValue = "5") int limit) {
+        return projectService.searchActiveProjectsByTitle(title, cursor, limit);
     }
 
     @PostMapping("/{projectId}/events")
@@ -111,5 +133,22 @@ public class ProjectController {
     @GetMapping("/{projectId}/events/upcoming")
     public List<ProjectEventCreatedResponseDto> getUpcomingEvents(@PathVariable Long projectId) {
         return projectEventService.getUpcomingProjectEventsByProject(projectId);
+    }
+
+    @GetMapping("/{projectId}/participants")
+    public List<ParticipantsResponseDto> getProjectParticipants(@PathVariable Long projectId) {
+        return projectService.getApprovedProjectParticipants(projectId);
+    }
+
+    @DeleteMapping("/remove-index")
+    public ResponseEntity<Void> removeProjectsIndex() {
+        projectSearchService.deleteIndex();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reindex")
+    public ResponseEntity<Void> reindexProjects() {
+        projectSearchService.reindexAll();
+        return ResponseEntity.ok().build();
     }
 }

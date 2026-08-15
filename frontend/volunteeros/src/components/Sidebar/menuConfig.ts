@@ -20,8 +20,12 @@ export const menuConfig = {
             path: "/app/volunteer/dashboard",
         },
         {
-            label: "Projects",
+            label: "Discover Opportunities",
             path: "/app/volunteer/projects",
+        },
+        {
+            label: "My Projects",
+            path: "/app/volunteer/my-projects",
         },
         {
             label: "Skills",

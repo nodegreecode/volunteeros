@@ -1,355 +1,231 @@
-import { useState } from "react";
+import {useState} from "react";
 import {
-  Button,
-  Card,
-  CardContent,
-  CardActions,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Grid,
-  Typography,
-  TextField,
-  CardMedia,
-  Box,
-  Chip,
-  Stack,
+    Button,
+    Card,
+    CardContent,
+    CardActions,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Grid,
+    Typography,
+    TextField,
+    CardMedia,
+    Box,
+    Chip,
+    Stack,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    TableContainer,
+    Menu,
+    MenuItem,
+    TablePagination
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DateRangeIcon from "@mui/icons-material/DateRange";
+import AddIcon from "@mui/icons-material/Add";
 import beachCleaning from "@/assets/ocg-saving-the-ocean2.jpg";
-import { Link } from "react-router-dom";
-import type { ProjectCreateResponseDto } from "@/features/organization/orgTypes.ts";
-import { useEditProject } from "@/features/organization/orgHooks";
-import { useFormik } from "formik";
+import {Link, useOutletContext} from "react-router-dom";
+import type {ProjectCreateResponseDto} from "@/features/organization/orgTypes.ts";
+import {useEditProject} from "@/features/organization/orgHooks";
+import {useFormik} from "formik";
 import * as Yup from "yup";
+import IconButton from "@mui/material/IconButton";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import {useNavigate} from "react-router-dom";
+
 
 interface ProjectEditFormValues {
-  title: string;
-  description: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  requiredVolunteers: number;
+    title: string;
+    description: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+    requiredVolunteers: number;
 }
 
 type OrganizationProjectsOverviewProps = {
-  projects: ProjectCreateResponseDto[];
+    projects: ProjectCreateResponseDto[];
 };
 
 const validationSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
-  description: Yup.string().required("Description is required"),
-  location: Yup.string().required("Location is required"),
-  startDate: Yup.string().required("Start date is required"),
-  endDate: Yup.string().required("End date is required"),
-  requiredVolunteers: Yup.number()
-    .min(1, "At least 1 volunteer required")
-    .required("Required volunteers is required"),
+    title: Yup.string().required("Title is required"),
+    description: Yup.string().required("Description is required"),
+    location: Yup.string().required("Location is required"),
+    startDate: Yup.string().required("Start date is required"),
+    endDate: Yup.string().required("End date is required"),
+    requiredVolunteers: Yup.number()
+        .min(1, "At least 1 volunteer required")
+        .required("Required volunteers is required"),
 });
 
-const getStatusColor = (status) =>{
-  switch (status) {
-    case "ACTIVE":
-      return "success";
-    case "PENDING_MODERATION":
-      return "warning"; // orange
-    case "CANCELLED":
-      return "error"; // red
-    default:
-      return "default";
-  }
+const getStatusColor = (status) => {
+    switch (status) {
+        case "ACTIVE":
+            return "success";
+        case "PENDING_MODERATION":
+            return "warning"; // orange
+        case "CANCELLED":
+            return "error"; // red
+        default:
+            return "default";
+    }
 }
 
-export default function OrganizationProjectsOverview({
-  projects,
-}: OrganizationProjectsOverviewProps) {
-  const { mutate: editProject, isPending } = useEditProject();
+const statusLabels = {
+    ACTIVE: "Active",
+    PENDING_MODERATION: "Pending",
+    COMPLETED: "Completed",
+    CANCELLED: "Cancelled",
+};
 
-  const [selectedProject, setSelectedProject] = useState(null);
+export default function OrganizationProjectsOverview() {
 
-  function handleClose() {
-    setSelectedProject(null);
-  }
+    const projects = useOutletContext();
 
-  const formik = useFormik<ProjectEditFormValues>({
-    initialValues: {
-      title: selectedProject?.title ?? "",
-      description: selectedProject?.description ?? "",
-      location: selectedProject?.location ?? "",
-      startDate: selectedProject?.startDate?.slice(0, 16) ?? "",
-      endDate: selectedProject?.endDate?.slice(0, 16) ?? "",
-      requiredVolunteers: selectedProject?.requiredVolunteers ?? 0,
-    },
-    enableReinitialize: true,
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      if (!selectedProject) return;
+    const navigate = useNavigate();
 
-      editProject(
-        {
-          projectId: selectedProject.id,
-          values: {
-            title: values.title,
-            description: values.description,
-            location: values.location,
-            startDate: new Date(values.startDate).toISOString(),
-            endDate: new Date(values.endDate).toISOString(),
-            requiredVolunteers: values.requiredVolunteers,
-          },
+    const {mutate: editProject, isPending} = useEditProject();
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [selectedProject, setSelectedProject] = useState(null);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    function handleClose() {
+        setSelectedProject(null);
+    }
+
+    function handleMenuOpen(event, project) {
+        setAnchorEl(event.currentTarget);
+        setSelectedProject(project);
+    }
+
+    function handleMenuClose() {
+        setAnchorEl(null);
+        setSelectedProject(null);
+    }
+
+    function handleTotalParticipants() {
+        return projects.reduce((acc, project) => {
+            return (
+                acc +
+                project.participations.filter((participation) => participation.status === "APPROVED").length
+            )
+        }, 0);
+    }
+
+    const paginatedProjects = projects.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+    );
+
+    const formik = useFormik<ProjectEditFormValues>({
+        initialValues: {
+            title: selectedProject?.title ?? "",
+            description: selectedProject?.description ?? "",
+            location: selectedProject?.location ?? "",
+            startDate: selectedProject?.startDate?.slice(0, 16) ?? "",
+            endDate: selectedProject?.endDate?.slice(0, 16) ?? "",
+            requiredVolunteers: selectedProject?.requiredVolunteers ?? 0,
         },
-        {
-          onSuccess: () => {
-            handleClose();
-          },
-        },
-      );
-    },
-  });
+        enableReinitialize: true,
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            if (!selectedProject) return;
 
-  return (
-    <Box
-      sx={{
-        padding: "2rem",
-      }}
-    >
-      <Stack spacing={3}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mb: 3,
-          }}
-        >
-          <Button component={Link} to="create" variant="contained">
-            Create new project
-          </Button>
-        </Box>
-        <Grid container spacing={3}>
-          {projects.map((project) => (
-            <Grid
-              item
-              size={{
-                xs: 12,
-                md: 6,
-                lg: 4,
-              }}
-              key={project.id}
-            >
-              <Card
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  borderRadius: 3,
-                  boxShadow: 3,
-                  padding: "10px",
-
-                  opacity: project.status === "PENDING_MODERATION" ? 0.7 : 1,
-                  backgroundColor:
-                      project.status === "PENDING_MODERATION"
-                          ? "action.hover"
-                          : "background.paper",
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" gutterBottom>
-                    {project.title}
-                  </Typography>
-
-                  <CardMedia
-                    component="img"
-                    sx={{
-                      height: 200,
-                      marginBottom: "16px",
-                    }}
-                    image={beachCleaning}
-                  />
-
-                  {/* Project metadata chips */}
-                  <Stack
-                    direction={{ lg: "column", xl: "row" }}
-                    spacing={1}
-                    flexWrap="wrap"
-                    useFlexGap
-                    sx={{ mb: 2 }}
-                  >
-                    <Chip
-                      icon={<DateRangeIcon />}
-                      label={`${new Date(project.startDate).toLocaleDateString()} - ${new Date(project.endDate).toLocaleDateString()}`}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                      sx={{
-                        px: 2,
-                      }}
-                    />
-
-                    <Chip
-                      icon={<LocationOnIcon />}
-                      label={project.location}
-                      size="small"
-                      color="success"
-                      variant="outlined"
-                      sx={{
-                        px: 2,
-                      }}
-                    />
-                    <Chip
-                        label={project.status}
-                        size="small"
-                        color= {getStatusColor(project.status)}
-                        variant="outlined"
-                        sx={{
-                          px: 2,
-                        }}
-                    />
-                  </Stack>
-
-                  <Typography variant="body2" color="text.secondary">
-                    {project.description}
-                  </Typography>
-                </CardContent>
-
-                <CardActions>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => setSelectedProject(project)}
-                  >
-                    Edit
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Stack>
-      {/* Edit Project Dialog */}
-      <Dialog
-        open={Boolean(selectedProject)}
-        onClose={handleClose}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Edit Project</DialogTitle>
-        <Box component="form" onSubmit={formik.handleSubmit}>
-          <DialogContent>
-            <TextField
-              fullWidth
-              label="Project title"
-              name="title"
-              value={formik.values.title}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.title && Boolean(formik.errors.title)}
-              helperText={formik.touched.title && formik.errors.title}
-              margin="normal"
-            />
-
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              label="Description"
-              name="description"
-              label="Description"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.description && Boolean(formik.errors.description)
-              }
-              helperText={
-                formik.touched.description && formik.errors.description
-              }
-              margin="normal"
-            />
-
-            <TextField
-              fullWidth
-              label="Location"
-              name="location"
-              value={formik.values.location}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.location && Boolean(formik.errors.location)}
-              helperText={formik.touched.location && formik.errors.location}
-              margin="normal"
-            />
-
-            <TextField
-              fullWidth
-              type="datetime-local"
-              label="Start date"
-              name="startDate"
-              value={formik.values.startDate}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              error={
-                formik.touched.startDate && Boolean(formik.errors.startDate)
-              }
-              helperText={formik.touched.startDate && formik.errors.startDate}
-              margin="normal"
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
+            editProject(
+                {
+                    projectId: selectedProject.id,
+                    values: {
+                        title: values.title,
+                        description: values.description,
+                        location: values.location,
+                        startDate: new Date(values.startDate).toISOString(),
+                        endDate: new Date(values.endDate).toISOString(),
+                        requiredVolunteers: values.requiredVolunteers,
+                    },
                 },
-              }}
-            />
+                {
+                    onSuccess: () => {
+                        handleClose();
+                    },
+                },
+            );
+        },
+    });
 
-            <TextField
-              fullWidth
-              type="datetime-local"
-              label="End date"
-              name="endDate"
-              value={formik.values.endDate}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              error={formik.touched.endDate && Boolean(formik.errors.endDate)}
-              helperText={formik.touched.endDate && formik.errors.endDate}
-              margin="normal"
-            />
-
-            <TextField
-              fullWidth
-              type="number"
-              label="Required volunteers"
-              name="requiredVolunteers"
-              value={formik.values.requiredVolunteers}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.requiredVolunteers &&
-                Boolean(formik.errors.requiredVolunteers)
-              }
-              helperText={
-                formik.touched.requiredVolunteers &&
-                formik.errors.requiredVolunteers
-              }
-              margin="normal"
-            />
-          </DialogContent>
-
-          <DialogActions>
-            <Button onClick={handleClose} disabled={isPending}>
-              Cancel
-            </Button>
-
-            <Button variant="contained" type="submit">
-              Save changes
-            </Button>
-          </DialogActions>
+    return (
+        <Box>
+            {/* Projects */}
+            <Paper variant="outlined" sx={{backgroundColor: "#F1F2F7"}}>
+                <TableContainer>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Title</TableCell>
+                                <TableCell>Location</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Date</TableCell>
+                                <TableCell align="right">Action</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {paginatedProjects.map((project) => (
+                                <TableRow key={project.id}
+                                          hover
+                                          onClick={() => navigate(`${project.id}`)}
+                                          sx={{cursor: "pointer"}}>
+                                    <TableCell>{project.title}</TableCell>
+                                    <TableCell>{project.location}</TableCell>
+                                    <TableCell>
+                                        <Chip label={statusLabels[project.status]}
+                                              size="small"
+                                              color={getStatusColor(project.status)}
+                                              variant="contained"
+                                              sx={{
+                                                  px: 2,
+                                              }}/>
+                                    </TableCell>
+                                    <TableCell>{new Date(project.startDate).toLocaleDateString()}</TableCell>
+                                    <TableCell align="right">
+                                        <IconButton aria-label="proejct actions"
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        handleMenuOpen(event, project);
+                                                    }}>
+                                            <MoreVertIcon/>
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    component="div"
+                    count={projects.length}
+                    page={page}
+                    onPageChange={(_, newPage) => setPage(newPage)}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={(event) => {
+                        setRowsPerPage(parseInt(event.target.value, 10));
+                        setPage(0);
+                    }}
+                    rowsPerPageOptions={[5, 10, 25]}
+                />
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+                    <MenuItem onClick={handleMenuClose}>View</MenuItem>
+                    <MenuItem onClick={handleMenuClose}>Edit</MenuItem>
+                    <MenuItem onClick={handleMenuClose}>Delete</MenuItem>
+                </Menu>
+            </Paper>
         </Box>
-      </Dialog>
-    </Box>
-  );
+
+    );
 }

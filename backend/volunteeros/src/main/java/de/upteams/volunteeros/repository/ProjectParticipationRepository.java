@@ -17,49 +17,71 @@ public interface ProjectParticipationRepository extends JpaRepository<ProjectPar
 
     List<ProjectParticipation> findByProjectId(Long projectId);
 
-    Optional<ProjectParticipation> findByProjectIdAndUserId(Long projectId, Long  userId);
+    Optional<ProjectParticipation> findByProjectIdAndUserId(Long projectId, Long userId);
 
     @Query("""
-    SELECT new  de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto(
-        pp.id,
-        p.id,
-        p.title,
-        o.orgName,
-        u.id,
-        pp.status,
-        pp.joinedAt,
-        pp.rejectedAt
-    )
-    FROM ProjectParticipation pp
-        JOIN pp.project p
-        JOIN p.organization o
-        JOIN pp.user u
-    WHERE u.id = :userId
-    ORDER BY pp.joinedAt DESC
-""")
+                SELECT new  de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto(
+                    pp.id,
+                    p.id,
+                    p.title,
+                    o.orgName,
+                    u.id,
+                    pp.status,
+                    pp.joinedAt,
+                    pp.rejectedAt
+                )
+                FROM ProjectParticipation pp
+                    JOIN pp.project p
+                    JOIN p.organization o
+                    JOIN pp.user u
+                WHERE u.id = :userId
+                ORDER BY pp.joinedAt DESC
+            """)
     List<ProjectParticipationResponseDto> findParticipationsByUserId(
             @Param("userId") Long userId
     );
 
     @Query("""
-    SELECT new de.upteams.volunteeros.dto.project.ParticipantsResponseDto(
-        pp.id,
-        p.id,
-        p.title,
-        u.id,
-        up.firstName,
-        up.lastName,
-        pp.status,
-        pp.joinedAt
-    )
-    FROM ProjectParticipation pp
-        JOIN pp.project p
-        JOIN pp.user u
-        JOIN u.userProfile up
-    WHERE p.organization.id = :organizationId
-    ORDER BY pp.joinedAt DESC
-""")
+                SELECT new de.upteams.volunteeros.dto.project.ParticipantsResponseDto(
+                    pp.id,
+                    p.id,
+                    p.title,
+                    u.id,
+                    up.firstName,
+                    up.lastName,
+                    pp.status,
+                    pp.joinedAt
+                )
+                FROM ProjectParticipation pp
+                    JOIN pp.project p
+                    JOIN pp.user u
+                    JOIN u.userProfile up
+                WHERE p.organization.id = :organizationId
+                ORDER BY pp.joinedAt DESC
+            """)
     List<ParticipantsResponseDto> findParticipantsByOrganizationId(
             @Param("organizationId") Long organizationId
     );
+
+    @Query("""
+                SELECT new de.upteams.volunteeros.dto.project.ParticipantsResponseDto(
+                    pp.id,
+                    p.id,
+                    p.title,
+                    u.id,
+                    up.firstName,
+                    up.lastName,
+                    pp.status,
+                    pp.joinedAt
+                )
+                FROM ProjectParticipation pp
+                    JOIN pp.project p
+                    JOIN pp.user u
+                    JOIN u.userProfile up
+                WHERE pp.project.id = :projectId
+                  AND pp.status = :status
+                ORDER BY pp.joinedAt DESC
+            """)
+    List<ParticipantsResponseDto> findAllByProjectIdAndStatus(@Param("projectId") Long projectId,
+                                                              @Param("status") ParticipationStatus status);
 }

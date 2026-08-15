@@ -17,6 +17,8 @@ public interface VolunteerEventRegistrationRepository extends JpaRepository<Volu
 
     Optional<VolunteerEventRegistration> findByIdAndVolunteerId(Long registrationId, Long volunteerId);
 
+    Optional<VolunteerEventRegistration> findByEventIdAndVolunteerId(Long eventId, Long volunteerId);
+
     Optional<VolunteerEventRegistration> findByQrToken(String qrToken);
 
     Optional<VolunteerEventRegistration> findByQrTokenAndEventProjectOrganizationOwnerId(String qrToken, Long ownerId);
@@ -37,4 +39,7 @@ public interface VolunteerEventRegistrationRepository extends JpaRepository<Volu
     int markRegisteredAsNoShow(@Param("projectEventId") Long projectEventId,
                                @Param("noShowStatus") VolunteerEventRegistrationStatus noShowStatus,
                                @Param("registeredStatus") VolunteerEventRegistrationStatus registeredStatus);
+
+    List<VolunteerEventRegistration> findAllByEventId(Long eventId);
 }
+

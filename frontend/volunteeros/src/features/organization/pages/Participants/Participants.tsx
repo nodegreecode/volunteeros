@@ -15,10 +15,6 @@ export default function Participants() {
     if (!myParticipants || myParticipants.length === 0) {
         return (
             <Box>
-                <Typography variant="h4" sx={{mb: 3}}>
-                    Project Applications
-                </Typography>
-
                 <Typography color="text.secondary">
                     You don't have an organization yet. Create an organization to start
                     receiving project applications.
@@ -28,16 +24,12 @@ export default function Participants() {
     }
 
     return (
-        <Box>
-            <Typography variant="h4" sx={{mb: 3}}>
-                Project Applications
-            </Typography>
 
-            <Stack spacing={3}>
-                <ParticipationStats participations={myParticipants}/>
-                <ParticipationFilters/>
-                <ParticipationTable participants={myParticipants}/>
-            </Stack>
-        </Box>
+        <Stack spacing={3}>
+            <ParticipationStats participations={myParticipants}/>
+            <ParticipationFilters/>
+            <ParticipationTable participants={myParticipants}/>
+        </Stack>
+
     );
 }

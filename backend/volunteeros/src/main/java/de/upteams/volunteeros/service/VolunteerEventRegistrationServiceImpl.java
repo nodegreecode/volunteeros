@@ -64,9 +64,9 @@ public class VolunteerEventRegistrationServiceImpl implements VolunteerEventRegi
     }
 
     @Override
-    public VolunteerEventRegistrationResponseDto qetRegistration(Long registrationId, String email) {
+    public VolunteerEventRegistrationResponseDto qetRegistration(Long eventId, String email) {
 
-        Objects.requireNonNull(registrationId, "RegistrationId cannot be null");
+        Objects.requireNonNull(eventId, "RegistrationId cannot be null");
         Objects.requireNonNull(email, "Current user email cannot be null");
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> {
@@ -74,7 +74,7 @@ public class VolunteerEventRegistrationServiceImpl implements VolunteerEventRegi
             return new EntityNotFoundException("User not found");
         });
 
-        VolunteerEventRegistration eventRegistration = volunteerEventRegistrationRepository.findByIdAndVolunteerId(registrationId, user.getId())
+        VolunteerEventRegistration eventRegistration = volunteerEventRegistrationRepository.findByEventIdAndVolunteerId(eventId, user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Event registration not found"));
 
         return volunteerEventRegistrationMapper.mapEntityToVolunteerEventRegistrationResponseDto(eventRegistration);

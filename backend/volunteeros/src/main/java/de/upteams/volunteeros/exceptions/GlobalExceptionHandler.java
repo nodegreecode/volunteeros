@@ -1,5 +1,6 @@
 package de.upteams.volunteeros.exceptions;
 
+import com.cloudinary.Api;
 import de.upteams.volunteeros.dto.errors.ApiError;
 import de.upteams.volunteeros.exceptions.types.*;
 import jakarta.validation.ConstraintViolation;
@@ -187,5 +188,41 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(new ApiError(message));
     }
+
+    @ExceptionHandler(ProjectImageUploadException.class)
+    public ResponseEntity<ApiError> handleException(ProjectImageUploadException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiError(message));
+    }
+
+    @ExceptionHandler(UserImageUploadException.class)
+    public ResponseEntity<ApiError> handleException(UserImageUploadException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiError(message));
+    }
+
+    @ExceptionHandler(OrganizationImageUploadException.class)
+    public ResponseEntity<ApiError> handleException(OrganizationImageUploadException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiError(message));
+    }
+
+    @ExceptionHandler(InvalidCursorException.class)
+    public ResponseEntity<ApiError> handleException(InvalidCursorException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiError(message));
+    }
+
 
 }

@@ -26,4 +26,8 @@ public interface ProjectEventService {
     ProjectEventCreatedResponseDto completeEvent(Long eventId, String email);
 
     VolunteerEventRegistrationResponseDto register(Long eventId, String email);
+
+    ProjectEventCreatedResponseDto getProjectEvent(Long eventId);
+
+    List<VolunteerEventRegistrationResponseDto> getAllProjectEventRegistrations(Long eventId);
 }

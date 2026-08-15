@@ -22,7 +22,7 @@ public class ImageService {
         this.cloudinary = cloudinary;
     }
 
-    public ImageUploadResponseDto upload( MultipartFile file, ImageFolder folder) {
+    public ImageUploadResponseDto upload(MultipartFile file, ImageFolder folder) {
 
         if (file.isEmpty()) {
             throw new ImageUploadException("Image file is empty");
@@ -45,10 +45,15 @@ public class ImageService {
 
     }
 
-    public void delete(String publicId) throws IOException {
-        cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+    public void delete(String publicId) {
+        try {
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        } catch (Exception e) {
+            throw new ImageUploadException("Image removing failed");
+        }
     }
 
+    @Deprecated
     public ImageUploadResponseDto replace(MultipartFile newFile, String oldPublicId, ImageFolder folder) {
 
         if (newFile.isEmpty()) {

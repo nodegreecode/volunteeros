@@ -38,6 +38,11 @@ type UpdateProjectParams = {
     values: ProjectEditRequestDto;
 };
 
+type UpdateProjectEventParams = {
+    projectEventId: number;
+    values: ProjectEventEditRequestDto;
+};
+
 export interface ProjectEditRequestDto {
     title: string;
     description: string;
@@ -45,6 +50,16 @@ export interface ProjectEditRequestDto {
     startDate: string;
     endDate: string;
     requiredVolunteers: number;
+}
+
+export interface ProjectEventEditRequestDto {
+    title: string;
+    description: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    location: string;
+    capacity: number;
 }
 
 /**
@@ -211,6 +226,230 @@ export async function updateProject({projectId, values,}: UpdateProjectParams) {
 
     if (!response.ok) {
         throw new Error("Failed to update project");
+    }
+
+    return response.json();
+}
+
+export async function uploadLogo(image) {
+
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const response = await fetch(OrganizationEndpoints.uploadLogo,
+        {
+            method: "POST",
+            credentials: "include",
+            body: formData
+        });
+
+    if (!response.ok) {
+        throw new Error("Failed to upload logo");
+    }
+}
+
+
+export async function fetchSingleProjectById(projectId: number) {
+    const response = await fetch(OrganizationEndpoints.singleProject(projectId), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch single project");
+    }
+
+    return response.json();
+}
+
+export async function uploadProjectImage({projectId, image}) {
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const response = await fetch(OrganizationEndpoints.uploadProjectImage(projectId), {
+        method: "POST",
+        credentials: "include",
+        body: formData
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to upload image");
+    }
+}
+
+export async function createProjectEvent({projectId, values}: CreateProjectParams) {
+    const response = await fetch(
+        OrganizationEndpoints.createProjectEvent(projectId),
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(values),
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to create project event");
+    }
+
+    return await response.json();
+}
+
+
+export async function fetchProjectEvents(projectId: number) {
+    const response = await fetch(OrganizationEndpoints.allProjectEvents(projectId), {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Accept": "application/json",
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch organization projects");
+    }
+
+    return response.json();
+}
+
+export async function fetchSingleProjectEventById(projectEventId: number) {
+    const response = await fetch(OrganizationEndpoints.singleProjectEvent(projectEventId), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch single project");
+    }
+
+    return response.json();
+}
+
+export async function updateProjectEvent({projectEventId, values,}: UpdateProjectEventParams) {
+    const response = await fetch(OrganizationEndpoints.editProjectEvent(projectEventId), {
+        method: "PATCH",
+        headers: {
+            "content-type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(values),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to update project event");
+    }
+
+    return response.json();
+}
+
+export async function cancelProjectEvent(projectEventId: number) {
+    const response = await fetch(OrganizationEndpoints.cancelProjectEvent(projectEventId), {
+        method: "PATCH",
+        headers: {
+            "content-type": "application/json",
+        },
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to update project event");
+    }
+
+    return response.json();
+}
+
+export async function fetchProjectEventRegistrations(projectEventId: number) {
+    const response = await fetch(OrganizationEndpoints.allProjectEventRegistrations(projectEventId), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch single project");
+    }
+
+    return response.json();
+}
+
+
+export async function startCheckIn(projectEventId: number) {
+    const response = await fetch(OrganizationEndpoints.startCheckIn(projectEventId), {
+        method: "PATCH",
+        headers: {
+            "content-type": "application/json",
+        },
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to update project event");
+    }
+
+    return response.json();
+}
+
+export async function checkInVolunteer(values) {
+    const response = await fetch(
+        OrganizationEndpoints.checkInVolunteer,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(values),
+        },
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to check in volunteer");
+    }
+
+    return await response.json();
+}
+
+export async function startProjectEvent(projectEventId: number) {
+    const response = await fetch(OrganizationEndpoints.startProjectEvent(projectEventId), {
+        method: "PATCH",
+        headers: {
+            "content-type": "application/json",
+        },
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to update project event");
+    }
+
+    return response.json();
+}
+
+export async function completeProjectEvent(projectEventId: number) {
+    const response = await fetch(OrganizationEndpoints.completeProjectEvent(projectEventId), {
+        method: "PATCH",
+        headers: {
+            "content-type": "application/json",
+        },
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to complete project event");
+    }
+
+    return response.json();
+}
+
+export async function fetchProjectParticipants(projectId: number) {
+    const response = await fetch(OrganizationEndpoints.projectParticipants(projectId), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch single project");
     }
 
     return response.json();

@@ -264,6 +264,23 @@ public class ProjectEventServiceImpl implements ProjectEventService {
         return volunteerEventRegistrationMapper.mapEntityToVolunteerEventRegistrationResponseDto(eventRegistration);
     }
 
+    @Override
+    public ProjectEventCreatedResponseDto getProjectEvent(Long eventId) {
+        ProjectEvent projectEvent = projectEventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Project event not found"));
+
+        return projectEventMapper.mapEntityToProjectEventCreatedResponseDto(projectEvent);
+    }
+
+    @Override
+    public List<VolunteerEventRegistrationResponseDto> getAllProjectEventRegistrations(Long eventId) {
+
+        Objects.requireNonNull(eventId, "EventId cannot be null");
+
+        List<VolunteerEventRegistration> registrations = volunteerEventRegistrationRepository.findAllByEventId(eventId);
+        return volunteerEventRegistrationMapper.mapEntityToVolunteerEventRegistrationResponseDtoList(registrations);
+    }
+
     private ProjectEvent createProjectEvent(ProjectEventCreateRequestDto requestDto) {
 
         ProjectEvent projectEvent = new ProjectEvent();
