@@ -38,3 +38,19 @@ export async function editProfile({values}: ProfileRequestDto): Promise<ProfileR
 
     return await response.json();
 }
+
+export async function uploadAvatar(image) {
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const response = await fetch(UsersUrls.uploadAvatar, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+    });
+
+    if(!response.ok) {
+        throw new Error("Failed to upload avatar");
+    }
+
+}

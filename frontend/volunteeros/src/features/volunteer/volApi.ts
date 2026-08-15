@@ -1,109 +1,211 @@
-import { OrganizationEndpoints } from "@/api/volunteeros-be-api.ts";
-import { VolunteerEndpoints } from "@/api/volunteeros-be-api.ts";
-import type { ProjectResponseDto } from "@/features/volunteer/volHooks.ts";
+import {OrganizationEndpoints} from "@/api/volunteeros-be-api.ts";
+import {VolunteerEndpoints} from "@/api/volunteeros-be-api.ts";
+import type {ProjectResponseDto} from "@/features/volunteer/volHooks.ts";
+import {string} from "yup";
 
 type ApplyForProjectParams = {
-  projectId: number;
+    projectId: number;
 };
 
 type WithdrawParticipationParams = {
-  participationId: number;
+    participationId: number;
 };
 
 /**
  *
  */
 export async function fetchAllActiveProjects(): Promise<ProjectResponseDto[]> {
-  const activeProjectsResponse = await fetch(
-    OrganizationEndpoints.activeProjects,
-    {
-      method: "GET",
-      credentials: "include",
-    },
-  );
+    const activeProjectsResponse = await fetch(
+        OrganizationEndpoints.activeProjects,
+        {
+            method: "GET",
+            credentials: "include",
+        },
+    );
 
-  if (!activeProjectsResponse.ok) {
-    throw new Error("Failed to load projects ");
-  }
+    if (!activeProjectsResponse.ok) {
+        throw new Error("Failed to load projects ");
+    }
 
-  return activeProjectsResponse.json();
+    return activeProjectsResponse.json();
 }
 
 /**
  *
  * @param values
  */
-export async function applyForProject({ projectId }: ApplyForProjectParams) {
-  const applicationResponse = await fetch(VolunteerEndpoints.apply(projectId), {
-    method: "POST",
-    credentials: "include",
-  });
+export async function applyForProject({projectId}: ApplyForProjectParams) {
+    const applicationResponse = await fetch(VolunteerEndpoints.apply(projectId), {
+        method: "POST",
+        credentials: "include",
+    });
 
-  if (!applicationResponse.ok) {
-    throw new Error("Failed to apply for project");
-  }
+    if (!applicationResponse.ok) {
+        throw new Error("Failed to apply for project");
+    }
 
-  return applicationResponse.json();
+    return applicationResponse.json();
 }
 
 export async function myParticipations() {
-  const participationsResponse = await fetch(
-    VolunteerEndpoints.myParticipation,
-    {
-      method: "GET",
-      credentials: "include",
-    },
-  );
+    const participationsResponse = await fetch(
+        VolunteerEndpoints.myParticipation,
+        {
+            method: "GET",
+            credentials: "include",
+        },
+    );
 
-  if (!participationsResponse.ok) {
-    throw new Error("Failed to find participations");
-  }
+    if (!participationsResponse.ok) {
+        throw new Error("Failed to find participations");
+    }
 
-  return participationsResponse.json();
+    return participationsResponse.json();
 }
 
 export async function myParticipants() {
-  const participantsResponse = await fetch(VolunteerEndpoints.myParticipants, {
-    method: "GET",
-    credentials: "include",
-  });
+    const participantsResponse = await fetch(OrganizationEndpoints.participants, {
+        method: "GET",
+        credentials: "include",
+    });
 
-  if (!participantsResponse.ok) {
-    throw new Error("Failed to find participants");
-  }
+    if (!participantsResponse.ok) {
+        throw new Error("Failed to find participants");
+    }
 
-  return participantsResponse.json();
+    return participantsResponse.json();
 }
 
 export async function withdrawParticipation({
-  participationId,
-}: WithdrawParticipationParams) {
-  const withdrawResponse = await fetch(
-    VolunteerEndpoints.withdrawParticipation(participationId),
-    {
-      method: "PATCH",
-      credentials: "include",
-    },
-  );
+                                                participationId,
+                                            }: WithdrawParticipationParams) {
+    const withdrawResponse = await fetch(
+        VolunteerEndpoints.withdrawParticipation(participationId),
+        {
+            method: "PATCH",
+            credentials: "include",
+        },
+    );
 
-  if (!withdrawResponse.ok) {
-    throw new Error("Failed to withdraw participation");
-  }
-  return withdrawResponse.json();
+    if (!withdrawResponse.ok) {
+        throw new Error("Failed to withdraw participation");
+    }
+    return withdrawResponse.json();
 }
 
 /**
  *
  */
 export async function myProjects() {
-  const myProjectsResponse = await fetch(VolunteerEndpoints.myProjects, {
-    method: "GET",
-    credentials: "include",
-  });
+    const myProjectsResponse = await fetch(VolunteerEndpoints.myProjects, {
+        method: "GET",
+        credentials: "include",
+    });
 
-  if (!myProjectsResponse.ok) {
-    throw new Error("Failed to load projects");
-  }
+    if (!myProjectsResponse.ok) {
+        throw new Error("Failed to load projects");
+    }
 
-  return myProjectsResponse.json();
+    return myProjectsResponse.json();
+}
+
+export async function fetchProjectEvents(projectId: number) {
+    const myProjectsResponse = await fetch(VolunteerEndpoints.projectEvents(projectId), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!myProjectsResponse.ok) {
+        throw new Error("Failed to load projects");
+    }
+
+    return myProjectsResponse.json();
+}
+
+
+export async function applyForEvent(projectEventId: number) {
+    const applicationResponse = await fetch(VolunteerEndpoints.applyForEvent(projectEventId), {
+        method: "POST",
+        credentials: "include",
+    });
+
+    if (!applicationResponse.ok) {
+        throw new Error("Failed to apply for event");
+    }
+
+    return applicationResponse.json();
+}
+
+export async function fetchSingleProjectEvent(projectEventId: number) {
+    const response = await fetch(VolunteerEndpoints.singleProjectEvent(projectEventId), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to load project event: " + projectEventId);
+    }
+
+    return response.json();
+}
+
+export async function fetchSingleProjectEventRegistration(projectEventId: number) {
+    const response = await fetch(VolunteerEndpoints.singleProjectEventRegistration(projectEventId), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to load project event registration: " + projectEventId);
+    }
+
+    return response.json();
+}
+
+export async function fetchRegistrationQrCode(registrationId: number) {
+    const response = await fetch(VolunteerEndpoints.fetchRegistrationQrCode(registrationId), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to load qr code fro registration: " + registrationId);
+    }
+
+    return response.json();
+}
+
+export async function withdrawEventParticipation(registrationId: number) {
+    const withdrawResponse = await fetch(
+        VolunteerEndpoints.withdrawEventParticipation(registrationId),
+        {
+            method: "PATCH",
+            credentials: "include",
+        },
+    );
+
+    if (!withdrawResponse.ok) {
+        throw new Error("Failed to withdraw event participation");
+    }
+    return withdrawResponse.json();
+}
+
+export async function fetchNextProjects(cursor: string | null, limit: number) {
+
+    const params = new URLSearchParams({limit: String(limit)});
+
+    if (cursor) {
+        params.set("cursor", cursor);
+    }
+
+    const response = await fetch(VolunteerEndpoints.nextProjects(params), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to load nextProjects");
+    }
+
+    return response.json();
 }

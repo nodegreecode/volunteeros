@@ -1,4 +1,4 @@
-import {editProfile} from "@/features/users/userApi.ts";
+import {editProfile, uploadAvatar} from "@/features/users/userApi.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 
@@ -15,4 +15,18 @@ export  function useEditProfile() {
         }
     })
 
+}
+
+
+export function useUploadAvatar() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: uploadAvatar,
+        onSuccess: async ()=> {
+            await queryClient.invalidateQueries({
+                queryKey: ["profile"],
+            })
+        }
+    })
 }

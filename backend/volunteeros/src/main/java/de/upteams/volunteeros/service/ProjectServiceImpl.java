@@ -1,5 +1,6 @@
 package de.upteams.volunteeros.service;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import de.upteams.volunteeros.domain.enums.ImageFolder;
 import de.upteams.volunteeros.domain.enums.ParticipationStatus;
 
@@ -24,6 +25,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,12 +56,19 @@ public class ProjectServiceImpl implements ProjectService {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final ProjectSearchService projectSearchService;
+    private final CursorService cursorService;
+
 
     public ProjectServiceImpl(OrganizationRepository organizationRepository, ProjectRepository projectRepository,
                               ProjectMapper projectMapper,
                               ProjectParticipationRepository participationRepository,
                               ProjectParticipationMapper projectParticipationMapper,
-                              UserRepository userRepository, ProjectParticipationRepository projectParticipationRepository, ApplicationEventPublisher eventPublisher, ImageService imageService, ImageRepository imageRepository, ProjectSearchService projectSearchService) {
+                              UserRepository userRepository,
+                              ProjectParticipationRepository projectParticipationRepository,
+                              ApplicationEventPublisher eventPublisher,
+                              ImageService imageService,
+                              ImageRepository imageRepository,
+                              ProjectSearchService projectSearchService, CursorService cursorService) {
         this.organizationRepository = organizationRepository;
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
@@ -66,6 +80,8 @@ public class ProjectServiceImpl implements ProjectService {
         this.imageService = imageService;
         this.imageRepository = imageRepository;
         this.projectSearchService = projectSearchService;
+
+        this.cursorService = cursorService;
     }
 
     @Override
@@ -334,6 +350,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public ProjectResponseDto getProjectById(Long projectId) {
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+
+        return projectMapper.mapEntityToProjectResponseDto(project);
+    }
+
+    @Override
     public List<ProjectResponseDto> allPendingModerationProjects() {
         return projectMapper.mapEntityToProjectResponseDtoList(projectRepository.findAllByStatus(ProjectStatus.PENDING_MODERATION));
     }
@@ -347,28 +372,43 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public void uploadProjectImage(Long projectId, MultipartFile file) {
 
-        Objects.requireNonNull(projectId , "ProjectId cannot be null");
-        Objects.requireNonNull(file , "Image cannot be null");
+        Objects.requireNonNull(projectId, "ProjectId cannot be null");
+        Objects.requireNonNull(file, "Image cannot be null");
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
 
+        Image projectImage = project.getImage();
+
+        String oldPublicId = projectImage != null ? projectImage.getPublicId() : null;
+
         ImageUploadResponseDto upload = imageService.upload(file, ImageFolder.PROJECT);
 
-        Image image = new Image();
-        image.setPublicId(upload.publicId());
-        image.setUrl(upload.secureUrl());
-        image.setContentType(file.getContentType());
-        image.setOriginalFilename(file.getOriginalFilename());
-        image.setSize(file.getSize());
-        image.setUploadedAt(Instant.now());
+        try {
+            if (projectImage == null) {
+                projectImage = new Image();
+            }
 
-        project.setImage(image);
+            projectImage.setPublicId(upload.publicId());
+            projectImage.setUrl(upload.secureUrl());
+            projectImage.setContentType(file.getContentType());
+            projectImage.setOriginalFilename(file.getOriginalFilename());
+            projectImage.setSize(file.getSize());
+            projectImage.setUploadedAt(Instant.now());
 
-        imageRepository.save(image);
+            project.setImage(projectImage);
+        } catch (Exception e) {
+            imageService.delete(upload.publicId());
+            throw new ProjectImageUploadException("Failed to save image");
+        }
+
+        if (oldPublicId != null) {
+            imageService.delete(oldPublicId);
+        }
 
     }
 
+    @Deprecated
     @Transactional
     public void replaceProjectImage(Long projectId, MultipartFile file) {
 
@@ -398,8 +438,136 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectResponseDto> searchActiveProjectsByTitle(String title) {
-        return projectSearchService.search(title);
+    public CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit) {
+        return projectSearchService.search(title, cursor, limit);
+    }
+
+
+    @Override
+    public List<ParticipantsResponseDto> getApprovedProjectParticipants(Long projectId) {
+        return projectParticipationRepository.findAllByProjectIdAndStatus(projectId, ParticipationStatus.APPROVED);
+    }
+
+    @Override
+    public CursorPage<ProjectResponseDto> nextPage(String cursor, int limit) {
+
+        Pageable pageable = PageRequest.of(0, limit + 1);
+
+        List<Project> projects;
+
+        if (cursor == null) {
+            projects = projectRepository.findFirstPage(ProjectStatus.ACTIVE, pageable);
+        } else {
+
+            ProjectSearchCursor decodedCursor = cursorService.decode(cursor);
+
+            projects = projectRepository.findNextPage(
+                    ProjectStatus.ACTIVE,
+                    decodedCursor.createdAt(),
+                    decodedCursor.id(),
+                    pageable);
+        }
+
+        boolean hasNextPage = projects.size() > limit;
+
+        if (hasNextPage) {
+            projects = projects.subList(0, limit);
+        }
+
+        String previousCursor = null;
+        String nextCursor = null;
+
+        if (!projects.isEmpty()) {
+
+            if (cursor != null) {
+                Project firstProject = projects.getFirst();
+                previousCursor = cursorService.encode(
+                        new ProjectSearchCursor(
+                                firstProject.getCreatedAt(),
+                                firstProject.getId()
+                        )
+                );
+            }
+
+            if (hasNextPage) {
+                Project lastProject = projects.getLast();
+
+                nextCursor = cursorService.encode(new ProjectSearchCursor(
+                        lastProject.getCreatedAt(),
+                        lastProject.getId()
+                ));
+            }
+        }
+
+        List<ProjectResponseDto> result = projects.stream()
+                .map(projectMapper::mapEntityToProjectResponseDto)
+                .toList();
+
+        return new CursorPage<>(result, nextCursor, previousCursor);
+
+    }
+
+    @Override
+    public CursorPage<ProjectResponseDto> previousPage(String cursor, int limit) {
+
+        if (cursor == null) {
+            throw new InvalidCursorException("Cursor is required when requesting the previous page");
+        }
+
+        Pageable pageable = PageRequest.of(0, limit + 1);
+
+        ProjectSearchCursor decodedCursor = cursorService.decode(cursor);
+
+        List<Project> projects = projectRepository.findPreviousPage(
+                ProjectStatus.ACTIVE,
+                decodedCursor.createdAt(),
+                decodedCursor.id(),
+                pageable);
+
+        boolean hasPreviousPage = projects.size() > limit;
+
+        if (hasPreviousPage) {
+            projects = projects.subList(0, limit);
+        }
+
+        String previousCursor = null;
+        String nextCursor = null;
+
+        if (!projects.isEmpty()) {
+
+            if (hasPreviousPage) {
+                Project firstProject = projects.getFirst();
+
+                previousCursor = cursorService.encode(
+                        new ProjectSearchCursor(
+                                firstProject.getCreatedAt(),
+                                firstProject.getId()
+                        ));
+
+            }
+
+            Project lastProject = projects.getLast();
+
+            nextCursor = cursorService.encode(
+                    new ProjectSearchCursor(
+                            lastProject.getCreatedAt(),
+                            lastProject.getId()
+                    )
+            );
+
+        }
+
+
+        List<ProjectResponseDto> result = projects.stream()
+                .map(projectMapper::mapEntityToProjectResponseDto)
+                .toList();
+
+
+        return new CursorPage<>(
+                result,
+                nextCursor,
+                previousCursor
+        );
     }
 
 }

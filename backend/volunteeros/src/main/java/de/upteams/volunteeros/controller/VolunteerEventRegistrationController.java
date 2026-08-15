@@ -24,9 +24,9 @@ public class VolunteerEventRegistrationController {
         return volunteerEventRegistrationService.cancel(registrationId, authentication.getName());
     }
 
-    @GetMapping({"/{registrationId}"})
-    public VolunteerEventRegistrationResponseDto qetRegistration(@PathVariable Long registrationId, Authentication authentication) {
-        return volunteerEventRegistrationService.qetRegistration(registrationId, authentication.getName());
+    @GetMapping({"/{eventId}"})
+    public VolunteerEventRegistrationResponseDto qetRegistration(@PathVariable Long eventId, Authentication authentication) {
+        return volunteerEventRegistrationService.qetRegistration(eventId, authentication.getName());
     }
 
     @GetMapping({"/{registrationId}/qr"})

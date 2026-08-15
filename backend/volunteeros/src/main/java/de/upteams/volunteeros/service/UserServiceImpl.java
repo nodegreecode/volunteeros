@@ -12,6 +12,7 @@ import de.upteams.volunteeros.dto.me.ProfileEditRequestDto;
 import de.upteams.volunteeros.dto.me.ProfileEditResponseDto;
 
 import de.upteams.volunteeros.exceptions.types.PhoneAlreadyExistsException;
+import de.upteams.volunteeros.exceptions.types.UserImageUploadException;
 import de.upteams.volunteeros.repository.*;
 import de.upteams.volunteeros.service.interfaces.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -107,20 +108,34 @@ public class UserServiceImpl implements UserService {
         });
 
         UserProfile userProfile = user.getUserProfile();
+        Image userImage = userProfile.getImage();
+
+        String oldPublicId = userImage != null
+                ? userImage.getPublicId()
+                : null;
 
         ImageUploadResponseDto upload = imageService.upload(file, ImageFolder.USER);
+        try {
+            if (userImage == null) {
+                userImage = new Image();
+            }
 
-        Image userImage = new Image();
-        userImage.setPublicId(upload.publicId());
-        userImage.setUrl(upload.secureUrl());
-        userImage.setContentType(file.getContentType());
-        userImage.setOriginalFilename(file.getOriginalFilename());
-        userImage.setSize(file.getSize());
-        userImage.setUploadedAt(Instant.now());
+            userImage.setPublicId(upload.publicId());
+            userImage.setUrl(upload.secureUrl());
+            userImage.setContentType(file.getContentType());
+            userImage.setOriginalFilename(file.getOriginalFilename());
+            userImage.setSize(file.getSize());
+            userImage.setUploadedAt(Instant.now());
 
-        userProfile.setImage(userImage);
+            userProfile.setImage(userImage);
+        } catch (Exception e) {
+            imageService.delete(upload.publicId());
+            throw new UserImageUploadException("Failed to save image");
+        }
 
-        // imageRepository.save(userImage);
+        if (oldPublicId != null) {
+            imageService.delete(oldPublicId);
+        }
     }
 
 }

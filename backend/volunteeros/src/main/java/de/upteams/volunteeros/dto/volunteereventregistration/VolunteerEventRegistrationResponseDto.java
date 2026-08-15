@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 public record VolunteerEventRegistrationResponseDto(Long id,
                                                     Long eventId,
-                                                    Long volunteerId,
+                                                    String volunteerFirstname,
+                                                    String volunteerLastname,
                                                     String qrToken,
                                                     VolunteerEventRegistrationStatus status,
                                                     LocalDateTime registeredAt,

@@ -4,7 +4,7 @@ import OrganizationProjectsOverview from "./OrganizationProjectsOverview";
 import {useOrganizationProjects} from "@/features/organization/orgHooks.ts";
 
 
-export default function OrganizationProjects() {
+  function OrganizationProjects() {
   const {data: projects, isLoading } = useOrganizationProjects();
 
   if (isLoading) {

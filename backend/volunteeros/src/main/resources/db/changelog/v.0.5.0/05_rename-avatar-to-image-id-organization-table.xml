@@ -11,6 +11,11 @@
                 oldColumnName="avatar"
                 newColumnName="image_id"/>
 
+        <sql>UPDATE organization
+            SET image_id = NULL
+            WHERE image_id = '';
+        </sql>
+
         <modifyDataType
                 tableName="organization"
                 columnName="image_id"

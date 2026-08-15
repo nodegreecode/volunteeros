@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity<?> uploadImage(@RequestParam MultipartFile image, Authentication authentication) {
+    public ResponseEntity<Void> uploadImage(@RequestParam MultipartFile image, Authentication authentication) {
         userService.uploadUserImage(authentication.getName(), image);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

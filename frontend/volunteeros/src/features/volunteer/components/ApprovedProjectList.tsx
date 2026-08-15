@@ -11,15 +11,9 @@ export default function ApprovedProjectList() {
     }
 
     return (
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
             {projects?.map((project) => (
-                <Grid
-                    size={{
-                        sx: 12,
-                        md: 4,
-                    }}
-                    key={project.id}
-                >
+                <Grid size={12} key={project.id}>
                     <ApprovedProjectCard project={project}/>
                 </Grid>
             ))}

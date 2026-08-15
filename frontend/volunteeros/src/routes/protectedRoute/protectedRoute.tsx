@@ -2,7 +2,7 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import ProtectedRouteComponent from "@/routes/protectedRoute/ProtectedRouteComponent.tsx";
 import OrganizationDashboardLayout from "@/layouts/OrganizationDashboardLayout.tsx";
 import OrganizationOverview from "@/features/organization/pages/OrganizationOverview/OrganizationOverview.tsx";
-import OrganizationProjects from "@/features/organization/components/OrganizationProjects/OrganizationProjects.tsx";
+import OrganizationProjects from "@/features/organization/components/OrganizationProjects/OrganizationProjects.txt";
 import VolunteerOverview from "@/features/volunteer/pages/VolunteerOverview/VolunteerOverview.tsx";
 import Participants from "@/features/organization/pages/Participants/Participants.tsx";
 import Projects from "@/pages/Projects/Projects.tsx";

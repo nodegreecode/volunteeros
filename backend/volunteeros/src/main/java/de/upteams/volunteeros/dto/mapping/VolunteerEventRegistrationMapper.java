@@ -6,12 +6,18 @@ import de.upteams.volunteeros.dto.volunteereventregistration.VolunteerEventRegis
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.Collection;
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface VolunteerEventRegistrationMapper {
 
     @Mapping(source = "event.id", target = "eventId")
-    @Mapping(source = "volunteer.id", target = "volunteerId")
+    @Mapping(source = "volunteer.userProfile.firstName", target = "volunteerFirstname")
+    @Mapping(source = "volunteer.userProfile.lastName", target = "volunteerLastname")
     VolunteerEventRegistrationResponseDto mapEntityToVolunteerEventRegistrationResponseDto(VolunteerEventRegistration entity);
+
+    List<VolunteerEventRegistrationResponseDto> mapEntityToVolunteerEventRegistrationResponseDtoList(Collection<VolunteerEventRegistration> entities);
 
     @Mapping(source = "id", target = "registrationId")
     @Mapping(source = "volunteer.userProfile.firstName", target = "volunteerFirstname")

@@ -4,7 +4,14 @@ import {
     myParticipations,
     withdrawParticipation,
     myProjects,
-    myParticipants
+    myParticipants,
+    fetchProjectEvents,
+    applyForEvent,
+    fetchSingleProjectEvent,
+    fetchSingleProjectEventRegistration,
+    fetchRegistrationQrCode,
+    withdrawEventParticipation,
+    fetchNextProjects
 } from "@/features/volunteer/volApi.ts";
 import {useQueryClient, useMutation, useQuery} from "@tanstack/react-query";
 
@@ -73,7 +80,7 @@ export function useMyParticipations() {
  * Fetch all project participants
  */
 export function useMyParticipants() {
-     return useQuery({
+    return useQuery({
         queryKey: ["my-participants"],
         queryFn: myParticipants,
         staleTime: DEFAULT_STALE_TIME,
@@ -107,6 +114,76 @@ export function useMyProjects() {
         queryFn: myProjects,
         staleTime: DEFAULT_STALE_TIME,
     });
+}
 
+export function useProjectEvents(projectId: number) {
+    return useQuery({
+        queryKey: ["project-events", projectId],
+        queryFn: () => fetchProjectEvents(projectId),
+        staleTime: DEFAULT_STALE_TIME,
+    });
+}
 
+export function useApplyForEvent() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: applyForEvent,
+
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ["project-events"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["project-event", variables.projectEventId],
+            });
+
+        },
+    });
+}
+
+export function useSingleProjectEvent(projectEventId: number) {
+    return useQuery({
+        queryKey: ["project-event", projectEventId],
+        queryFn: () => fetchSingleProjectEvent(projectEventId),
+        staleTime: DEFAULT_STALE_TIME,
+    });
+}
+
+export function useSingleProjectEventRegistration(projectEventId: number) {
+    return useQuery({
+        queryKey: ["project-event-registration", projectEventId],
+        queryFn: () => fetchSingleProjectEventRegistration(projectEventId),
+        staleTime: DEFAULT_STALE_TIME,
+    });
+}
+
+export function useRegistrationQrCode(registrationId: number) {
+    return useQuery({
+        queryKey: ["registration-qr-code", registrationId],
+        queryFn: () => fetchRegistrationQrCode(registrationId),
+        enabled: false,
+    });
+}
+
+export function useWithdrawEventParticipation() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: withdrawEventParticipation,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["project-event-registration"],
+            });
+        },
+    });
+}
+
+export function useNextProjects({cursor, limit}: { cursor: string | null, limit: number }) {
+    return useQuery({
+        queryKey: ["projects-next", cursor, limit],
+        queryFn: () => fetchNextProjects(cursor, limit),
+        staleTime: DEFAULT_STALE_TIME,
+    });
 }

@@ -3,13 +3,15 @@ import TextField from "@mui/material/TextField";
 import {useFormik} from "formik";
 import {useOutletContext} from "react-router-dom";
 import {useState} from "react";
-import {useEditProfile} from "@/features/users/userHooks";
+import {useEditProfile, useUploadAvatar} from "@/features/users/userHooks";
 
 export default function PersonalInformation() {
 
     const {user} = useOutletContext();
 
     const updateProfile = useEditProfile();
+
+    const uploadAvatar = useUploadAvatar();
 
     const [isEditing, setIsEditing] = useState(false);
 
@@ -21,8 +23,13 @@ export default function PersonalInformation() {
         }
     }
 
-    function handleAvatarChange() {
+    async function handleAvatarChange(event) {
+        const file = event.target.files[0];
 
+        if (!file) {
+            return;
+        }
+        uploadAvatar.mutateAsync(file);
     }
 
     const formik = useFormik({
@@ -34,7 +41,7 @@ export default function PersonalInformation() {
             bio: user.bio
         },
         onSubmit: async (values) => {
-            console.log(values);
+
             await updateProfile.mutateAsync({
                 values
             })
@@ -54,15 +61,12 @@ export default function PersonalInformation() {
                         borderColor: "divider",
                         borderRadius: 2,
                         p: 2,
+                        backgroundColor: "#F1F2F7"
                     }}
                 >
                     <Box sx={{display: "flex", alignItems: "center", gap: 2}}>
                         <Avatar
-                            src={
-                                formik.values.avatar
-                                    ? URL.createObjectURL(formik.values.avatar)
-                                    : undefined
-                            }
+                            src={user.avatar?.url || undefined}
                             sx={{
                                 width: 80,
                                 height: 80,
@@ -81,8 +85,9 @@ export default function PersonalInformation() {
                         component="label"
                         variant="outlined"
                         sx={{alignSelf: "center", mt: 0}}
+                        disabled={uploadAvatar.isPending}
                     >
-                        Edit
+                        {uploadAvatar.isPending ? "Uploading..." : "Edit"}
                         <input
                             type="file"
                             hidden
@@ -91,13 +96,21 @@ export default function PersonalInformation() {
                         />
                     </Button>
                 </Box>
+
                 <Box sx={{
                     border: 1,
                     borderColor: "divider",
                     borderRadius: 2,
                     p: 2,
+                    backgroundColor: "#F1F2F7"
                 }}>
-                    <Box sx={{display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2}}>
+                    <Box sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        mb: 2,
+
+                    }}>
                         <Typography variant="h5">Personal Information</Typography>
                         <Button
                             component="label"
