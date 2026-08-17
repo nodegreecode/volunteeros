@@ -88,15 +88,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
+
                         //USER
                         .requestMatchers(HttpMethod.GET, "/api/users/profile").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/users/profile").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/users/image").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
+
                         //SKILL
                         .requestMatchers(HttpMethod.POST, "/api/skills").hasAnyRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/skills").hasAnyRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.PATCH, "/api/skills/{skillId:\\d+}").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.DELETE, "/api/skills/{skillId:\\d+}").hasRole("VOLUNTEER")
+
                         // NOTIFICATION
                         .requestMatchers(HttpMethod.GET, "/api/notifications").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/notifications/unread").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
@@ -112,10 +115,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/applications/{userId:\\d+}").hasRole("ADMIN")
 
                         // ORGANIZATIONS
-                        .requestMatchers(HttpMethod.GET, "/api/organizations").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.PATCH, "/api/organizations/{organizationId:\\d+}").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.GET, "/api/organizations/all").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/organizations/image").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.GET, "/api/organizations").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/organizations/me").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/organizations/me").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.POST, "/api/organizations/me/image").hasRole("ORGANIZATION")
 
                         // PROJECTS
                         .requestMatchers(HttpMethod.POST, "/api/projects/{organizationId:\\d+}").hasRole("ORGANIZATION")
@@ -146,26 +149,26 @@ public class SecurityConfig {
 
                         // PROJECTS PARTICIPATION
                         .requestMatchers(HttpMethod.PATCH, "/api/project-participations/{participationId:\\d+}/status").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.GET, "/api/project-participations/organization").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/project-participations/{participationId:\\d+}/withdraw").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/project-participations/volunteer").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.GET, "/api/project-participations/organization").hasRole("ORGANIZATION")
 
                         // PROJECT EVENTS
                         .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/start-check-in").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/start").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/cancel").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/complete").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.POST, "/api/project-events/{eventId:\\d+}/registrations").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/start-check-in").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.PATCH, "/api/project-events/{eventId:\\d+}/start").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.GET, "/api/project-events/{eventId:\\d+}/registration").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/project-events/{eventId:\\d+}").hasAnyRole("ORGANIZATION", "VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/project-events/{eventId:\\d+}/registrations").hasRole("ORGANIZATION")
 
                         // EVENT REGISTRATION
-                        .requestMatchers(HttpMethod.GET, "/api/event-registrations/{eventId:\\d+}").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/event-registrations/{registrationId:\\d+}/qr").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.PATCH, "/api/event-registrations/{registrationId:\\d+}/cancel").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.POST, "/api/event-registrations/check-in").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/event-registrations/{registrationId:\\d+}/no-show").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.POST, "/api/event-registrations/check-in").hasRole("ORGANIZATION")
 
                         // MODERATION
                         .requestMatchers(HttpMethod.GET, "/api/moderations/cases").hasRole("ADMIN")

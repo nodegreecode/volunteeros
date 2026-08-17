@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 public interface VolunteerEventRegistrationService {
 
-    VolunteerEventRegistrationResponseDto cancel(Long registrationId, String email);
+    void cancel(Long registrationId, String email);
 
     VolunteerEventRegistrationResponseDto qetRegistration(Long registrationId, String email);
 
@@ -15,6 +15,6 @@ public interface VolunteerEventRegistrationService {
 
     VolunteerCheckInResponseDto checkIn(String qrToken, String email);
 
-    VolunteerEventRegistrationResponseDto noShow(Long registrationId, String email);
+    void noShow(Long registrationId, String email);
 
 }

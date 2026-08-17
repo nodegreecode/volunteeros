@@ -8,18 +8,18 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_HOST_PORT}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - volunteeros_postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:8
     container_name: volunteeros_redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_HOST_PORT}:6379"
     volumes:
-      - redis_data:/data
+      - volunteeros_redis_data:/data
     command: redis-server --appendonly yes
 
   elasticsearch:
@@ -31,12 +31,11 @@ services:
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - "${ELASTICSEARCH_HOST_PORT}:9200"
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+      - volunteeros_elasticsearch_data:/usr/share/elasticsearch/data
 
 volumes:
-  postgres_data:
-  redis_data:
-  elasticsearch_data:
+  volunteeros_postgres_data:
+  volunteeros_redis_data:
+  volunteeros_elasticsearch_data:

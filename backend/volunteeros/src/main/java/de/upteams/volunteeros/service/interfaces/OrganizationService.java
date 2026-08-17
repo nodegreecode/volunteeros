@@ -11,7 +11,7 @@ import java.util.List;
 public interface OrganizationService {
     Organization createOrganization(OrganizationApplication application);
 
-    OrganizationResponseDto editOrganization(Long organizationId, OrganizationUpdateRequestDto requestDto, String email);
+    OrganizationResponseDto editOrganization( OrganizationUpdateRequestDto requestDto, String email);
 
     OrganizationResponseDto getOrganization(String email);
 

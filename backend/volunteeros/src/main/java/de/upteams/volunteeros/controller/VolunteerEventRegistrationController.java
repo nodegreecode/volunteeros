@@ -1,11 +1,14 @@
 package de.upteams.volunteeros.controller;
 
 import de.upteams.volunteeros.dto.project.ProjectEventCreatedResponseDto;
+import de.upteams.volunteeros.dto.response.DataResponse;
 import de.upteams.volunteeros.dto.volunteereventregistration.VolunteerCheckInRequestDto;
 import de.upteams.volunteeros.dto.volunteereventregistration.VolunteerCheckInResponseDto;
 import de.upteams.volunteeros.dto.volunteereventregistration.VolunteerEventRegistrationQRCodeResponseDto;
 import de.upteams.volunteeros.dto.volunteereventregistration.VolunteerEventRegistrationResponseDto;
 import de.upteams.volunteeros.service.interfaces.VolunteerEventRegistrationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +23,9 @@ public class VolunteerEventRegistrationController {
     }
 
     @PatchMapping({"/{registrationId}/cancel"})
-    public VolunteerEventRegistrationResponseDto cancel(@PathVariable Long registrationId, Authentication authentication) {
-        return volunteerEventRegistrationService.cancel(registrationId, authentication.getName());
-    }
-
-    @GetMapping({"/{eventId}"})
-    public VolunteerEventRegistrationResponseDto qetRegistration(@PathVariable Long eventId, Authentication authentication) {
-        return volunteerEventRegistrationService.qetRegistration(eventId, authentication.getName());
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancel(@PathVariable Long registrationId, Authentication authentication) {
+        volunteerEventRegistrationService.cancel(registrationId, authentication.getName());
     }
 
     @GetMapping({"/{registrationId}/qr"})
@@ -36,8 +35,9 @@ public class VolunteerEventRegistrationController {
     }
 
     @PatchMapping({"/{registrationId}/no-show"})
-    public VolunteerEventRegistrationResponseDto noShow(@PathVariable Long registrationId, Authentication authentication) {
-        return volunteerEventRegistrationService.noShow(registrationId, authentication.getName());
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void noShow(@PathVariable Long registrationId, Authentication authentication) {
+        volunteerEventRegistrationService.noShow(registrationId, authentication.getName());
     }
 
     @PostMapping({"/check-in"})

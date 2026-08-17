@@ -74,7 +74,8 @@ public class ProjectEventServiceImpl implements ProjectEventService {
         }
         ProjectEvent projectEvent = createProjectEvent(requestDto);
         project.addEvent(projectEvent);
-        projectRepository.save(project);
+
+        projectEventRepository.save(projectEvent);
 
         return projectEventMapper.mapEntityToProjectEventCreatedResponseDto(projectEvent);
     }

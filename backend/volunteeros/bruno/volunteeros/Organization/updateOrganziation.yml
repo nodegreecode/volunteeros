@@ -1,0 +1,26 @@
+info:
+  name: updateOrganziation
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/organizations/me"
+  body:
+    type: json
+    data: |-
+      {
+        "orgName": "Green Future Initiative",
+        "orgForm": "Non-profit",
+        "city": "Berlin",
+        "phone": "+49 30 12345678",
+        "description": "An organization focused on environmental volunteering and community projects.",
+        "website": "https://www.greenfuture.example"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

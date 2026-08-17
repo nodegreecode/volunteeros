@@ -1,0 +1,23 @@
+info:
+  name: uploadLogo
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/organizations/me/image"
+  body:
+    type: multipart-form
+    data:
+      - name: image
+        type: file
+        value:
+          - /home/zenmaster/Downloads/moritz-lange-jIpTrVUVy90-unsplash.jpg
+        contentType: image/jpeg
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

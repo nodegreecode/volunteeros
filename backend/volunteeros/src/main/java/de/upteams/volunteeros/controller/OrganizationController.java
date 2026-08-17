@@ -3,6 +3,7 @@ package de.upteams.volunteeros.controller;
 import de.upteams.volunteeros.dto.organization.*;
 import de.upteams.volunteeros.dto.project.ProjectCreateRequestDto;
 import de.upteams.volunteeros.dto.project.ProjectCreateResponseDto;
+import de.upteams.volunteeros.dto.response.DataResponse;
 import de.upteams.volunteeros.service.interfaces.OrganizationApplicationService;
 import de.upteams.volunteeros.service.interfaces.OrganizationService;
 import jakarta.validation.Valid;
@@ -24,25 +25,26 @@ public class OrganizationController {
         this.organizationService = organizationService;
     }
 
-    @PatchMapping("/{organizationId}")
-    public OrganizationResponseDto editOrganization(@PathVariable Long organizationId, @RequestBody OrganizationUpdateRequestDto requestDto, Authentication authentication) {
-        return organizationService.editOrganization(organizationId, requestDto, authentication.getName());
+    @PatchMapping("/me")
+    public OrganizationResponseDto editOrganization(@RequestBody OrganizationUpdateRequestDto requestDto, Authentication authentication) {
+        return organizationService.editOrganization(requestDto, authentication.getName());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<DataResponse<OrganizationResponseDto>> getOrganization(Authentication authentication) {
+        return ResponseEntity.ok(new DataResponse<>(organizationService.getOrganization(authentication.getName())));
     }
 
     @GetMapping
-    public ResponseEntity<OrganizationResponse> getOrganization(Authentication authentication) {
-        return ResponseEntity.ok(new OrganizationResponse(organizationService.getOrganization(authentication.getName())));
-    }
-
-    @GetMapping("/all")
     public List<OrganizationResponseDto> getOrganizations() {
         return organizationService.allOrganizations();
     }
 
-    @PostMapping("/image")
-    public ResponseEntity<?> uploadImage(@RequestParam MultipartFile image, Authentication authentication) {
+    @PostMapping("/me/image")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void uploadImage(@RequestParam MultipartFile image, Authentication authentication) {
         organizationService.uploadOrganizationImage(authentication.getName(), image);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+
     }
 
 }
