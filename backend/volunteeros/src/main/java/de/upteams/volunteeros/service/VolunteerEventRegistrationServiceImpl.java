@@ -41,7 +41,7 @@ public class VolunteerEventRegistrationServiceImpl implements VolunteerEventRegi
 
     @Override
     @Transactional
-    public VolunteerEventRegistrationResponseDto cancel(Long registrationId, String email) {
+    public void cancel(Long registrationId, String email) {
 
         Objects.requireNonNull(registrationId, "RegistrationId cannot be null");
         Objects.requireNonNull(email, "Current user email cannot be null");
@@ -60,7 +60,6 @@ public class VolunteerEventRegistrationServiceImpl implements VolunteerEventRegi
 
         eventRegistration.setStatus(VolunteerEventRegistrationStatus.CANCELLED);
 
-        return volunteerEventRegistrationMapper.mapEntityToVolunteerEventRegistrationResponseDto(eventRegistration);
     }
 
     @Override
@@ -74,10 +73,9 @@ public class VolunteerEventRegistrationServiceImpl implements VolunteerEventRegi
             return new EntityNotFoundException("User not found");
         });
 
-        VolunteerEventRegistration eventRegistration = volunteerEventRegistrationRepository.findByEventIdAndVolunteerId(eventId, user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Event registration not found"));
-
-        return volunteerEventRegistrationMapper.mapEntityToVolunteerEventRegistrationResponseDto(eventRegistration);
+        return volunteerEventRegistrationRepository.findByEventIdAndVolunteerId(eventId, user.getId())
+                .map(volunteerEventRegistrationMapper::mapEntityToVolunteerEventRegistrationResponseDto)
+                .orElse(null);
     }
 
     @Override
@@ -134,7 +132,7 @@ public class VolunteerEventRegistrationServiceImpl implements VolunteerEventRegi
 
     @Override
     @Transactional
-    public VolunteerEventRegistrationResponseDto noShow(Long registrationId, String email) {
+    public void noShow(Long registrationId, String email) {
 
         Objects.requireNonNull(email, "Current user email cannot be null");
         Objects.requireNonNull(registrationId, "RegistrationId cannot be null");
@@ -153,6 +151,5 @@ public class VolunteerEventRegistrationServiceImpl implements VolunteerEventRegi
 
         eventRegistration.setStatus(VolunteerEventRegistrationStatus.NO_SHOW);
 
-        return volunteerEventRegistrationMapper.mapEntityToVolunteerEventRegistrationResponseDto(eventRegistration);
     }
 }

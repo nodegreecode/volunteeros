@@ -1,0 +1,30 @@
+info:
+  name: createProject
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/projects/:organizationId"
+  params:
+    - name: organizationId
+      value: "1"
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Community Cleanup Project",
+        "description": "A volunteer project focused on cleaning and improving public spaces in the local community.",
+        "location": "Berlin, Germany",
+        "startDate": "2026-09-01T09:00:00Z",
+        "endDate": "2026-09-30T17:00:00Z",
+        "requiredVolunteers": 20
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,23 @@
+name: VOL_DEV
+variables:
+  - name: baseUrl
+    value: http://localhost:8080
+    description: ""
+  - name: orgUserEmail
+    value: mike.norris@example.com
+    description: ""
+  - name: orgUserPasword
+    value: "1111"
+    description: ""
+  - name: adminUserEmail
+    value: anatolii.vasylenko@example.com
+    description: ""
+  - name: adminUserPassword
+    value: admin
+    description: ""
+  - name: volUserEmail
+    value: john.doe@example.com
+    description: ""
+  - name: volUserPassword
+    value: "2222"
+    description: ""

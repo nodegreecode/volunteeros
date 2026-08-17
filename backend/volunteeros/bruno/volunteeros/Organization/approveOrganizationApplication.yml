@@ -1,0 +1,19 @@
+info:
+  name: approveOrganizationApplication
+  type: http
+  seq: 2
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/applications/:applicationId/approve"
+  params:
+    - name: applicationId
+      value: "1"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

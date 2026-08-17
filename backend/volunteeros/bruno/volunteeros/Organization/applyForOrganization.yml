@@ -1,0 +1,31 @@
+info:
+  name: applyForOrganization
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/applications"
+  body:
+    type: json
+    data: |-
+      {
+        "organizationForm": "NON_PROFIT",
+        "organizationName": "Example Organization",
+        "description": "An organization focused on community development and social initiatives.",
+        "memberRole": "FOUNDER",
+        "phone": "+491234567890",
+        "email": "contact@example.org",
+        "website": "https://www.example.org",
+        "registrationCountry": "DE",
+        "city": "Berlin",
+        "street": "Alexanderplatz 1",
+        "registrationNumber": "HRB123456"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

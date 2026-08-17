@@ -95,23 +95,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional
-    public OrganizationResponseDto editOrganization(Long organizationId, OrganizationUpdateRequestDto requestDto, String email) {
+    public OrganizationResponseDto editOrganization(OrganizationUpdateRequestDto requestDto, String email) {
 
-        Objects.requireNonNull(organizationId, "OrganizationId cannot be null");
         Objects.requireNonNull(requestDto, "OrganizationUpdateRequestDto cannot be null");
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> {
-            logger.warn(" User not found {}", email);
-            return new EntityNotFoundException("User not found");
-        });
-
-        Organization organization = organizationRepository.findById(organizationId)
+        Organization organization = organizationRepository.findByOwnerEmail(email)
                 .orElseThrow(() -> new OrganizationNotFounException("Organization not found"));
-
-        if (!Objects.equals(organization.getOwner(), user)) {
-            logger.warn("User {} tried to edit organization {}", email, organizationId);
-            throw new AccessDeniedException("Only owner can edit organization");
-        }
 
         organization.setOrgForm(requestDto.orgForm());
         organization.setOrgName(requestDto.orgName());
@@ -119,7 +108,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setPhone(requestDto.phone());
         organization.setDescription(requestDto.description());
         organization.setWebsite(requestDto.website());
-        logger.info("Organization information updated {}", organizationId);
+        organization.setUpdatedAt(Instant.now());
+
+        logger.info("Organization information updated {}", email);
+
         return organizationMapper.mapEntityToOrganizationResponseDto(organization);
     }
 
@@ -135,12 +127,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
         Objects.requireNonNull(file, "Image cannot be null");
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> {
-            logger.warn("User not found{}", email);
-            return new EntityNotFoundException("User not found");
-        });
-
-        Organization organization = user.getOrganization();
+        Organization organization = organizationRepository.findByOwnerEmail(email)
+                .orElseThrow(() -> new OrganizationNotFounException("Organization not found"));
 
         Image organizationImage = organization.getImage();
 
@@ -163,6 +151,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             organizationImage.setUploadedAt(Instant.now());
 
             organization.setImage(organizationImage);
+            organization.setUpdatedAt(Instant.now());
 
         } catch (Exception e) {
             imageService.delete(upload.publicId());
