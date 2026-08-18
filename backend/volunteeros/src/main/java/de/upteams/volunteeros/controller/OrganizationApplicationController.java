@@ -3,6 +3,7 @@ package de.upteams.volunteeros.controller;
 import de.upteams.volunteeros.dto.organization.OrganizationApplicationRequestDto;
 import de.upteams.volunteeros.dto.organization.OrganizationApplicationResponse;
 import de.upteams.volunteeros.dto.organization.OrganizationApplicationResponseDto;
+import de.upteams.volunteeros.dto.response.DataResponse;
 import de.upteams.volunteeros.service.interfaces.OrganizationApplicationService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +38,8 @@ public class OrganizationApplicationController {
         return organizationApplicationService.reject(applicationId);
     }
 
-    @GetMapping("/all")
-    public List<OrganizationApplicationResponseDto> getOrganizationApplications() {
+    @GetMapping
+    public List<OrganizationApplicationResponseDto> getPendingOrganizationApplications() {
         return organizationApplicationService.getPendingOrganizationApplications();
     }
 
@@ -47,8 +48,8 @@ public class OrganizationApplicationController {
         return organizationApplicationService.allOrganizationApplicationsByUser(userId);
     }
 
-    @GetMapping
-    public ResponseEntity<OrganizationApplicationResponse> myApplication(Authentication authentication) {
-        return ResponseEntity.ok(new OrganizationApplicationResponse(organizationApplicationService.getOrganizationApplication(authentication.getName())));
+    @GetMapping("/me")
+    public ResponseEntity<DataResponse<OrganizationApplicationResponseDto>> myApplication(Authentication authentication) {
+        return ResponseEntity.ok(new DataResponse<>(organizationApplicationService.getOrganizationApplication(authentication.getName())));
     }
 }

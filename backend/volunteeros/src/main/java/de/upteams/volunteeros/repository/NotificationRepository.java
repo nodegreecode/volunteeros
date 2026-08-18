@@ -10,7 +10,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     List<Notification> findAllByUserEmailOrderByCreatedAtDesc(String email);
 
-    List<Notification> findAllByUserEmailAndReadFalse(String email);
+    List<Notification> findAllByUserEmailAndReadFalseOrderByCreatedAtDesc(String email);
 
     long countByUserEmailAndReadFalse( String email);
 

@@ -3,6 +3,7 @@ package de.upteams.volunteeros.dto.project;
 import de.upteams.volunteeros.dto.image.ImageUploadResponseDto;
 
 public record ProjectResponseDto(String id,
+                                 String organizationId,
                                  String title,
                                  String description,
                                  String location,
@@ -11,5 +12,6 @@ public record ProjectResponseDto(String id,
                                  String status,
                                  String requiredVolunteers,
                                  ImageUploadResponseDto image,
-                                 String createdAt) {
+                                 String createdAt,
+                                 String updatedAt) {
 }

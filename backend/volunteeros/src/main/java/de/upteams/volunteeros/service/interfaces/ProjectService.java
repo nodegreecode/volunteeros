@@ -13,21 +13,21 @@ import java.util.List;
 
 public interface ProjectService {
 
-    ProjectCreateResponseDto createProject(Long organizationId, ProjectCreateRequestDto requestDto);
+    ProjectResponseDto createProject( String email, ProjectCreateRequestDto requestDto);
 
-    ProjectEditResponseDto editProject(Long projectId, ProjectEditRequestDto requestDto, String email);
+    ProjectResponseDto editProject(Long projectId, ProjectEditRequestDto requestDto, String email);
 
     ProjectParticipationResponseDto apply(Long projectId, String email);
 
     ProjectParticipationStatusUpdateResponseDto withdraw(Long projectId);
 
-    ProjectEditResponseDto activateProject(Long projectId);
+    ProjectResponseDto  activateProject(Long projectId);
 
-    ProjectEditResponseDto cancelProject(Long projectId);
+    ProjectResponseDto cancelProject(Long projectId, String email);
 
-    ProjectEditResponseDto completeProject(Long projectId);
+    ProjectResponseDto completeProject(Long projectId, String email);
 
-    void removeProject(Long projectId); // ???
+    void removeProject(Long projectId, String email); // ???
 
     String updateParticipantStatus(
             Long participationId,
@@ -41,15 +41,14 @@ public interface ProjectService {
 
     List<ProjectResponseDto> allActiveProjects();
 
-    List<ProjectCreateResponseDto> allMyProjects(String email);
+    List<ProjectResponseDto> myProjects(String email);
 
     List<ProjectParticipationResponseDto> myProjectParticipationApplications(String email);
 
     List<ParticipantsResponseDto> myParticipants(String email);
 
-    void uploadProjectImage(Long projectId, MultipartFile file);
+    void uploadProjectImage(Long projectId, String email, MultipartFile file);
 
-    void replaceProjectImage(Long projectId, MultipartFile file);
 
     CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit);
 

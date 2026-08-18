@@ -44,7 +44,6 @@ public class OrganizationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void uploadImage(@RequestParam MultipartFile image, Authentication authentication) {
         organizationService.uploadOrganizationImage(authentication.getName(), image);
-
     }
 
 }

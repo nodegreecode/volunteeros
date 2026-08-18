@@ -21,5 +21,5 @@ public interface NotificationService {
 
     long countUnread(String email);
 
-    void markAsRead(Long notificationId, String email);
+    NotificationDto markAsRead(Long notificationId, String email);
 }
