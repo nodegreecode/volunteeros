@@ -18,6 +18,7 @@ public interface ProjectMapper {
     @Mapping(target = "organizationId", source = "entity.organization.id")
     ProjectEditResponseDto mapEntityToEditResponseDto(Project entity);
 
+    @Mapping(target = "organizationId", source = "entity.organization.id")
     ProjectResponseDto mapEntityToProjectResponseDto(Project entity);
 
     List<ProjectResponseDto> mapEntityToProjectResponseDtoList(Collection<Project> entities);

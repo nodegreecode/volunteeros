@@ -47,18 +47,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDto> getAll(String email) {
-        return notificationRepository.findAllByUserEmailOrderByCreatedAtDesc(email)
-                .stream()
-                .map(notificationMapper::mapEntityToNotificationDto)
-                .toList();
+        return notificationMapper.mapEntityToNotificationDtoList(notificationRepository.findAllByUserEmailOrderByCreatedAtDesc(email));
     }
 
     @Override
     public List<NotificationDto> getUnread(String email) {
-        return notificationRepository.findAllByUserEmailAndReadFalse(email)
-                .stream()
-                .map(notificationMapper::mapEntityToNotificationDto)
-                .toList();
+        return notificationMapper.mapEntityToNotificationDtoList(notificationRepository.findAllByUserEmailAndReadFalseOrderByCreatedAtDesc(email));
     }
 
     @Override
@@ -69,10 +63,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void markAsRead(Long notificationId, String email) {
+    public NotificationDto markAsRead(Long notificationId, String email) {
         Notification notification = notificationRepository.findByIdAndUserEmail(notificationId, email)
                 .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
 
         notification.setRead(true);
+
+        return notificationMapper.mapEntityToNotificationDto(notification);
     }
 }

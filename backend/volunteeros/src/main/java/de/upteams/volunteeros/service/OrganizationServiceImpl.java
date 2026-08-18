@@ -33,14 +33,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private final OrganizationRepository organizationRepository;
     private final OrganizationMapper organizationMapper;
-    private final UserRepository userRepository;
     private final ImageService imageService;
 
 
-    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, UserRepository userRepository, ImageService imageService) {
+    public OrganizationServiceImpl(OrganizationRepository organizationRepository, OrganizationMapper organizationMapper, ImageService imageService) {
         this.organizationRepository = organizationRepository;
         this.organizationMapper = organizationMapper;
-        this.userRepository = userRepository;
         this.imageService = imageService;
     }
 
@@ -76,12 +74,14 @@ public class OrganizationServiceImpl implements OrganizationService {
         organization.setRegistrationNumber(application.getRegistrationNumber());
 
         organizationMember.setOrganization(organization);
-        organization.getMembers().add(organizationMember);
 
+        organization.getMembers().add(organizationMember);
         organization.setOwner(application.getUser());
 
         Organization organizationSaved = organizationRepository.save(organization);
+
         logger.info("Organization {} and Organization Member {} created", organization.getId(), organizationMember.getId());
+
         return organizationSaved;
     }
 

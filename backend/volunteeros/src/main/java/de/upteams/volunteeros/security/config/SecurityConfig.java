@@ -92,7 +92,7 @@ public class SecurityConfig {
                         //USER
                         .requestMatchers(HttpMethod.GET, "/api/users/profile").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/users/profile").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/users/image").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/users/profile/image").hasAnyRole("ORGANIZATION", "VOLUNTEER", "ADMIN")
 
                         //SKILL
                         .requestMatchers(HttpMethod.POST, "/api/skills").hasAnyRole("VOLUNTEER")
@@ -108,10 +108,10 @@ public class SecurityConfig {
 
                         // ORGANIZATION APPLICATIONS
                         .requestMatchers(HttpMethod.POST, "/api/applications").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.GET, "/api/applications").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.GET, "/api/applications/me").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/applications/{applicationId:\\d+}/approve").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/applications/{applicationId:\\d+}/reject").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/applications/all").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/applications").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/applications/{userId:\\d+}").hasRole("ADMIN")
 
                         // ORGANIZATIONS
@@ -121,29 +121,31 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/organizations/me/image").hasRole("ORGANIZATION")
 
                         // PROJECTS
-                        .requestMatchers(HttpMethod.POST, "/api/projects/{organizationId:\\d+}").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.POST, "/api/projects/{projectId:\\d+}/participants").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.GET, "/api/projects").hasAnyRole("ORGANIZATION", "VOLUNTEER")
-                        .requestMatchers(HttpMethod.GET, "/api/projects/{projectId:\\d+}").hasAnyRole("ORGANIZATION", "VOLUNTEER")
-                        .requestMatchers(HttpMethod.GET, "/api/projects/all").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/projects").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.POST, "/api/projects/{projectId:\\d+}/image").hasRole("ORGANIZATION")
 
-                        .requestMatchers(HttpMethod.GET, "/api/projects/active").hasRole("VOLUNTEER") // deprecated
+                        .requestMatchers(HttpMethod.POST, "/api/projects/{projectId:\\d+}/participation").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/{projectId:\\d+}/participants").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/me").hasAnyRole("ORGANIZATION", "VOLUNTEER")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/{projectId:\\d+}").hasAnyRole("ORGANIZATION", "VOLUNTEER")
+                        .requestMatchers(HttpMethod.GET, "/api/projects").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/pending-moderation").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/active").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/complete").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.DELETE, "/api/projects/{projectId:\\d+}/remove").hasRole("ORGANIZATION")
+                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/cancel").hasRole("ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/api/projects/active-next").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/projects/active-previous").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.GET, "/api/projects/pending-moderation").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/projects/search").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/complete").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.DELETE, "/api/projects/{projectId:\\d+}/remove").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/active").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/cancel").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/projects/{projectId:\\d+}/image").hasRole("ORGANIZATION")
-                        .requestMatchers(HttpMethod.PUT, "/api/projects/{projectId:\\d+}/image").hasRole("ORGANIZATION")
+
+
                         .requestMatchers(HttpMethod.POST, "/api/projects/{projectId:\\d+}/events").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.GET, "/api/projects/{projectId:\\d+}/events").hasAnyRole("ORGANIZATION", "VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/projects/{projectId:\\d+}/events/upcoming").hasAnyRole("ORGANIZATION", "VOLUNTEER")
-                        .requestMatchers(HttpMethod.GET, "/api/projects/{projectId:\\d+}/participants").hasRole("ORGANIZATION")
+
                         .requestMatchers(HttpMethod.POST, "/api/projects/reindex").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/projects/remove-index").hasRole("ADMIN")
 

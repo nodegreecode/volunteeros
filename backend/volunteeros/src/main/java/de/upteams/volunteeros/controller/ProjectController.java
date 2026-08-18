@@ -29,60 +29,55 @@ public class ProjectController {
         this.projectSearchService = projectSearchService;
     }
 
-    @PostMapping("/{organizationId}")
-    public ProjectCreateResponseDto createProject(@PathVariable Long organizationId, @RequestBody ProjectCreateRequestDto requestDto) {
-        return projectService.createProject(organizationId, requestDto);
+    @PostMapping
+    public ProjectResponseDto createProject(Authentication authentication, @RequestBody ProjectCreateRequestDto requestDto) {
+        return projectService.createProject(authentication.getName(), requestDto);
     }
 
     @PatchMapping("/{projectId}")
-    public ProjectEditResponseDto editProject(@PathVariable Long projectId, @RequestBody ProjectEditRequestDto requestDto, Authentication authentication) {
+    public ProjectResponseDto editProject(@PathVariable Long projectId, @RequestBody ProjectEditRequestDto requestDto, Authentication authentication) {
         return projectService.editProject(projectId, requestDto, authentication.getName());
     }
 
     @PatchMapping("/{projectId}/active")
-    public ProjectEditResponseDto activateProject(@PathVariable Long projectId) {
+    public ProjectResponseDto activateProject(@PathVariable Long projectId) {
         return projectService.activateProject(projectId);
     }
 
     @PatchMapping("/{projectId}/cancel")
-    public ProjectEditResponseDto cancelProject(@PathVariable Long projectId) {
-        return projectService.cancelProject(projectId);
+    public ProjectResponseDto cancelProject(@PathVariable Long projectId, Authentication authentication) {
+        return projectService.cancelProject(projectId, authentication.getName());
     }
 
     @PatchMapping("/{projectId}/complete")
-    public ProjectEditResponseDto completeProject(@PathVariable Long projectId) {
-        return projectService.completeProject(projectId);
+    public ProjectResponseDto completeProject(@PathVariable Long projectId, Authentication authentication) {
+        return projectService.completeProject(projectId, authentication.getName());
     }
 
     @DeleteMapping("/{projectId}/remove")
-    public void removeProject(@PathVariable Long projectId) {
-        projectService.removeProject(projectId);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeProject(@PathVariable Long projectId, Authentication authentication) {
+        projectService.removeProject(projectId, authentication.getName());
     }
 
-    @PostMapping("/{projectId}/participants")
+    @PostMapping("/{projectId}/participation")
     public ProjectParticipationResponseDto applyForParticipation(@PathVariable Long projectId, Authentication authentication) {
         return projectService.apply(projectId, authentication.getName());
     }
 
-    @GetMapping
-    public List<ProjectCreateResponseDto> allMyProjects(Authentication authentication) {
-        return projectService.allMyProjects(authentication.getName());
+    @GetMapping("/me")
+    public List<ProjectResponseDto> myProjects(Authentication authentication) {
+        return projectService.myProjects(authentication.getName());
     }
 
     @GetMapping("/{projectId}")
-    public ProjectResponseDto getSingleProject(@PathVariable Long projectId) {
+    public ProjectResponseDto getProject(@PathVariable Long projectId) {
         return projectService.getProjectById(projectId);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<ProjectResponseDto> allProjects() {
         return projectService.allProjects();
-    }
-
-    @Deprecated
-    @GetMapping("/active")
-    public List<ProjectResponseDto> allActiveProjects() {
-        return projectService.allActiveProjects();
     }
 
     @GetMapping("/active-next")
@@ -96,21 +91,14 @@ public class ProjectController {
     }
 
     @GetMapping("/pending-moderation")
-    public List<ProjectResponseDto> allPendingModerationProjects() {
+    public List<ProjectResponseDto> pendingModerationProjects() {
         return projectService.allPendingModerationProjects();
     }
 
     @PostMapping("/{projectId}/image")
-    public ResponseEntity<?> uploadImage(@PathVariable Long projectId, @RequestParam MultipartFile image) {
-        projectService.uploadProjectImage(projectId, image);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @Deprecated
-    @PutMapping("/{projectId}/image")
-    public ResponseEntity<?> replaceImage(@PathVariable Long projectId, @RequestParam MultipartFile image) {
-        projectService.replaceProjectImage(projectId, image);
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void uploadImage(@PathVariable Long projectId, Authentication authentication, @RequestParam MultipartFile image) {
+        projectService.uploadProjectImage(projectId, authentication.getName(), image);
     }
 
     @GetMapping("/search")

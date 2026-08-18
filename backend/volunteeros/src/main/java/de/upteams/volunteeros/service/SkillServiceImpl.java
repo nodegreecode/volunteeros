@@ -2,6 +2,7 @@ package de.upteams.volunteeros.service;
 
 import de.upteams.volunteeros.domain.model.Skill;
 import de.upteams.volunteeros.domain.model.User;
+import de.upteams.volunteeros.domain.model.UserProfile;
 import de.upteams.volunteeros.dto.mapping.SkillMapper;
 import de.upteams.volunteeros.dto.skill.*;
 import de.upteams.volunteeros.exceptions.types.AuthorizationException;
@@ -37,11 +38,10 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     @Transactional
-    public SkillCreateResponseDto addSkill(Authentication authentication, SkillCreateRequestDto requestDto) {
+    public SkillResponseDto addSkill(String email, SkillCreateRequestDto requestDto) {
 
         Objects.requireNonNull(requestDto, "SkillCreateRequestDto  cannot be null");
 
-        String email = authentication.getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> {
             logger.warn(USER_NOT_FOUND + "{}", email);
             return new EntityNotFoundException("User not found");
@@ -53,30 +53,39 @@ public class SkillServiceImpl implements SkillService {
         user.getUserProfile().addSkill(skill);
         skillRepository.save(skill);
 
-        return skillMapper.mapEntityToSkillCreateResponseDto(skill);
+        return skillMapper.mapEntityToSkillResponseDto(skill);
     }
 
     @Override
     @Transactional
-    public SkillEditResponseDto editSkill(Long skillId, SkillEditRequestDto requestDto) {
+    public SkillResponseDto editSkill(Long skillId, SkillEditRequestDto requestDto, String email) {
 
         Objects.requireNonNull(requestDto, "SkillCreateRequestDto  cannot be null");
 
-        Skill skill = skillRepository.findById(skillId).orElseThrow(() -> {
-            logger.warn(USER_NOT_FOUND + "{}", skillId);
-            return new EntityNotFoundException("Skill not found");
+        User user = userRepository.findByEmail(email).orElseThrow(() -> {
+            logger.warn(USER_NOT_FOUND + "{}", email);
+            return new EntityNotFoundException("User not found");
         });
+
+        UserProfile userProfile = user.getUserProfile();
+
+        Skill skill = userProfile.getSkills().stream()
+                .filter(s -> s.getId().equals(skillId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Skill not found"));
+
         skill.setName(requestDto.name());
-        return skillMapper.mapEntityToSkillEditResponseDto(skill);
+        skill.setProficiency(requestDto.proficiency());
+
+        return skillMapper.mapEntityToSkillResponseDto(skill);
     }
 
     @Override
     @Transactional
-    public void removeSkill(Long skillId, Authentication authentication) {
+    public void removeSkill(String email, Long skillId) {
 
         Objects.requireNonNull(skillId, "skillId,  cannot be null");
 
-        String email = authentication.getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> {
             logger.warn(USER_NOT_FOUND + "{}", email);
             return new AuthorizationException("User not found");
@@ -90,8 +99,8 @@ public class SkillServiceImpl implements SkillService {
 
     @Override
     @Transactional
-    public List<SkillResponseDto> getSkills(Authentication authentication) {
-        String email = authentication.getName();
+    public List<SkillResponseDto> getSkills(String email) {
+
         User user = userRepository.findByEmail(email).orElseThrow(() -> {
             logger.warn(USER_NOT_FOUND + "{}", email);
             return new EntityNotFoundException("User with this email not found");

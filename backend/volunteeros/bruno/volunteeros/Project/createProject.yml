@@ -5,20 +5,16 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/projects/:organizationId"
-  params:
-    - name: organizationId
-      value: "1"
-      type: path
+  url: "{{baseUrl}}/api/projects"
   body:
     type: json
     data: |-
       {
-        "title": "Community Cleanup Project",
+        "title": "Removing garbage from streets",
         "description": "A volunteer project focused on cleaning and improving public spaces in the local community.",
         "location": "Berlin, Germany",
-        "startDate": "2026-09-01T09:00:00Z",
-        "endDate": "2026-09-30T17:00:00Z",
+        "startDate": "2026-09-16T09:00:00Z",
+        "endDate": "2026-09-16T17:00:00Z",
         "requiredVolunteers": 20
       }
   auth: inherit

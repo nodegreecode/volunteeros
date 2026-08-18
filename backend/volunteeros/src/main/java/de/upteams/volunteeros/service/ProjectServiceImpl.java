@@ -54,7 +54,6 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectParticipationRepository projectParticipationRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final ImageService imageService;
-    private final ImageRepository imageRepository;
     private final ProjectSearchService projectSearchService;
     private final CursorService cursorService;
 
@@ -67,7 +66,6 @@ public class ProjectServiceImpl implements ProjectService {
                               ProjectParticipationRepository projectParticipationRepository,
                               ApplicationEventPublisher eventPublisher,
                               ImageService imageService,
-                              ImageRepository imageRepository,
                               ProjectSearchService projectSearchService, CursorService cursorService) {
         this.organizationRepository = organizationRepository;
         this.projectRepository = projectRepository;
@@ -78,7 +76,6 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectParticipationRepository = projectParticipationRepository;
         this.eventPublisher = eventPublisher;
         this.imageService = imageService;
-        this.imageRepository = imageRepository;
         this.projectSearchService = projectSearchService;
 
         this.cursorService = cursorService;
@@ -86,13 +83,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public ProjectCreateResponseDto createProject(Long organizationId, ProjectCreateRequestDto requestDto) {
-        Objects.requireNonNull(organizationId, "OrganizationId cannot be null");
+    public ProjectResponseDto  createProject(String email, ProjectCreateRequestDto requestDto) {
+
         Objects.requireNonNull(requestDto, "ProjectCreateRequestDto cannot be null");
 
-        Organization organization = organizationRepository.findById(organizationId).orElseThrow(() -> {
-            logger.warn("Organization {} not found", organizationId);
-            return new AuthorizationException("Volunteer with this email not found");
+        Organization organization = organizationRepository.findByOwnerEmail(email).orElseThrow(() -> {
+            logger.warn("Organization {} not found", email);
+            return new AuthorizationException("Organization with this email not found");
         });
 
         Project project = new Project();
@@ -114,25 +111,18 @@ public class ProjectServiceImpl implements ProjectService {
                         new ProjectCreatedEvent(project.getId())
                 );
 
-        return projectMapper.mapEntityToProjectCreateResponseDto(project);
+        return projectMapper.mapEntityToProjectResponseDto(project);
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "projects", allEntries = true)
-    public ProjectEditResponseDto editProject(Long projectId, ProjectEditRequestDto requestDto, String email) {
+    public ProjectResponseDto editProject(Long projectId, ProjectEditRequestDto requestDto, String email) {
 
         Objects.requireNonNull(projectId, "Project id cannot be null");
         Objects.requireNonNull(requestDto, "ProjectEditRequestDto cannot be null");
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> {
-            logger.warn(" User not found {}", email);
-            return new EntityNotFoundException("User not found");
-        });
-
-        Long organizationId = user.getOrganization().getId();
-
-        Project entity = projectRepository.findByIdAndOrganizationId(projectId, organizationId)
+        Project entity = projectRepository.findByIdAndOrganizationOwnerEmail(projectId, email)
                 .orElseThrow(() -> new ProjectEditDeniedException("Access denied"));
 
         projectMapper.updateEntityFromDto(requestDto, entity);
@@ -140,7 +130,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectSearchService.index(entity); // Update elastic search ProjectDocument
 
-        return projectMapper.mapEntityToEditResponseDto(entity);
+        return projectMapper.mapEntityToProjectResponseDto(entity);
     }
 
     @Override
@@ -193,7 +183,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     @CacheEvict(value = "projects", allEntries = true)
-    public ProjectEditResponseDto activateProject(Long projectId) {
+    public ProjectResponseDto  activateProject(Long projectId) {
 
         Objects.requireNonNull(projectId, "Project id cannot be null");
 
@@ -206,17 +196,17 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectSearchService.index(entity); // Update elastic search ProjectDocument
 
-        return projectMapper.mapEntityToEditResponseDto(entity);
+        return projectMapper.mapEntityToProjectResponseDto(entity);
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "projects", allEntries = true)
-    public ProjectEditResponseDto cancelProject(Long projectId) {
+    public ProjectResponseDto cancelProject(Long projectId, String email) {
 
         Objects.requireNonNull(projectId, "Project id cannot be null");
 
-        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
+        Project entity = projectRepository.findByIdAndOrganizationOwnerEmail(projectId, email).orElseThrow(() -> {
             logger.warn("Project not found: {}", projectId);
             return new EntityNotFoundException("Entity not found");
         });
@@ -225,17 +215,17 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectSearchService.index(entity); // Update elastic search ProjectDocument
 
-        return projectMapper.mapEntityToEditResponseDto(entity);
+        return projectMapper.mapEntityToProjectResponseDto(entity);
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "projects", allEntries = true)
-    public ProjectEditResponseDto completeProject(Long projectId) {
+    public ProjectResponseDto completeProject(Long projectId, String email) {
 
         Objects.requireNonNull(projectId, "Project id cannot be null");
 
-        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
+        Project entity = projectRepository.findByIdAndOrganizationOwnerEmail(projectId, email).orElseThrow(() -> {
             logger.warn("Project not found: {}", projectId);
             return new EntityNotFoundException("Entity not found");
         });
@@ -245,17 +235,18 @@ public class ProjectServiceImpl implements ProjectService {
         projectSearchService.index(entity); // Update elastic search ProjectDocument
 
         logger.info("Project status updated {}", projectId);
-        return projectMapper.mapEntityToEditResponseDto(entity);
+
+        return projectMapper.mapEntityToProjectResponseDto(entity);
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "projects", allEntries = true)
-    public void removeProject(Long projectId) {
+    public void removeProject(Long projectId, String email) {
 
         Objects.requireNonNull(projectId, "Project id cannot be null");
 
-        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
+        Project entity = projectRepository.findByIdAndOrganizationOwnerEmail(projectId, email).orElseThrow(() -> {
             logger.warn("Project not found: {}", projectId);
             return new EntityNotFoundException("Entity not found");
         });
@@ -318,7 +309,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectCreateResponseDto> allMyProjects(String email) {
+    public List<ProjectResponseDto> myProjects(String email) {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> {
             logger.warn("User not found {}", email);
@@ -341,7 +332,7 @@ public class ProjectServiceImpl implements ProjectService {
             );
         }
 
-        return projectMapper.mapEntityToProjectCreateResponseDtoList(projects);
+        return projectMapper.mapEntityToProjectResponseDtoList(projects);
     }
 
     @Override
@@ -370,12 +361,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Transactional
-    public void uploadProjectImage(Long projectId, MultipartFile file) {
+    public void uploadProjectImage(Long projectId, String email, MultipartFile file) {
 
         Objects.requireNonNull(projectId, "ProjectId cannot be null");
         Objects.requireNonNull(file, "Image cannot be null");
 
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByIdAndOrganizationOwnerEmail(projectId, email)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
 
         Image projectImage = project.getImage();
@@ -397,6 +388,7 @@ public class ProjectServiceImpl implements ProjectService {
             projectImage.setUploadedAt(Instant.now());
 
             project.setImage(projectImage);
+            project.setUpdatedAt(Instant.now());
         } catch (Exception e) {
             imageService.delete(upload.publicId());
             throw new ProjectImageUploadException("Failed to save image");
@@ -408,34 +400,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
-    @Deprecated
-    @Transactional
-    public void replaceProjectImage(Long projectId, MultipartFile file) {
-
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new EntityNotFoundException("Project not found"));
-
-        Image image = project.getImage();
-
-        if (image == null) {
-            throw new EntityNotFoundException("Project has no image");
-        }
-
-        ImageUploadResponseDto upload = imageService.replace(
-                file,
-                image.getPublicId(),
-                ImageFolder.PROJECT
-        );
-
-        image.setPublicId(upload.publicId());
-        image.setUrl(upload.secureUrl());
-        image.setContentType(file.getContentType());
-        image.setOriginalFilename(file.getOriginalFilename());
-        image.setSize(file.getSize());
-        image.setUploadedAt(Instant.now());
-
-        imageRepository.save(image);
-    }
 
     @Override
     public CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit) {

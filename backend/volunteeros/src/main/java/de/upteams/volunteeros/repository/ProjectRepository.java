@@ -17,6 +17,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Optional<Project> findByIdAndOrganizationId(Long projectId, Long organizationId);
 
+    Optional<Project> findByIdAndOrganizationOwnerEmail(Long projectId, String email);
+
     @Query("""
                 SELECT pp.project
                 FROM ProjectParticipation pp

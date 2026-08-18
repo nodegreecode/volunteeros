@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface SkillService {
 
-    SkillCreateResponseDto addSkill(Authentication authentication, SkillCreateRequestDto requestDto);
+    SkillResponseDto addSkill(String email, SkillCreateRequestDto requestDto);
 
-    SkillEditResponseDto editSkill(Long skillId, SkillEditRequestDto requestDto);
+    SkillResponseDto editSkill(Long skillId, SkillEditRequestDto requestDto, String email);
 
-    void removeSkill(Long skillId, Authentication authentication);
+    void removeSkill(String email, Long skillId);
 
-    List<SkillResponseDto> getSkills(Authentication authentication);
+    List<SkillResponseDto> getSkills(String email);
 }
