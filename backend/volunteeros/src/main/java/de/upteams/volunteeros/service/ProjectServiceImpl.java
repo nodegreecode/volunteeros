@@ -1,11 +1,8 @@
 package de.upteams.volunteeros.service;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import de.upteams.volunteeros.domain.enums.ImageFolder;
-import de.upteams.volunteeros.domain.enums.ParticipationStatus;
+import de.upteams.volunteeros.domain.enums.*;
 
-import de.upteams.volunteeros.domain.enums.ProjectStatus;
-import de.upteams.volunteeros.domain.enums.UserRoleType;
 import de.upteams.volunteeros.domain.model.*;
 import de.upteams.volunteeros.dto.image.ImageUploadResponseDto;
 import de.upteams.volunteeros.dto.mapping.ProjectMapper;
@@ -438,8 +435,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit) {
-        return projectSearchService.search(title, cursor, limit);
+    public CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit, CursorDirection direction) {
+        return projectSearchService.search(title, cursor, limit, direction);
     }
 
 
@@ -529,6 +526,8 @@ public class ProjectServiceImpl implements ProjectService {
         if (hasPreviousPage) {
             projects = projects.subList(0, limit);
         }
+
+        Collections.reverse(projects); // turn back to DESC
 
         String previousCursor = null;
         String nextCursor = null;

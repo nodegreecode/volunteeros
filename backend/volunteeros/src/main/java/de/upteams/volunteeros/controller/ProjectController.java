@@ -1,5 +1,6 @@
 package de.upteams.volunteeros.controller;
 
+import de.upteams.volunteeros.domain.enums.CursorDirection;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
 import de.upteams.volunteeros.dto.project.*;
@@ -116,8 +117,9 @@ public class ProjectController {
     @GetMapping("/search")
     public CursorPage<ProjectResponseDto> findProjectsByTitle(@RequestParam String title,
                                                               @RequestParam(required = false) String cursor,
-                                                              @RequestParam(defaultValue = "5") int limit) {
-        return projectService.searchActiveProjectsByTitle(title, cursor, limit);
+                                                              @RequestParam(defaultValue = "5") int limit,
+                                                              @RequestParam CursorDirection direction) {
+        return projectService.searchActiveProjectsByTitle(title, cursor, limit, direction);
     }
 
     @PostMapping("/{projectId}/events")
