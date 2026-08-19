@@ -399,8 +399,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit) {
-        return projectSearchService.search(title, cursor, limit);
+    public CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit, CursorDirection direction) {
+        return projectSearchService.search(title, cursor, limit, direction);
     }
 
     @Override
@@ -524,6 +524,8 @@ public class ProjectServiceImpl implements ProjectService {
         if (hasPreviousPage) {
             projects = projects.subList(0, limit);
         }
+
+        Collections.reverse(projects); // turn back to DESC
 
         String previousCursor = null;
         String nextCursor = null;

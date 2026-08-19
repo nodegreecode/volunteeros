@@ -1,6 +1,7 @@
 package de.upteams.volunteeros.service;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import de.upteams.volunteeros.domain.enums.CursorDirection;
 import de.upteams.volunteeros.domain.model.Project;
 import de.upteams.volunteeros.domain.model.ProjectDocument;
 import de.upteams.volunteeros.dto.mapping.ProjectSearchMapper;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -51,11 +53,11 @@ public class ProjectSearchServiceImpl implements ProjectSearchService {
     }
 
     @Override
-    public CursorPage<ProjectResponseDto> search(String title, String cursor, int limit) {
+    public CursorPage<ProjectResponseDto> search(String title, String cursor, int limit, CursorDirection direction) {
 
         ProjectSearchCursor decodedCursor = cursor != null ? cursorService.decode(cursor) : null;
 
-        NativeQuery query = buildQuery(title, decodedCursor, limit);
+        NativeQuery query = buildQuery(title, decodedCursor, limit, direction);
 
         SearchHits<ProjectDocument> hits = elasticsearchOperations.search(query, ProjectDocument.class);
 
@@ -67,6 +69,10 @@ public class ProjectSearchServiceImpl implements ProjectSearchService {
             searchHits = searchHits.subList(0, limit);
         }
 
+        if (direction == CursorDirection.PREVIOUS) {
+            Collections.reverse(searchHits);
+        }
+
         List<ProjectResponseDto> projects = searchHits
                 .stream()
                 .map(SearchHit::getContent)
@@ -74,19 +80,55 @@ public class ProjectSearchServiceImpl implements ProjectSearchService {
                 .toList();
 
         String nextCursor = null;
+        String previousCursor = null;
 
-        if (hasNext) {
+        if (!searchHits.isEmpty()) {
+            SearchHit<ProjectDocument> firstHit = searchHits.getFirst();
             SearchHit<ProjectDocument> lastHit = searchHits.getLast();
 
-            nextCursor = cursorService.encode(
-                    new ProjectSearchCursor(
-                            Instant.ofEpochMilli(((Number) lastHit.getSortValues().get(0)).longValue()),
-                            ((Number) lastHit.getSortValues().get(1)).longValue()
-                    )
-            );
+
+            if (direction == CursorDirection.NEXT) {
+                if (hasNext) {
+                    nextCursor = cursorService.encode(
+                            new ProjectSearchCursor(
+                                    Instant.ofEpochMilli(((Number) lastHit.getSortValues().get(0)).longValue()),
+                                    ((Number) lastHit.getSortValues().get(1)).longValue()
+                            )
+                    );
+                }
+
+                if (cursor != null) {
+                    previousCursor = cursorService.encode(
+                            new ProjectSearchCursor(
+                                    Instant.ofEpochMilli(((Number) firstHit.getSortValues().get(0)).longValue()),
+                                    ((Number) firstHit.getSortValues().get(1)).longValue()
+                            )
+                    );
+                }
+            } else {
+                if (hasNext) {
+                    previousCursor = cursorService.encode(
+                            new ProjectSearchCursor(
+                                    Instant.ofEpochMilli(((Number) firstHit.getSortValues().get(0)).longValue()),
+                                    ((Number) firstHit.getSortValues().get(1)).longValue()
+                            )
+                    );
+                }
+
+                if (cursor != null) {
+                    nextCursor = cursorService.encode(
+                            new ProjectSearchCursor(
+                                    Instant.ofEpochMilli(((Number) lastHit.getSortValues().get(0)).longValue()),
+                                    ((Number) lastHit.getSortValues().get(1)).longValue()
+                            )
+                    );
+                }
+            }
+
         }
 
-        return new CursorPage<>(projects, nextCursor, null);
+
+        return new CursorPage<>(projects, nextCursor, previousCursor);
     }
 
     @Override
@@ -112,11 +154,10 @@ public class ProjectSearchServiceImpl implements ProjectSearchService {
         }
     }
 
-    private NativeQuery buildQuery(
-            String title,
-            ProjectSearchCursor cursor,
-            int limit
-    ) {
+    private NativeQuery buildQuery(String title, ProjectSearchCursor cursor, int limit, CursorDirection direction) {
+
+        SortOrder order = direction == CursorDirection.NEXT ? SortOrder.Desc : SortOrder.Asc;
+
         NativeQueryBuilder builder = NativeQuery.builder()
                 .withQuery(q -> q
                         .bool(b -> b
@@ -137,13 +178,13 @@ public class ProjectSearchServiceImpl implements ProjectSearchService {
                 .withSort(s -> s
                         .field(f -> f
                                 .field("createdAt")
-                                .order(SortOrder.Desc)
+                                .order(order)
                         )
                 )
                 .withSort(s -> s
                         .field(f -> f
                                 .field("id")
-                                .order(SortOrder.Desc)
+                                .order(order)
                         )
                 )
                 .withMaxResults(limit + 1);

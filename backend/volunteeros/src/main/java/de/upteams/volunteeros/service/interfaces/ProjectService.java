@@ -1,5 +1,6 @@
 package de.upteams.volunteeros.service.interfaces;
 
+import de.upteams.volunteeros.domain.enums.CursorDirection;
 import de.upteams.volunteeros.domain.enums.PageDirection;
 import de.upteams.volunteeros.domain.model.ProjectParticipation;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
@@ -51,7 +52,7 @@ public interface ProjectService {
     void uploadProjectImage(Long projectId, String email, MultipartFile file);
 
 
-    CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit);
+    CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit, CursorDirection direction);
 
     List<ParticipantsResponseDto> getApprovedProjectParticipants(Long projectId);
 

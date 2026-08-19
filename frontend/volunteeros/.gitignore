@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+mise.toml
 pnpm-lock.yaml
 
 # Editor directories and files
@@ -23,4 +24,3 @@ pnpm-lock.yaml
 *.njsproj
 *.sln
 *.sw?
-mise.toml
