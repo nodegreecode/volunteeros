@@ -196,11 +196,11 @@ export default [
                                                 path: "projects",
                                                 element: <Projects/>,
                                                 handle: {title: "Browse Projects"},
-                                                children: [
+                                               /* children: [
                                                     {
                                                         index: true,
                                                     },
-                                                ]
+                                                ]*/
                                             },
                                             {
                                                 path: "my-projects",

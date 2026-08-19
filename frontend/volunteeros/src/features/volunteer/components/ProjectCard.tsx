@@ -14,16 +14,15 @@ import {
     useApplyForProject,
 } from "@/features/volunteer/volHooks.ts";
 
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import GroupsIcon from "@mui/icons-material/Groups";
+
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Divider from "@mui/material/Divider";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {NavLink, useSearchParams} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import {useState} from "react";
+import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 
 type ProjectCardProps = {
     project: {
@@ -67,16 +66,31 @@ export default function ProjectCard({project}: ProjectCardProps) {
         <Card sx={{backgroundColor: "#F1F2F7"}}>
             <CardContent>
                 <Stack direction="row" alignItems="center" spacing={2}>
-                    <Box component="img"
-                         src={project.image?.secureUrl}
-                         alt={project.title}
-                         sx={{
-                             width: 80,
-                             height: 60,
-                             borderRadius: 1,
-                             objectFit: "cover",
-                             flexShrink: 0,
-                         }}/>
+                    {project.image?.secureUrl ?
+                        (<Box component="img"
+                              src={project.image.secureUrl}
+                              alt={project.title}
+                              sx={{
+                                  width: 80,
+                                  height: 60,
+                                  borderRadius: 1,
+                                  objectFit: "cover",
+                                  flexShrink: 0,
+                              }}/>) :
+                        (<Box
+                            sx={{
+                                width: 80,
+                                height: 60,
+                                borderRadius: 1,
+                                flexShrink: 0,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "action.hover",
+                            }}>
+                            <ImageOutlinedIcon fontSize="large" color="disabled"/>
+                        </Box>)}
+
                     <Typography variant="h6" sx={{fontWeight: 600, flex: 1}}>{project.title}</Typography>
                     <IconButton>
                         <MoreVertIcon/>
@@ -151,7 +165,7 @@ export default function ProjectCard({project}: ProjectCardProps) {
 
                 <CardActions sx={{justifyContent: "flex-end", px: 2, pb: 2}}>
                     <Button variant="contained"
-                        onClick={handleApplyForProject}
+                            onClick={handleApplyForProject}
                     >
                         Apply
                     </Button>
@@ -168,7 +182,6 @@ export default function ProjectCard({project}: ProjectCardProps) {
                 </CardActions>
             </Collapse>
         </Card>
-
 
 
     );
