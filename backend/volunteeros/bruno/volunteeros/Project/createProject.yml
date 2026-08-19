@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "title": "Removing garbage from streets",
+        "title": "Bring out old stuf from school storage",
         "description": "A volunteer project focused on cleaning and improving public spaces in the local community.",
         "location": "Berlin, Germany",
         "startDate": "2026-09-16T09:00:00Z",

@@ -63,7 +63,7 @@ export const VolunteerEndpoints = {
     apply: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/participants`,
     myParticipation: BASE_URL + "/api/project-participations/volunteer",
     withdrawParticipation: (participationId: number) => `${BASE_URL}/api/projects/participants/${participationId}/withdraw`,
-    myProjects: BASE_URL + "/api/projects",
+    myProjects: BASE_URL + "/api/projects/me",
     projectEvents: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/events`,
     applyForEvent: (projectEventId: number) => `${BASE_URL}/api/project-events/${projectEventId}/registrations`,
     singleProjectEvent: (projectEventId: number) => `${BASE_URL}/api/project-events/${projectEventId}`,

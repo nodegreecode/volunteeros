@@ -18,8 +18,6 @@ export default function Projects() {
 
     const limit = 5;
 
-    //const {data: projects} = useAllActiveProjects();
-
     const {data: nextProjects, isLoading} = useNextProjects({cursor, limit});
 
     if (isLoading) {
