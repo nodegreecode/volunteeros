@@ -71,7 +71,8 @@ export const VolunteerEndpoints = {
     fetchRegistrationQrCode: (registrationId: number) => `${BASE_URL}/api/event-registrations/${registrationId}/qr`,
     withdrawEventParticipation: (registrationId: number) => `${BASE_URL}/api/event-registrations/${registrationId}/cancel`,
     nextProjects: (params) => `${BASE_URL}/api/projects/active-next?${params}`,
-    previousProjects: (params) => `${BASE_URL}/api/projects/active-next?${params}`,
+    previousProjects: (params) => `${BASE_URL}/api/projects/active-previous?${params}`,
+    searchProjectsByTitle: (params) => `${BASE_URL}/api/projects/search?${params}`
 } as const;
 
 export const ProjectUrls = {} as const;

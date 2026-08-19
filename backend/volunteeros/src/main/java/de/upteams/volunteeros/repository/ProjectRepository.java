@@ -40,7 +40,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                     SELECT p
                     FROM Project p
                     WHERE p.status = :status
-                    ORDER BY p.createdAt DESC, id DESC
+                    ORDER BY p.createdAt DESC, p.id DESC
             """)
     List<Project> findFirstPage(@Param("status") ProjectStatus status,
                                 Pageable pageable);
@@ -52,7 +52,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                     WHERE p.status = :status
                                 AND p.createdAt < :createdAt
                                 OR (p.createdAt = :createdAt AND p.id < :id)
-                    ORDER BY p.createdAt DESC, id DESC
+                    ORDER BY p.createdAt DESC, p.id DESC
             """)
     List<Project> findNextPage(@Param("status") ProjectStatus status,
                                @Param("createdAt") Instant createdAt,
@@ -65,7 +65,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                     WHERE p.status = :status
                                 AND (p.createdAt > :createdAt
                                 OR (p.createdAt = :createdAt AND p.id > :id))
-                    ORDER BY p.createdAt DESC, id DESC
+                    ORDER BY p.createdAt ASC, p.id ASC
             """)
     List<Project> findPreviousPage(@Param("status") ProjectStatus status,
                                @Param("createdAt") Instant createdAt,

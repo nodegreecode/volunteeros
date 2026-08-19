@@ -190,7 +190,9 @@ export async function withdrawEventParticipation(registrationId: number) {
     return withdrawResponse.json();
 }
 
-export async function fetchNextProjects(cursor: string | null, limit: number) {
+export async function fetchNextProjects(direction: "next" | "previous", cursor: string | null, limit: number) {
+
+    const endpoint = direction === "next" ? VolunteerEndpoints.nextProjects : VolunteerEndpoints.previousProjects;
 
     const params = new URLSearchParams({limit: String(limit)});
 
@@ -198,13 +200,33 @@ export async function fetchNextProjects(cursor: string | null, limit: number) {
         params.set("cursor", cursor);
     }
 
-    const response = await fetch(VolunteerEndpoints.nextProjects(params), {
+    const response = await fetch(endpoint(params), {
         method: "GET",
         credentials: "include",
     });
 
     if (!response.ok) {
-        throw new Error("Failed to load nextProjects");
+        throw new Error("Failed to load projects page");
+    }
+
+    return response.json();
+}
+
+export async function searchProjectsByTitle(title: string, cursor: string | null, limit: number, direction: "NEXT" | "PREVIOUS") {
+
+    const params = new URLSearchParams({title: title, limit: String(limit), direction: direction});
+
+    if (cursor) {
+        params.set("cursor", cursor);
+    }
+
+    const response = await fetch(VolunteerEndpoints.searchProjectsByTitle(params), {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        throw new Error("No projects find for the title: " + title);
     }
 
     return response.json();

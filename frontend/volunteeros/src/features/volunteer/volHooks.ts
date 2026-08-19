@@ -11,7 +11,8 @@ import {
     fetchSingleProjectEventRegistration,
     fetchRegistrationQrCode,
     withdrawEventParticipation,
-    fetchNextProjects
+    fetchNextProjects,
+    searchProjectsByTitle
 } from "@/features/volunteer/volApi.ts";
 import {useQueryClient, useMutation, useQuery} from "@tanstack/react-query";
 
@@ -180,10 +181,27 @@ export function useWithdrawEventParticipation() {
     });
 }
 
-export function useNextProjects({cursor, limit}: { cursor: string | null, limit: number }) {
+export function useNextProjects({direction, cursor, limit}: {
+    direction: "next" | "previous",
+    cursor: string | null,
+    limit: number
+}) {
     return useQuery({
-        queryKey: ["projects-next", cursor, limit],
-        queryFn: () => fetchNextProjects(cursor, limit),
+        queryKey: ["projects-next", direction, cursor, limit],
+        queryFn: () => fetchNextProjects(direction, cursor, limit),
+        staleTime: DEFAULT_STALE_TIME,
+    });
+}
+
+export function useSearchProjectsByTitle({title, cursor, limit, direction}: {
+    title: string;
+    cursor: string | null,
+    limit: number,
+    direction: "NEXT" | "PREVIOUS",
+}) {
+    return useQuery({
+        queryKey: ["projects-by-title", title, cursor, limit, direction],
+        queryFn: () => searchProjectsByTitle(title, cursor, limit, direction),
         staleTime: DEFAULT_STALE_TIME,
     });
 }
