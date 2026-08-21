@@ -132,13 +132,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/projects").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/projects/pending-moderation").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/active").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/activate").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/complete").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.DELETE, "/api/projects/{projectId:\\d+}/remove").hasRole("ORGANIZATION")
                         .requestMatchers(HttpMethod.PATCH, "/api/projects/{projectId:\\d+}/cancel").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.GET, "/api/projects/active-next").hasRole("VOLUNTEER")
-                        .requestMatchers(HttpMethod.GET, "/api/projects/active-previous").hasRole("VOLUNTEER")
+                        .requestMatchers(HttpMethod.GET, "/api/projects/active").hasRole("VOLUNTEER")
                         .requestMatchers(HttpMethod.GET, "/api/projects/search").hasRole("VOLUNTEER")
 
 

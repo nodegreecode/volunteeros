@@ -1,5 +1,5 @@
 package de.upteams.volunteeros.service.interfaces;
-
+import de.upteams.volunteeros.domain.enums.PageDirection;
 import de.upteams.volunteeros.domain.enums.CursorDirection;
 import de.upteams.volunteeros.domain.model.ProjectParticipation;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
@@ -55,7 +55,7 @@ public interface ProjectService {
 
     List<ParticipantsResponseDto> getApprovedProjectParticipants(Long projectId);
 
-    CursorPage<ProjectResponseDto> nextPage(String cursor, int limit);
+    CursorPage<ProjectResponseDto>  activeProjectsPage(String cursor, int limit, PageDirection direction);
 
     CursorPage<ProjectResponseDto> previousPage(String cursor, int limit);
 

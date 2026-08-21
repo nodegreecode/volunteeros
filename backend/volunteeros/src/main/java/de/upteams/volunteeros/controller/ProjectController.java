@@ -1,5 +1,5 @@
 package de.upteams.volunteeros.controller;
-
+import de.upteams.volunteeros.domain.enums.PageDirection;
 import de.upteams.volunteeros.domain.enums.CursorDirection;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
@@ -40,7 +40,7 @@ public class ProjectController {
         return projectService.editProject(projectId, requestDto, authentication.getName());
     }
 
-    @PatchMapping("/{projectId}/active")
+    @PatchMapping("/{projectId}/activate")
     public ProjectResponseDto activateProject(@PathVariable Long projectId) {
         return projectService.activateProject(projectId);
     }
@@ -81,14 +81,9 @@ public class ProjectController {
         return projectService.allProjects();
     }
 
-    @GetMapping("/active-next")
-    public CursorPage<ProjectResponseDto> nextActiveProjects(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "5") int limit) {
-        return projectService.nextPage(cursor, limit);
-    }
-
-    @GetMapping("/active-previous")
-    public CursorPage<ProjectResponseDto> previousActiveProjects(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "5") int limit) {
-        return projectService.previousPage(cursor, limit);
+    @GetMapping("/active")
+    public CursorPage<ProjectResponseDto> activeProjects(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "5") int limit, @RequestParam(defaultValue = "NEXT") PageDirection direction) {
+        return projectService.activeProjectsPage(cursor, limit, direction);
     }
 
     @GetMapping("/pending-moderation")

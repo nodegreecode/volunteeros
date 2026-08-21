@@ -24,6 +24,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -80,7 +81,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public ProjectResponseDto  createProject(String email, ProjectCreateRequestDto requestDto) {
+    public ProjectResponseDto createProject(String email, ProjectCreateRequestDto requestDto) {
 
         Objects.requireNonNull(requestDto, "ProjectCreateRequestDto cannot be null");
 
@@ -180,7 +181,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     @CacheEvict(value = "projects", allEntries = true)
-    public ProjectResponseDto  activateProject(Long projectId) {
+    public ProjectResponseDto activateProject(Long projectId) {
 
         Objects.requireNonNull(projectId, "Project id cannot be null");
 
@@ -397,12 +398,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
-
     @Override
     public CursorPage<ProjectResponseDto> searchActiveProjectsByTitle(String title, String cursor, int limit, CursorDirection direction) {
         return projectSearchService.search(title, cursor, limit, direction);
     }
-
 
     @Override
     public List<ParticipantsResponseDto> getApprovedProjectParticipants(Long projectId) {
@@ -410,7 +409,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public CursorPage<ProjectResponseDto> nextPage(String cursor, int limit) {
+    public CursorPage<ProjectResponseDto> activeProjectsPage(String cursor, int limit, PageDirection direction) {
 
         Pageable pageable = PageRequest.of(0, limit + 1);
 
@@ -422,11 +421,20 @@ public class ProjectServiceImpl implements ProjectService {
 
             ProjectSearchCursor decodedCursor = cursorService.decode(cursor);
 
-            projects = projectRepository.findNextPage(
-                    ProjectStatus.ACTIVE,
-                    decodedCursor.createdAt(),
-                    decodedCursor.id(),
-                    pageable);
+            projects = direction == PageDirection.NEXT ?
+
+                    projectRepository.findNextPage(
+                            ProjectStatus.ACTIVE,
+                            decodedCursor.createdAt(),
+                            decodedCursor.id(),
+                            pageable)
+                    :
+                    projectRepository.findPreviousPage(
+                            ProjectStatus.ACTIVE,
+                            decodedCursor.createdAt(),
+                            decodedCursor.id(),
+                            pageable
+                    );
         }
 
         boolean hasNextPage = projects.size() > limit;
@@ -435,29 +443,54 @@ public class ProjectServiceImpl implements ProjectService {
             projects = projects.subList(0, limit);
         }
 
+        if (direction == PageDirection.PREVIOUS) {
+            Collections.reverse(projects);
+        }
+
         String previousCursor = null;
         String nextCursor = null;
 
         if (!projects.isEmpty()) {
+            Project firstProject = projects.getFirst();
+            Project lastProject = projects.getLast();
 
-            if (cursor != null) {
-                Project firstProject = projects.getFirst();
-                previousCursor = cursorService.encode(
-                        new ProjectSearchCursor(
-                                firstProject.getCreatedAt(),
-                                firstProject.getId()
-                        )
-                );
+            if (direction == PageDirection.NEXT) {
+                if (cursor != null) {
+                    previousCursor = cursorService.encode(
+                            new ProjectSearchCursor(
+                                    firstProject.getCreatedAt(),
+                                    firstProject.getId()
+                            )
+                    );
+                }
+
+                if (hasNextPage) {
+                    nextCursor = cursorService.encode(new ProjectSearchCursor(
+                            lastProject.getCreatedAt(),
+                            lastProject.getId()
+                    ));
+                }
+            } else {
+                if (hasNextPage) {
+                    previousCursor = cursorService.encode(
+                            new ProjectSearchCursor(
+                                    firstProject.getCreatedAt(),
+                                    firstProject.getId()
+                            )
+                    );
+                }
+
+                if (cursor != null) {
+                    nextCursor = cursorService.encode(
+                            new ProjectSearchCursor(
+                                    lastProject.getCreatedAt(),
+                                    lastProject.getId()
+                            )
+                    );
+                }
+
             }
 
-            if (hasNextPage) {
-                Project lastProject = projects.getLast();
-
-                nextCursor = cursorService.encode(new ProjectSearchCursor(
-                        lastProject.getCreatedAt(),
-                        lastProject.getId()
-                ));
-            }
         }
 
         List<ProjectResponseDto> result = projects.stream()
@@ -468,6 +501,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
+    @Deprecated
     @Override
     public CursorPage<ProjectResponseDto> previousPage(String cursor, int limit) {
 

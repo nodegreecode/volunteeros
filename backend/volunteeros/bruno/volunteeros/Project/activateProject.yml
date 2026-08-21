@@ -5,10 +5,10 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/api/projects/:projectId/active"
+  url: "{{baseUrl}}/api/projects/:projectId/activate"
   params:
     - name: projectId
-      value: "1"
+      value: "12"
       type: path
   auth: inherit
 

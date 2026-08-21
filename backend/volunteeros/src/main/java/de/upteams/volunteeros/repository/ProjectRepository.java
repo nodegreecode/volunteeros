@@ -50,8 +50,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                     SELECT p
                     FROM Project p
                     WHERE p.status = :status
-                                AND p.createdAt < :createdAt
-                                OR (p.createdAt = :createdAt AND p.id < :id)
+                                AND (p.createdAt < :createdAt
+                                OR (p.createdAt = :createdAt AND p.id < :id))
                     ORDER BY p.createdAt DESC, p.id DESC
             """)
     List<Project> findNextPage(@Param("status") ProjectStatus status,

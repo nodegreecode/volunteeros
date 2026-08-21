@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Box, Card, Container, Divider, Stack, Tab, Tabs, Typography} from "@mui/material";
+import {Box, Card, Container, Divider, Stack, Tab, Tabs} from "@mui/material";
 import ApplicationList from "@/features/volunteer/components/ApplicationList.tsx";
 import ApprovedProjectList from "@/features/volunteer/components/ApprovedProjectList.tsx";
 
