@@ -28,7 +28,7 @@ export default function OrganizationStats({organization,}: { organization: Organ
             icon: <EventIcon fontSize="large"/>,
         },
     ];
-    // @ts-ignore
+
     return (
         <Grid container spacing={3} sx={{mb: 5}}>
             {stats.map((stat) => (

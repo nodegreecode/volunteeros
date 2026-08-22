@@ -1,12 +1,8 @@
 import {Box, Drawer, Card, IconButton,  Divider, Typography, CardContent, CardMedia} from "@mui/material";
 import {useState, useEffect} from "react";
-import ParticipantDrawerHeader from "@/features/organization/components/Participants/ParticipantDrawerHeader.tsx";
-import ParticipantInfoCard from "@/features/organization/components/Participants/ParticipantInfoCard.tsx";
-import ParticipationActions from "@/features/organization/components/Participants/ParticipationActions";
 
 import type {Participant} from "@/features/organization/components/Participants/ParticipationTable";
-import {useSingleProject, useUpdateParticipationStatus} from "@/features/organization/orgHooks.ts";
-import Loading from "@/components/common/Loading.tsx";
+import {useUpdateParticipationStatus} from "@/features/organization/orgHooks.ts";
 import CloseIcon from "@mui/icons-material/Close";
 
 type ParticipantDrawerProps = {

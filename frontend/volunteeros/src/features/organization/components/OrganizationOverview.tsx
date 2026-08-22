@@ -4,9 +4,7 @@ import OrganizationDetailsCard
     from "@/features/organization/components/OrganizaitonOverview/OrganizationDetailsCard.tsx";
 import EditOrganizationDialog from "@/features/organization/components/OrganizaitonOverview/EditOrganizationDialog";
 import {useState} from "react";
-import {Button, Stack, Typography} from "@mui/material";
-import {Link} from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
+import {Stack, Typography} from "@mui/material";
 import OrganizationMembers from "@/features/organization/components/OrganizationMembers/OrganizationMembers.tsx";
 
 export default function OrganizationOverview({organization}: { organization: Organization; }) {

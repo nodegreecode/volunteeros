@@ -5,19 +5,13 @@ import {
     Card,
     CardContent,
     CardHeader,
-    Chip, Menu, MenuItem,
-    Paper,
-    Stack, Table, TableBody, TableCell,
-    TableContainer, TableHead, TablePagination, TableRow,
-    Typography
+    Chip, Stack, Typography
 } from "@mui/material";
 import {Link, useNavigate, useParams, Outlet} from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {type ChangeEvent, useState} from "react";
 import {
     useEditProject,
@@ -76,20 +70,20 @@ const eventStatusLabels = {
 
 export default function ProjectDetailsLayout() {
 
-    const {id} = useParams();
+    const {projectId} = useParams();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [isEditing, setIsEditing] = useState(false);
     const navigate = useNavigate();
 
-    const {data: project, isLoading: isLoadingProject} = useSingleProject(Number(id));
+    const {data: project, isLoading: isLoadingProject} = useSingleProject(Number(projectId));
 
     const {mutate: uploadImage, isPending: isPendingProjectImage} = useUploadProjectImage();
 
     const {mutate: editProject, isPending: isUpdatingProject} = useEditProject();
 
-    const {data: events = [], isLoading: isLoadingEvents, isError, error} = useProjectEvents(Number(id));
+    const {data: events = [], isLoading: isLoadingEvents, isError, error} = useProjectEvents(Number(projectId));
 
     const formik = useFormik({
         initialValues: {
@@ -101,7 +95,7 @@ export default function ProjectDetailsLayout() {
         onSubmit: (values) => {
             editProject(
                 {
-                    projectId: id,
+                    projectId: projectId,
                     values: {
                         title: values.title,
                         description: values.description,
@@ -129,15 +123,10 @@ export default function ProjectDetailsLayout() {
         }
 
         uploadImage({
-            projectId: Number(id),
+            projectId: Number(projectId),
             image: file
         });
     }
-
-    const paginatedEvents = events.slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-    );
 
     function handleEdit() {
         if (isEditing) {
@@ -219,7 +208,7 @@ export default function ProjectDetailsLayout() {
             </Card>
 
             <ProjectDetailsTabs/>
-            <Outlet/>
+            <Outlet context={events}/>
         </Box>
     </>
 }

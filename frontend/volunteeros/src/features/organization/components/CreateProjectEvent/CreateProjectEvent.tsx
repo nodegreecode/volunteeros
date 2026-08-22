@@ -16,7 +16,7 @@ export interface ProjectEventCreateRequest {
 
 export default function CreateProjectEvent() {
 
-    const {id} = useParams();
+    const {projectId} = useParams();
 
     const navigate = useNavigate();
 
@@ -34,14 +34,14 @@ export default function CreateProjectEvent() {
         },
         onSubmit: async (values) => {
             await createProjectEvent.mutateAsync({
-                projectId: Number(id),
+                projectId: Number(projectId),
                 values: {
                     ...values,
                     startDate: new Date(values.date).toISOString(),
                 },
             });
 
-            navigate(`/app/organization/projects/${id}`);
+            navigate(`/app/organization/projects/${projectId}`);
         },
     });
 

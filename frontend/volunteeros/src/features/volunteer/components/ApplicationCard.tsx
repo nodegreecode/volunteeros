@@ -5,7 +5,8 @@ import {
     Chip,
     Button,
     CardActions,
-    CardContent, Box, Collapse,
+    CardContent,
+    Collapse,
 } from "@mui/material";
 
 import type {ProjectParticipationResponseDto} from "@/features/volunteer/volTypes";
@@ -15,7 +16,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Divider from "@mui/material/Divider";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {NavLink} from "react-router-dom";
 import {useState} from "react";
 
 type ApplicationCardProps = {

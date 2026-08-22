@@ -1,4 +1,4 @@
-import {Box, Card, CardContent, CardMedia, Divider, Drawer, IconButton, Typography} from "@mui/material";
+import {Box, Card, CardContent, Divider, Drawer, IconButton, Typography} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function ProjectEventsDrawer({
@@ -6,8 +6,6 @@ export default function ProjectEventsDrawer({
                                                 events,
                                                 onClose,
                                             }) {
-
-
     return (
         <Drawer
             anchor="right"

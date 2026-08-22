@@ -10,26 +10,11 @@ import {
     TableContainer,
     TableHead,
     TablePagination,
-    TableRow,
-    Typography
+    TableRow
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {useState} from "react";
-
-
-const getStatusColor = (status) => {
-    switch (status) {
-        case "ACTIVE":
-            return "success";
-        case "PENDING_MODERATION":
-            return "warning"; // orange
-        case "CANCELLED":
-            return "error"; // red
-        default:
-            return "default";
-    }
-}
 
 const getEventStatusColor = (status) => {
     switch (status) {
@@ -48,13 +33,6 @@ const getEventStatusColor = (status) => {
     }
 }
 
-const statusLabels = {
-    ACTIVE: "Active",
-    PENDING_MODERATION: "Pending",
-    COMPLETED: "Completed",
-    CANCELLED: "Cancelled",
-};
-
 const eventStatusLabels = {
     PUBLISHED: "Published",
     CHECK_IN: "Check-In",
@@ -64,7 +42,7 @@ const eventStatusLabels = {
 };
 
 export function ProjectParticipants() {
-    const {id} = useParams();
+    const {projectId} = useParams();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -74,7 +52,7 @@ export function ProjectParticipants() {
         isLoading: isLoadingProjectParticipants,
         isError,
         error
-    } = useProjectParticipants(Number(id));
+    } = useProjectParticipants(Number(projectId));
 
     if (isLoadingProjectParticipants) {
         return <Loading/>;

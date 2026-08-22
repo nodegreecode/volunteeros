@@ -1,20 +1,7 @@
 import {useState} from "react";
 import {
-    Button,
-    Card,
-    CardContent,
-    CardActions,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Grid,
-    Typography,
-    TextField,
-    CardMedia,
     Box,
     Chip,
-    Stack,
     Paper,
     Table,
     TableHead,
@@ -26,12 +13,7 @@ import {
     MenuItem,
     TablePagination
 } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import DateRangeIcon from "@mui/icons-material/DateRange";
-import AddIcon from "@mui/icons-material/Add";
-import beachCleaning from "@/assets/ocg-saving-the-ocean2.jpg";
-import {Link, useOutletContext} from "react-router-dom";
-import type {ProjectCreateResponseDto} from "@/features/organization/orgTypes.ts";
+import {useOutletContext} from "react-router-dom";
 import {useEditProject} from "@/features/organization/orgHooks";
 import {useFormik} from "formik";
 import * as Yup from "yup";
@@ -48,10 +30,6 @@ interface ProjectEditFormValues {
     endDate: string;
     requiredVolunteers: number;
 }
-
-type OrganizationProjectsOverviewProps = {
-    projects: ProjectCreateResponseDto[];
-};
 
 const validationSchema = Yup.object({
     title: Yup.string().required("Title is required"),

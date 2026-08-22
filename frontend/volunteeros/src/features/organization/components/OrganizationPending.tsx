@@ -1,18 +1,5 @@
 import {Card, CardContent, Typography, Chip, Stack, Box} from "@mui/material";
 
-interface OrganizationPendingProps {
-    id: number;
-    organizationForm: string;
-    organizationName: string;
-    applicationStatus: string;
-    description: string;
-    memberRole: string;
-    submittedAt: string;
-    reviewedAt: string;
-}
-
-import PendingActionsIcon from "@mui/icons-material/PendingActions";
-
 export default function OrganizationPending({application}) {
     return (
         <>

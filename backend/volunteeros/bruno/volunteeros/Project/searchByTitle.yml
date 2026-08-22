@@ -1,0 +1,25 @@
+info:
+  name: searchByTitle
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/projects/search?title=park&direction=NEXT&cursor=eyJjcmVhdGVkQXQiOiIyMDI2LTA4LTE5VDE5OjIxOjM4LjY1NFoiLCJpZCI6N30"
+  params:
+    - name: title
+      value: park
+      type: query
+    - name: direction
+      value: NEXT
+      type: query
+    - name: cursor
+      value: eyJjcmVhdGVkQXQiOiIyMDI2LTA4LTE5VDE5OjIxOjM4LjY1NFoiLCJpZCI6N30
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

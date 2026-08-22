@@ -37,8 +37,6 @@ export function useOrganization() {
         queryFn: fetchOrganization,
         staleTime: 1000 * 60 * 30,
     });
-
-
 }
 
 /**

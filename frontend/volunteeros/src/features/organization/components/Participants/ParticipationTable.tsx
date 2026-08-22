@@ -11,7 +11,7 @@ import {
   Stack,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import ParticipantDrawer from "@/features/organization/components/Participants/ParticipantDrawer";
 import { useUpdateParticipationStatus } from "@/features/organization/orgHooks.ts";

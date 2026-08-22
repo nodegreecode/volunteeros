@@ -9,11 +9,7 @@ import {
     Collapse,
 } from "@mui/material";
 import {useState} from "react";
-import ProjectDetailsDialog from "@/features/volunteer/components/ProjectDetailsDialog";
-import {useNavigate, NavLink, useLocation, useSearchParams} from "react-router-dom";
-import {
-    ProjectDetailsDrawer
-} from "@/features/volunteer/components/ProjectDetailsDrawer/ProjectDetailsDrawer.tsx";
+import {NavLink,  useSearchParams} from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Divider from "@mui/material/Divider";
@@ -24,8 +20,6 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 export default function ApprovedProjectCard({project}) {
     const [open, setOpen] = useState(false);
     const [showActions, setShowActions] = useState(false);
-    const location = useLocation();
-
     const [, setSearchParams] = useSearchParams();
 
     const handleViewDetails = () => {
