@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/api/projects/:projectId/activate"
   params:
     - name: projectId
-      value: "12"
+      value: "15"
       type: path
   auth: inherit
 

@@ -10,7 +10,6 @@ import {
     Stack,
 } from "@mui/material";
 
-import EditIcon from "@mui/icons-material/Edit";
 import SettingsIcon from "@mui/icons-material/Settings";
 
 import type {Organization} from "@/features/admin/adminTypes.ts";

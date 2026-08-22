@@ -22,20 +22,30 @@ export default function Projects() {
     const [search, setSearch] = useState("");
     const [submittedSearch, setSubmittedSearch] = useState("");
 
-    const [direction, setDirection] = useState<"next" | "previous">("next");
+    const [direction, setDirection] = useState<"NEXT" | "PREVIOUS">("NEXT");
     const [cursor, setCursor] = useState(null);
+
+
+    const nextProjectsQuery = useNextProjects({
+        direction,
+        cursor,
+        limit: PAGE_SIZE
+    });
+
+    const searchProjectsQuery = useSearchProjectsByTitle({
+        title: submittedSearch,
+        cursor,
+        limit: PAGE_SIZE,
+        direction: direction === "NEXT" ? "NEXT" : "PREVIOUS",
+        enabled: !!submittedSearch
+    });
+
+    const activeQuery = submittedSearch ? searchProjectsQuery : nextProjectsQuery;
 
     const {
         data: cursorPage,
         isLoading: isLoadingProjects
-    } = submittedSearch
-        ? useSearchProjectsByTitle({
-            title: submittedSearch,
-            cursor,
-            limit: PAGE_SIZE,
-            direction: direction === "next" ? "NEXT" : "PREVIOUS"
-        })
-        : useNextProjects({direction, cursor, limit: PAGE_SIZE});
+    } = activeQuery;
 
     if (isLoadingProjects) {
         return (<Box sx={{display: "flex", justifyContent: "center"}}>
@@ -54,19 +64,19 @@ export default function Projects() {
 
         setSubmittedSearch(search);
         setCursor(null);
-        setDirection("next");
+        setDirection("NEXT");
 
     }
 
     function handleNext() {
         if (!nextCursor) return;
-        setDirection("next");
+        setDirection("NEXT");
         setCursor(nextCursor);
     }
 
     function handlePrevious() {
         if (!previousCursor) return;
-        setDirection("previous");
+        setDirection("PREVIOUS");
         setCursor(previousCursor);
     }
 

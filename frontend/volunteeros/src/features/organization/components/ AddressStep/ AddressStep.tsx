@@ -1,5 +1,4 @@
-import {Avatar, Box, Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField} from "@mui/material";
-import logo from "@/assets/planting-flowers.jpg";
+import {Box, Stack, TextField} from "@mui/material";
 
 export default function AddressStep({formik}) {
     return (

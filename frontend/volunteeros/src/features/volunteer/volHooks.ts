@@ -182,7 +182,7 @@ export function useWithdrawEventParticipation() {
 }
 
 export function useNextProjects({direction, cursor, limit}: {
-    direction: "next" | "previous",
+    direction: "NEXT" | "PREVIOUS",
     cursor: string | null,
     limit: number
 }) {
@@ -193,15 +193,17 @@ export function useNextProjects({direction, cursor, limit}: {
     });
 }
 
-export function useSearchProjectsByTitle({title, cursor, limit, direction}: {
+export function useSearchProjectsByTitle({title, cursor, limit, direction, enabled}: {
     title: string;
     cursor: string | null,
     limit: number,
     direction: "NEXT" | "PREVIOUS",
+    enabled: boolean,
 }) {
     return useQuery({
         queryKey: ["projects-by-title", title, cursor, limit, direction],
         queryFn: () => searchProjectsByTitle(title, cursor, limit, direction),
         staleTime: DEFAULT_STALE_TIME,
+        enabled
     });
 }

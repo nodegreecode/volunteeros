@@ -1,15 +1,13 @@
-import {NavLink, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {
     Box,
     Button,
-    Card, CardActions,
+    Card,
+    CardActions,
     CardContent,
-    CardMedia,
-    Chip, Collapse,
-    LinearProgress, Menu, MenuItem,
-    Paper,
-    Stack, Table, TableBody, TableCell,
-    TableContainer, TableHead, TablePagination, TableRow,
+    Chip,
+    Collapse,
+    Stack,
     Typography
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -52,7 +50,7 @@ export default function ProjectEventDetails() {
         return <Loading/>
     }
 
-   async function handleWithdraw() {
+    async function handleWithdraw() {
         await cancelRegistartion(Number(registration?.id));
     }
 

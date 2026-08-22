@@ -62,6 +62,35 @@ export interface ProjectEventEditRequestDto {
     capacity: number;
 }
 
+export interface OrganizationResponseDto {
+    id: string;
+    ownerId: string;
+    orgForm: string;
+    orgName: string;
+    registrationNumber: string;
+    description: string;
+    website: string;
+    registrationCountry: string;
+    city: string;
+    street: string;
+    phone: string;
+    email: string;
+    avatar: OrganizationAvatar | null;
+    applicationsCount: number;
+    createdAt: string;
+    updatedAt: string | null;
+}
+
+export interface OrganizationAvatar {
+    contentType: string;
+    id: number;
+    originalFilename: string;
+    publicId: string;
+    size: number;
+    uploadedAt: string;
+    url: string;
+}
+
 /**
  *
  */
@@ -76,7 +105,7 @@ export async function fetchOrganization() {
 
     const data = await organizationResponse.json();
 
-    return data.organization;
+    return data.data;
 }
 
 /**
@@ -93,7 +122,7 @@ export async function fetchApplication() {
 
     const data = await applicationResponse.json();
 
-    return data.application;
+    return data.data;
 }
 
 /**
@@ -259,7 +288,7 @@ export async function fetchSingleProjectById(projectId: number) {
         throw new Error("Failed to fetch single project");
     }
 
-    return response.json();
+    return await response.json();
 }
 
 export async function uploadProjectImage({projectId, image}) {

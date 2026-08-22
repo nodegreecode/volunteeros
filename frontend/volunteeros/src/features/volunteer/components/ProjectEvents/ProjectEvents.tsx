@@ -1,21 +1,20 @@
 import {
     Box,
-    Button, Chip, Menu, MenuItem,
+    Chip,
+    Menu,
+    MenuItem,
     Paper,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead, TablePagination,
-    TableRow,
-    Typography
+    TableRow
 } from "@mui/material";
-import {NavLink, useNavigate, useOutletContext} from "react-router-dom";
+import { useNavigate, useOutletContext} from "react-router-dom";
 import {useState} from "react";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import {useEditProject} from "@/features/organization/orgHooks.ts";
-
 
 const getStatusColor = (status) => {
     switch (status) {

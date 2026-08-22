@@ -159,7 +159,9 @@ export async function fetchSingleProjectEventRegistration(projectEventId: number
         throw new Error("Failed to load project event registration: " + projectEventId);
     }
 
-    return response.json();
+    const data = await response.json();
+
+    return  data.data;
 }
 
 export async function fetchRegistrationQrCode(registrationId: number) {
@@ -190,17 +192,17 @@ export async function withdrawEventParticipation(registrationId: number) {
     return withdrawResponse.json();
 }
 
-export async function fetchNextProjects(direction: "next" | "previous", cursor: string | null, limit: number) {
+export async function fetchNextProjects(direction: "NEXT" | "PREVIOUS", cursor: string | null, limit: number) {
 
-    const endpoint = direction === "next" ? VolunteerEndpoints.nextProjects : VolunteerEndpoints.previousProjects;
+    //const endpoint = direction === "next" ? VolunteerEndpoints.nextProjects : VolunteerEndpoints.previousProjects;
 
-    const params = new URLSearchParams({limit: String(limit)});
+    const params = new URLSearchParams({limit: String(limit), direction: direction});
 
     if (cursor) {
         params.set("cursor", cursor);
     }
 
-    const response = await fetch(endpoint(params), {
+    const response = await fetch(VolunteerEndpoints.nextProjects(params), {
         method: "GET",
         credentials: "include",
     });

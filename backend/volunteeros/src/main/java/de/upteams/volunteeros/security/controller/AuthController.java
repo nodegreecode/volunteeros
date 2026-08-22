@@ -34,15 +34,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@Valid @RequestBody UserRegistrationDto registrationDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void register(@Valid @RequestBody UserRegistrationDto registrationDto) {
         authService.register(registrationDto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         TokenResponseDto tokens = authService.login(requestDto);
 
         response.addHeader(
@@ -63,13 +62,12 @@ public class AuthController {
                         .toString()
         );
 
-        return ResponseEntity
-                .noContent()
-                .build();
+
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = tokenService.getTokenFromRequest(
                 request,
                 TokenType.REFRESH_TOKEN.getValue());
@@ -84,13 +82,11 @@ public class AuthController {
                 HttpHeaders.SET_COOKIE,
                 cookieUtils.deleteCookie(TokenType.REFRESH_TOKEN.getValue()).toString());
 
-        return ResponseEntity
-                .noContent()
-                .build();
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Void> getNewAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void getNewAccessToken(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = tokenService.getTokenFromRequest(
                 request,
@@ -106,9 +102,5 @@ public class AuthController {
                                 Duration.ofMinutes(15))
                         .toString()
         );
-
-        return ResponseEntity
-                .noContent()
-                .build();
     }
 }

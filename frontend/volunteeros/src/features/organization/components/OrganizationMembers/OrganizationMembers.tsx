@@ -1,5 +1,4 @@
-import {Avatar, Box, Button, Card, CardContent, CardHeader, Divider, Typography} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import {Card, CardContent, CardHeader} from "@mui/material";
 
 export default function OrganizationMembers() {
     return <>

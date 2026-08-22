@@ -1,9 +1,6 @@
 import { Box, IconButton, Typography, Chip } from "@mui/material";
-
 import CloseIcon from "@mui/icons-material/Close";
-
 import type { Participant } from "@/features/organization/components/Participants/ParticipationTable";
-import { useEffect, useState } from "react";
 
 interface Props {
   participant: Participant;

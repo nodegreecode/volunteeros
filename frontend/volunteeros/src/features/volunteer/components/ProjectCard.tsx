@@ -1,7 +1,5 @@
-import imagePlaceholder from "@/assets/ny-menghor.jpg";
 import {
     Card,
-    CardMedia,
     CardContent,
     CardActions,
     Typography,

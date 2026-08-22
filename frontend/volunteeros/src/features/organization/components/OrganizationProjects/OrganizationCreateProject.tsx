@@ -6,7 +6,6 @@ import {
     useOrganization,
 } from "@/features/organization/orgHooks";
 import type {ProjectCreateRequest} from "@/features/organization/orgApi";
-import Loading from "@/components/common/Loading";
 
 export default function OrganizationCreateProject() {
     const navigate = useNavigate();

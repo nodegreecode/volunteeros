@@ -5,9 +5,6 @@ import de.upteams.volunteeros.domain.model.ProjectParticipation;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
 import de.upteams.volunteeros.dto.project.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

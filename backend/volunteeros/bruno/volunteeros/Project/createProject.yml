@@ -10,11 +10,11 @@ http:
     type: json
     data: |-
       {
-        "title": "Bring out old stuf from school storage",
+        "title": "Clean up parks and gardens",
         "description": "A volunteer project focused on cleaning and improving public spaces in the local community.",
         "location": "Berlin, Germany",
-        "startDate": "2026-09-16T09:00:00Z",
-        "endDate": "2026-09-16T17:00:00Z",
+        "startDate": "2026-09-26T09:00:00Z",
+        "endDate": "2026-09-26T20:00:00Z",
         "requiredVolunteers": 20
       }
   auth: inherit

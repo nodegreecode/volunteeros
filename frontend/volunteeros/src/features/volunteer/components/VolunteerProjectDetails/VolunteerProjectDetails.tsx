@@ -1,12 +1,9 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {type ChangeEvent, useState} from "react";
+import {useState} from "react";
 import {
-    useEditProject,
     useProjectEvents,
     useSingleProject,
-    useUploadProjectImage
 } from "@/features/organization/orgHooks.ts";
-import {useFormik} from "formik";
 import Loading from "@/components/common/Loading.tsx";
 import {
     Box, Card, CardContent,
@@ -19,8 +16,9 @@ import {
     TableHead,
     TablePagination,
     TableRow, Typography,
-    Button, Stack, LinearProgress, CardMedia
-
+    Button,
+    Stack,
+    CardMedia
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";

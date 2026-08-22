@@ -126,14 +126,14 @@ public class ProjectController {
     }
 
     @DeleteMapping("/remove-index")
-    public ResponseEntity<Void> removeProjectsIndex() {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeProjectsIndex() {
         projectSearchService.deleteIndex();
-        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/reindex")
-    public ResponseEntity<Void> reindexProjects() {
+    @ResponseStatus(HttpStatus.OK)
+    public void reindexProjects() {
         projectSearchService.reindexAll();
-        return ResponseEntity.ok().build();
     }
 }

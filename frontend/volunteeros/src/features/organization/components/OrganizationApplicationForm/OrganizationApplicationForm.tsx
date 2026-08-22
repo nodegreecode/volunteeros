@@ -1,12 +1,10 @@
 import {useState} from "react";
 import {
     Box,
-    Button, Card, CardContent,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField, Typography,
+    Button,
+    Card,
+    CardContent,
+    Typography,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import {useProfile} from "@/features/auth/authHooks.ts";
@@ -97,8 +95,6 @@ export default function OrganizationApplicationForm({onCancel}: OrganizationAppl
                         </Box>
 
                         <Box component="form" display="flex" gap={2} mt={3} onSubmit={formik.handleSubmit}>
-
-
 
 
                             <Button

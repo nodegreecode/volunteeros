@@ -1,0 +1,11 @@
+name: PROD
+variables:
+  - name: baseUrl
+    value: https://157.180.123.76:443
+    description: ""
+  - name: voluserEmail
+    value: volunteer12345@gmail.com
+    description: ""
+  - name: voluserPassword
+    value: "2222"
+    description: ""

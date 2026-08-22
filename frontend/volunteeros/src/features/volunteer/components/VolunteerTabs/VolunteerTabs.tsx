@@ -1,10 +1,9 @@
 import {Tabs, Tab} from "@mui/material";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import {NavLink} from "react-router-dom";
 
 export default function VolunteerTabs() {
 
-    //const navigate = useNavigate();
     const location = useLocation();
 
     const tabs = [

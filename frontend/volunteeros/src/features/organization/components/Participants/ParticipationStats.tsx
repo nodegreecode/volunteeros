@@ -1,26 +1,6 @@
 import { Card, CardContent, Stack, Typography } from "@mui/material";
 
-const stats = [
-  {
-    label: "Pending",
-    value: 12,
-  },
-  {
-    label: "Approved",
-    value: 35,
-  },
-  {
-    label: "Rejected",
-    value: 4,
-  },
-  {
-    label: "Total",
-    value: 51,
-  },
-];
-
 export default function ParticipationStats({ participations }) {
-  console.log(participations);
 
   const totleParticipations = participations.length ?? 0;
   const rejected = participations.reduce((acc, current) => {

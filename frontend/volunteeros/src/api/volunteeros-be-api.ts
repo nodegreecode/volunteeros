@@ -17,8 +17,8 @@ export const UsersUrls = {
 }
 
 export const OrganizationEndpoints = {
-    organization: BASE_URL + "/api/organizations",
-    application: BASE_URL + "/api/applications",
+    organization: BASE_URL + "/api/organizations/me",
+    application: BASE_URL + "/api/applications/me",
     applications: BASE_URL + "/api/applications/all",
     applicationsByUser: BASE_URL + "/api/applications/{userId}",
     applicationStatus: (applicationId: number) =>
@@ -26,7 +26,7 @@ export const OrganizationEndpoints = {
     organizations: BASE_URL + "/api/organizations/all",
     organizationEdit: (organizationId: number) =>
         `${BASE_URL}/api/organizations/${organizationId}`,
-    myProjects: BASE_URL + "/api/projects",
+    myProjects: BASE_URL + "/api/projects/me",
     createProject: (organizationId: number) =>
         `${BASE_URL}/api/projects/${organizationId}`,
     activeProjects: BASE_URL + "/api/projects/active",
@@ -67,11 +67,10 @@ export const VolunteerEndpoints = {
     projectEvents: (projectId: number) => `${BASE_URL}/api/projects/${projectId}/events`,
     applyForEvent: (projectEventId: number) => `${BASE_URL}/api/project-events/${projectEventId}/registrations`,
     singleProjectEvent: (projectEventId: number) => `${BASE_URL}/api/project-events/${projectEventId}`,
-    singleProjectEventRegistration: (projectEventId: number) => `${BASE_URL}/api/event-registrations/${projectEventId}`,
+    singleProjectEventRegistration: (projectEventId: number) => `${BASE_URL}/api/project-events/${projectEventId}/registration`,
     fetchRegistrationQrCode: (registrationId: number) => `${BASE_URL}/api/event-registrations/${registrationId}/qr`,
     withdrawEventParticipation: (registrationId: number) => `${BASE_URL}/api/event-registrations/${registrationId}/cancel`,
-    nextProjects: (params) => `${BASE_URL}/api/projects/active-next?${params}`,
-    previousProjects: (params) => `${BASE_URL}/api/projects/active-previous?${params}`,
+    nextProjects: (params) => `${BASE_URL}/api/projects/active?${params}`,
     searchProjectsByTitle: (params) => `${BASE_URL}/api/projects/search?${params}`
 } as const;
 
