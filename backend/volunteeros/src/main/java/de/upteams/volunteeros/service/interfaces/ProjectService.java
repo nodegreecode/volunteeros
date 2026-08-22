@@ -1,7 +1,7 @@
 package de.upteams.volunteeros.service.interfaces;
-
-import de.upteams.volunteeros.domain.enums.CursorDirection;
 import de.upteams.volunteeros.domain.enums.PageDirection;
+import de.upteams.volunteeros.domain.enums.CursorDirection;
+import de.upteams.volunteeros.domain.model.ProjectParticipation;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationStatusUpdateResponseDto;
 import de.upteams.volunteeros.dto.project.*;
