@@ -1,5 +1,5 @@
 import {Outlet, useParams} from "react-router-dom";
-import {useProjectEvents} from "@/features/volunteer/volHooks.ts";
+import {useProjectEvents} from "@/features/project/projectHook.ts";
 import Loading from "@/components/common/Loading.tsx";
 
 export default function ProjectEventLayout() {

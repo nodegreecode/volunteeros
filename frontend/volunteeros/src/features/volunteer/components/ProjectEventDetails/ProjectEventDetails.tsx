@@ -14,11 +14,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import {useSingleProjectEvent, useProjectEventRegistration} from "@/features/project-event/projectEventHook.ts";
 import {
     useRegistrationQrCode,
-    useSingleProjectEvent,
-    useSingleProjectEventRegistration, useWithdrawEventParticipation
-} from "@/features/volunteer/volHooks.ts";
+    useWithdrawEventParticipation
+} from "@/features/project-event-registration/projectEventRegistrationHook.ts";
 import Loading from "@/components/common/Loading.tsx";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -36,7 +36,7 @@ export default function ProjectEventDetails() {
     const {
         data: registration,
         isLoading: isLoadingRegistration
-    } = useSingleProjectEventRegistration(Number(projectEventId));
+    } = useProjectEventRegistration(Number(projectEventId));
 
     const {
         data: qrCode,
@@ -108,6 +108,12 @@ export default function ProjectEventDetails() {
                             <Typography variant="caption" color="text.secondary">Location</Typography>
                             <Typography sx={{fontSize: "1.1rem", fontWeight: 600}}>
                                 {event.location}
+                            </Typography>
+                        </Stack>
+                        <Stack spacing={1}>
+                            <Typography variant="caption" color="text.secondary">Registration status</Typography>
+                            <Typography sx={{fontSize: "1.1rem", fontWeight: 600}}>
+                                {registration?.status.toLowerCase()}
                             </Typography>
                         </Stack>
                     </Stack>

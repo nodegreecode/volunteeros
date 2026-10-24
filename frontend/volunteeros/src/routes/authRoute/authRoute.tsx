@@ -9,7 +9,7 @@ export default [
     element: <AuthRouteComponent />,
     children: [
       {
-        path: "/auth",
+        path: "auth",
         element: <AuthLayout />,
         children: [
           {

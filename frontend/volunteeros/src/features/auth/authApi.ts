@@ -1,4 +1,4 @@
-import {AuthUrls} from "@/api/volunteeros-be-api.ts";
+import {AuthUrls, UserUrls} from "@/api/volunteeros-be-api.ts";
 import {
     type RegisterRequestPayload,
     type LoginRequestPayload,
@@ -58,24 +58,6 @@ export async function loginUser(values: LoginRequestPayload) {
         const error = await loginResponse.json() as ApiError;
         throw new Error(error.message);
     }
-}
-
-/**
- *  Fetch user profile
- */
-export async function fetchProfile() {
-
-    const profileResponse = await apiFetch(AuthUrls.profile);
-
-    if (profileResponse.status == 401 || profileResponse.status == 403) {
-        return null;
-    }
-
-    if (!profileResponse.ok) {
-        throw new Error("Failed to load user data");
-    }
-
-    return await profileResponse.json();
 }
 
 /**

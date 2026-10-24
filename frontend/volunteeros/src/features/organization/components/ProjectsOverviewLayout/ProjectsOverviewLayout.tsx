@@ -8,11 +8,17 @@ import {
     Card,
     CardContent
 } from "@mui/material";
-
+import OrganizationProjectsEmpty
+    from "@/features/organization/components/OrganizationProjects/OrganizationProjectsEmpty.tsx";
 import AddIcon from "@mui/icons-material/Add";
 
 export default function ProjectsOverviewLayout() {
     const projects = useOutletContext();
+
+    if (!projects || projects.length === 0) {
+        return <OrganizationProjectsEmpty />;
+    }
+
     return <>
         {/* Header */}
         <Stack direction="row" sx={{justifyContent: "space-between", alignItems: "center", mb: 4}}>

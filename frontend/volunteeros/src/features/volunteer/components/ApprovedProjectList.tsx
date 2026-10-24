@@ -1,4 +1,4 @@
-import {useMyProjects} from "@/features/volunteer/volHooks.ts";
+import {useMyProjects} from "@/features/project/projectHook.ts";
 import Loading from "@/components/common/Loading.tsx";
 import {Grid} from "@mui/material";
 import ApprovedProjectCard from "@/features/volunteer/components/ApprovedProjectCard";

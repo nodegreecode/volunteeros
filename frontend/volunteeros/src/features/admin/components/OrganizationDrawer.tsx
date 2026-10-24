@@ -3,7 +3,7 @@ import DrawerHeader from "@/features/admin/components/OrganizationDrawer/DrawerH
 import OrganizationInfoCard from "@/features/admin/components/OrganizationDrawer/OrganizationInfoCard.tsx";
 import ApplicationsSection from "@/features/admin/components/OrganizationDrawer/ApplicationsSection.tsx";
 import NotesSection from "@/features/admin/components/NotesSection.tsx";
-import { useUserApplications } from "@/features/admin/adminHooks";
+import { useUserApplications } from "@/features/organization-application/orgApplicationHooks.ts";
 import type { Organization } from "@/features/admin/adminTypes";
 import Loading from "@/components/common/Loading.tsx";
 

@@ -1,4 +1,3 @@
-import {useApplicationUpdateStatus, useOrganizations, usePendingApplicaitons} from "@/features/admin/adminHooks.ts";
 import {useState} from "react";
 import type {Organization, OrganizationApplicationResponseDto} from "@/features/admin/adminTypes.ts";
 import Loading from "@/components/common/Loading.tsx";
@@ -7,12 +6,20 @@ import OrganizationTable from "@/features/admin/components/OrganizationTable .ts
 import ApplicationTable from "@/features/admin/components/ApplicationTable.tsx";
 import OrganizationDrawer from "@/features/admin/components/OrganizationDrawer.tsx";
 import ApplicationDrawer from "@/features/admin/components/ApplicationDrawer/ApplicationDrawer.tsx";
+import {
+    useApproveOrganizationApplication,
+    useOrganizationApplications,
+    useRejectOrganizationApplication
+} from "@/features/organization-application/orgApplicationHooks.ts";
+import {useOrganizations} from "@/features/organization/orgHooks";
 
 export default function Organizations() {
     const {organizations, isLoading} = useOrganizations();
-    const {pendingApplications, isLoading: isLoadingApplications} = usePendingApplicaitons();
+    const {pendingApplications, isLoading: isLoadingApplications} = useOrganizationApplications();
 
-    const updateApplicationStatusMutation = useApplicationUpdateStatus();
+    const approveOrganizationApplication = useApproveOrganizationApplication();
+
+    const rejectOrganizationApplication = useRejectOrganizationApplication();
 
     const [tab, setTab] = useState(0);
     const [selectedApplication, setSelectedApplication] =
@@ -24,19 +31,34 @@ export default function Organizations() {
         return <Loading/>;
     }
 
-    function handleStatusUpdate(status: "APPROVED" | "REJECTED") {
+    function handleApproveOrganizationApplication() {
+
         if (!selectedApplication) {
             return;
         }
 
         setSelectedApplication((prev) =>
-            prev ? {...prev, applicationStatus: status} : null,
+            prev ? {...prev, applicationStatus: "APPROVED"} : null,
         );
 
-        updateApplicationStatusMutation.mutate({
-            applicationId: selectedApplication.id,
-            status,
-        });
+        approveOrganizationApplication.mutate({
+            applicationId: selectedApplication.id
+        })
+    }
+
+    function handleRejectOrganizationApplication() {
+
+        if (!selectedApplication) {
+            return;
+        }
+
+        setSelectedApplication((prev) =>
+            prev ? {...prev, applicationStatus: "REJECTED"} : null,
+        );
+
+         rejectOrganizationApplication.mutate({
+            applicationId: selectedApplication.id
+        })
     }
 
     return (
@@ -82,8 +104,8 @@ export default function Organizations() {
                             open={!!selectedApplication}
                             application={selectedApplication}
                             onClose={() => setSelectedApplication(null)}
-                            onApprove={() => handleStatusUpdate("APPROVED")}
-                            onReject={() => handleStatusUpdate("REJECTED")}
+                            onApprove={handleApproveOrganizationApplication}
+                            onReject={handleRejectOrganizationApplication}
                         />
                     )}
                 </Stack>

@@ -1,4 +1,5 @@
 package de.upteams.volunteeros.service.interfaces;
+
 import de.upteams.volunteeros.domain.enums.PageDirection;
 import de.upteams.volunteeros.domain.enums.CursorDirection;
 import de.upteams.volunteeros.domain.model.ProjectParticipation;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public interface ProjectService {
 
-    ProjectResponseDto createProject( String email, ProjectCreateRequestDto requestDto);
+    ProjectResponseDto createProject(String email, ProjectCreateRequestDto requestDto);
 
     ProjectResponseDto editProject(Long projectId, ProjectEditRequestDto requestDto, String email);
 
@@ -19,9 +20,9 @@ public interface ProjectService {
 
     ProjectParticipationStatusUpdateResponseDto withdraw(Long projectId);
 
-    ProjectResponseDto  activateProject(Long projectId);
+    ProjectResponseDto activateProject(Long projectId);
 
-    ProjectResponseDto cancelProject(Long projectId, String email);
+    ProjectResponseDto cancelProject(Long projectId);
 
     ProjectResponseDto completeProject(Long projectId, String email);
 
@@ -52,7 +53,7 @@ public interface ProjectService {
 
     List<ParticipantsResponseDto> getApprovedProjectParticipants(Long projectId);
 
-    CursorPage<ProjectResponseDto>  activeProjectsPage(String cursor, int limit, PageDirection direction);
+    CursorPage<ProjectResponseDto> activeProjectsPage(String cursor, int limit, PageDirection direction);
 
     CursorPage<ProjectResponseDto> previousPage(String cursor, int limit);
 

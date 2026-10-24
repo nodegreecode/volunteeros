@@ -11,9 +11,9 @@ http:
     data: |-
       {
         "organizationForm": "NON_PROFIT",
-        "organizationName": "Example Organization",
+        "organizationName": "Helping Angels",
         "description": "An organization focused on community development and social initiatives.",
-        "memberRole": "FOUNDER",
+        "memberRole": "OWNER",
         "phone": "+491234567890",
         "email": "contact@example.org",
         "website": "https://www.example.org",
@@ -29,3 +29,4 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true

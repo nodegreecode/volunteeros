@@ -7,10 +7,7 @@ import {
     Stack,
     Chip, Box, Collapse,
 } from "@mui/material";
-import {
-
-    useApplyForProject,
-} from "@/features/volunteer/volHooks.ts";
+import {useApplyForProject,} from "@/features/project/projectHook.ts";
 
 
 import IconButton from "@mui/material/IconButton";

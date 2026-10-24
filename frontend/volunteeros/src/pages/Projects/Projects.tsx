@@ -1,4 +1,5 @@
-import {type ProjectResponseDto, useNextProjects, useSearchProjectsByTitle} from "@/features/volunteer/volHooks.ts";
+
+import {useNextProjects, useSearchProjectsByTitle} from "@/features/project/projectHook.ts";
 import {
     Box,
     Container,
@@ -14,6 +15,7 @@ import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import * as React from "react";
+import type {ProjectResponse} from "@/features/project/projectTypes.ts";
 
 const PAGE_SIZE = 5;
 
@@ -23,8 +25,7 @@ export default function Projects() {
     const [submittedSearch, setSubmittedSearch] = useState("");
 
     const [direction, setDirection] = useState<"NEXT" | "PREVIOUS">("NEXT");
-    const [cursor, setCursor] = useState(null);
-
+    const [cursor, setCursor] = useState<string|null>(null);
 
     const nextProjectsQuery = useNextProjects({
         direction,
@@ -109,7 +110,7 @@ export default function Projects() {
                 />
 
                 <Grid container spacing={3}>
-                    {projects.map((project: ProjectResponseDto) => (
+                    {projects.map((project: ProjectResponse) => (
                         <Grid size={12} key={project.id}>
                             <ProjectCard project={project}/>
                         </Grid>

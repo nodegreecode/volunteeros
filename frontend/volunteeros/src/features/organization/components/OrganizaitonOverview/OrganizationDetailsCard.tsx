@@ -48,7 +48,7 @@ export default function OrganizationDetailsCard({
                 >
                     <Box sx={{display: "flex", alignItems: "center", gap: 2}}>
                         <Avatar
-                            src={organization?.avatar.url || undefined}
+                            src={organization?.avatar?.url || undefined}
                             sx={{
                                 width: 80,
                                 height: 80,

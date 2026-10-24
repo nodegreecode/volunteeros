@@ -5,7 +5,7 @@ import ParticipantInfoCard from "./ParticipantInfoCard";
 import ParticipationActions from "./ParticipationActions";
 
 import type { Participant } from "@/features/organization/components/Participants/ParticipationTable";
-import { useUpdateParticipationStatus } from "@/features/organization/orgHooks.ts";
+import { useUpdateParticipationStatus } from "@/features/project-participation/projectParticipationHook.ts";
 
 type ParticipantDrawerProps = {
   open: boolean;
@@ -19,25 +19,16 @@ enum ParticipationStatus {
   CANCELLED = "CANCELLED",
 }
 
-export default function ParticipantDrawer({
-  open,
-  participant,
-  onClose,
-}: ParticipantDrawerProps) {
-  const [currentParticipant, setCurrentParticipant] =
-    useState<Participant | null>(participant);
+export default function ParticipantDrawer({open, participant, onClose}: ParticipantDrawerProps) {
+  const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(participant);
 
   useEffect(() => {
     setCurrentParticipant(participant);
   }, [participant]);
 
-  const { mutate: updateParticipationStatus, isPending } =
-    useUpdateParticipationStatus();
+  const { mutate: updateParticipationStatus, isPending } = useUpdateParticipationStatus();
 
-  function handleStatusUpdate(
-    participantId: number,
-    status: ParticipationStatus,
-  ) {
+  function handleStatusUpdate(participantId: number, status: ParticipationStatus,) {
     updateParticipationStatus(
       {
         participationId: participantId,

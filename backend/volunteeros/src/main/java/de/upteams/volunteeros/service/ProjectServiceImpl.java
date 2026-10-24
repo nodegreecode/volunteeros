@@ -200,13 +200,13 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     @CacheEvict(value = "projects", allEntries = true)
-    public ProjectResponseDto cancelProject(Long projectId, String email) {
+    public ProjectResponseDto cancelProject(Long projectId) {
 
         Objects.requireNonNull(projectId, "Project id cannot be null");
 
-        Project entity = projectRepository.findByIdAndOrganizationOwnerEmail(projectId, email).orElseThrow(() -> {
+        Project entity = projectRepository.findById(projectId).orElseThrow(() -> {
             logger.warn("Project not found: {}", projectId);
-            return new EntityNotFoundException("Entity not found");
+            return new EntityNotFoundException("Project not found");
         });
 
         entity.cancel();
@@ -225,7 +225,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project entity = projectRepository.findByIdAndOrganizationOwnerEmail(projectId, email).orElseThrow(() -> {
             logger.warn("Project not found: {}", projectId);
-            return new EntityNotFoundException("Entity not found");
+            return new EntityNotFoundException("Project not found");
         });
 
         entity.complete();
@@ -246,7 +246,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project entity = projectRepository.findByIdAndOrganizationOwnerEmail(projectId, email).orElseThrow(() -> {
             logger.warn("Project not found: {}", projectId);
-            return new EntityNotFoundException("Entity not found");
+            return new EntityNotFoundException("Project not found");
         });
 
         projectRepository.delete(entity);
@@ -271,7 +271,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectParticipation participation = participationRepository.findById(participationId).orElseThrow(() -> {
             logger.warn("Participation not found:  participationId={}", participationId);
-            return new EntityNotFoundException("Entity not found");
+            return new EntityNotFoundException("Project not found");
         });
 
         participation.setStatus(newStatus);
@@ -284,7 +284,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> {
             logger.warn("User not found {}", email);
-            return new EntityNotFoundException("User not found");
+            return new EntityNotFoundException("Project not found");
         });
 
         return projectParticipationRepository.findParticipationsByUserId(user.getId());

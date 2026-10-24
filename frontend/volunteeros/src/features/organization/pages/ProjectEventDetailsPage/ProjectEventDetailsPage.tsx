@@ -1,7 +1,7 @@
 import {Outlet, useParams} from "react-router-dom";
 import {Box, Chip, Paper, Typography} from "@mui/material";
 import ProjectEventTabs from "@/features/organization/components/ProjectEventTabs/ProjectEventTabs.tsx";
-import {useSingleProjectEvent} from "@/features/organization/orgHooks.ts";
+import {useSingleProjectEvent} from "@/features/project-event/projectEventHook.ts";
 import Loading from "@/components/common/Loading.tsx";
 
 const getEventStatusColor = (status) => {

@@ -1,15 +1,11 @@
 import {Box, Button, TextField, Typography, Card} from "@mui/material";
 import {useFormik} from "formik";
 import {useNavigate} from "react-router-dom";
-import {
-    useCreateProject,
-    useOrganization,
-} from "@/features/organization/orgHooks";
+import {useCreateProject,} from "@/features/project/projectHook.ts";
 import type {ProjectCreateRequest} from "@/features/organization/orgApi";
 
 export default function OrganizationCreateProject() {
     const navigate = useNavigate();
-    const {data: organization} = useOrganization();
 
     const createProject = useCreateProject();
 
@@ -25,7 +21,6 @@ export default function OrganizationCreateProject() {
 
         onSubmit: async (values) => {
             await createProject.mutateAsync({
-                organizationId: organization.id,
                 values: {
                     ...values,
                     startDate: new Date(values.startDate).toISOString(),
@@ -99,7 +94,7 @@ export default function OrganizationCreateProject() {
 
                     <TextField
                         label="Start Date"
-                        type="datetime-local"
+                        type="date"
                         fullWidth
                         margin="normal"
                         name="startDate"
@@ -115,7 +110,7 @@ export default function OrganizationCreateProject() {
 
                     <TextField
                         label="End Date"
-                        type="datetime-local"
+                        type="date"
                         fullWidth
                         margin="normal"
                         name="endDate"

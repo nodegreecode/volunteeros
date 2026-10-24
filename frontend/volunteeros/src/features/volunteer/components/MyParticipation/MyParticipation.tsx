@@ -1,4 +1,4 @@
-import {useMyParticipations} from "@/features/volunteer/volHooks.ts";
+import {useMyParticipations} from "@/features/project-participation/projectParticipationHook.ts";
 import Loading from "@/components/common/Loading.tsx";
 import {Stack} from "@mui/material";
 import ApplicationCard from "@/features/volunteer/components/ApplicationCard.tsx";

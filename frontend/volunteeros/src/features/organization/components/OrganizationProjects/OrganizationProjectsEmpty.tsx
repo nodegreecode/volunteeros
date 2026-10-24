@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { useOrganization } from "@/features/organization/orgHooks";
 
 export default function OrganizationProjectsEmpty() {
-  const { organization, isLoading } = useOrganization();
+  const { data: organization, isLoading } = useOrganization();
   const canCreateProject = !!organization;
+
+
   return (
     <div>
       <h2>No projects yet</h2>

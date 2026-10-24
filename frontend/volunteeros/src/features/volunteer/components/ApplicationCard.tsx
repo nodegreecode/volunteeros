@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 
 import type {ProjectParticipationResponseDto} from "@/features/volunteer/volTypes";
-import {useWithdrawParticipation} from "@/features/volunteer/volHooks.ts";
+import {useWithdrawParticipation} from "@/features/project-participation/projectParticipationHook.ts";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Divider from "@mui/material/Divider";
@@ -20,6 +20,28 @@ import {useState} from "react";
 
 type ApplicationCardProps = {
     application: ProjectParticipationResponseDto;
+};
+
+const getStatusColor = (status) => {
+    switch (status) {
+        case "APPROVED":
+            return "success";
+        case "PENDING":
+            return "warning";
+        case "CANCELLED":
+            return "error";
+        case "REJECTED":
+            return "error";
+        default:
+            return "default";
+    }
+}
+
+const statusLabels = {
+    APPROVED: "Approved",
+    PENDING: "Pending",
+    CANCELLED: "Cancelled",
+    REJECTED: "Rejected",
 };
 
 
@@ -64,7 +86,7 @@ export default function ApplicationCard({application}: ApplicationCardProps) {
                     <Stack spacing={1}>
                         <Typography variant="caption" color="text.secondary">Status</Typography>
                         <Typography sx={{fontSize: "1.1rem", fontWeight: 600}}>
-                            <Chip label={application.status} color="success"/>
+                            <Chip label={statusLabels[application.status]} color={getStatusColor(application.status)}/>
                         </Typography>
                     </Stack>
                     <Stack spacing={1}>
@@ -103,7 +125,7 @@ export default function ApplicationCard({application}: ApplicationCardProps) {
                     </Typography>
 
                     <Typography variant="body2">
-                       Description
+                        Description
                     </Typography>
                 </CardContent>
 

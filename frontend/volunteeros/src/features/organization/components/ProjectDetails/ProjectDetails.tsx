@@ -45,7 +45,7 @@ const eventStatusLabels = {
 
 export default function ProjectDetails() {
 
-    const events = useOutletContext();
+    const {events} = useOutletContext();
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [page, setPage] = useState(0);

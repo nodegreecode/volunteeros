@@ -1,5 +1,5 @@
 import {Outlet, useOutletContext} from "react-router-dom";
-import Header from "@/components/Header/Header.tsx";
+import AppHeader from "@/components/AppHeader/AppHeader.tsx";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import {Box} from "@mui/material";
 import {menuConfig} from "@/components/Sidebar/menuConfig.ts";
@@ -23,7 +23,7 @@ export default function DashboardLayout() {
                 <Sidebar items={menuItems} isOpen={isOpen} user={user}/>
 
                 <Box sx={{display: "flex", flexDirection: "column", flex: 1,}}>
-                    <Header drawerOpen={isOpen} toggleDrawer={toggleDrawer}/>
+                    <AppHeader toggleDrawer={toggleDrawer}/>
 
                     <Box component="main" sx={{flex: 1, py: 3, px: 10}}>
                         <Box sx={{maxWidth: 1300, mx: "auto", width: "100%"}}>

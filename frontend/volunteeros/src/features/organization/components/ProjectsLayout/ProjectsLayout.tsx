@@ -1,8 +1,7 @@
 import {Outlet} from "react-router-dom";
-import {useOrganizationProjects} from "@/features/organization/orgHooks.ts";
+import {useOrganizationProjects} from "@/features/project/projectHook.ts";
 import Loading from "@/components/common/Loading.tsx";
-import OrganizationProjectsEmpty
-    from "@/features/organization/components/OrganizationProjects/OrganizationProjectsEmpty.tsx";
+
 
 
 export default function ProjectsLayout() {
@@ -13,9 +12,6 @@ export default function ProjectsLayout() {
         return <Loading />;
     }
 
-    if (!projects || projects.length === 0) {
-        return <OrganizationProjectsEmpty />;
-    }
     return<>
         <Outlet context={projects}/>
     </>

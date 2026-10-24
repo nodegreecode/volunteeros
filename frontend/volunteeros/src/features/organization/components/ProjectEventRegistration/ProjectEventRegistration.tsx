@@ -16,7 +16,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {Link, useParams} from "react-router-dom";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useProjectEventRegistrations, useStartCheckIn} from "@/features/organization/orgHooks";
+import {useProjectEventRegistrations, useStartCheckIn} from "@/features/project-event/projectEventHook.ts";
 import Loading from "@/components/common/Loading.tsx";
 import {useOutletContext} from "react-router-dom";
 

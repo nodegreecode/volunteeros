@@ -2,7 +2,7 @@ import {Box, Drawer, Card, IconButton,  Divider, Typography, CardContent, CardMe
 import {useState, useEffect} from "react";
 
 import type {Participant} from "@/features/organization/components/Participants/ParticipationTable";
-import {useUpdateParticipationStatus} from "@/features/organization/orgHooks.ts";
+import {useUpdateParticipationStatus} from "@/features/project-participation/projectParticipationHook.ts";
 import CloseIcon from "@mui/icons-material/Close";
 
 type ParticipantDrawerProps = {

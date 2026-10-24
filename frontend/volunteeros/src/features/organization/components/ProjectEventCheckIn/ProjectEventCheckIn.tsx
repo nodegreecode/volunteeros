@@ -16,12 +16,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import {useState} from "react";
 import {useOutletContext} from "react-router-dom";
-import {
-    useCheckInVolunteer,
-    useProjectEventRegistrations,
-    useStartProjectEvent
-} from "@/features/organization/orgHooks.ts";
+import {useProjectEventRegistrations, useStartProjectEvent} from "@/features/project-event/projectEventHook.ts";
 import Loading from "@/components/common/Loading.tsx";
+import {useCheckInVolunteer} from "@/features/project-event-registration/projectEventRegistrationHook.ts";
 
 
 const getStatusColor = (status) => {
@@ -90,6 +87,7 @@ export function ProjectEventCheckIn() {
     }
 
     function handleCancel() {
+
     }
 
     function handleStartEvent() {

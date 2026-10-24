@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import {useFormik} from "formik";
 import {useState} from "react";
 import {useOutletContext, useParams} from "react-router-dom";
-import {useCancelProjectEvent, useCompleteProjectEvent, useEditProjectEvent} from "@/features/organization/orgHooks.ts";
+import {useEditProjectEvent, useCancelProjectEvent, useCompleteProjectEvent} from "@/features/project-event/projectEventHook.ts";
 
 export default function ProjectEventInformation() {
 

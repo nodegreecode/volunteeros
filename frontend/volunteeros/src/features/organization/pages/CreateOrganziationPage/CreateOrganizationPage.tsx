@@ -5,8 +5,9 @@ import {useState} from "react";
 import {Stack, Box, Button, Card, CardContent, Typography} from "@mui/material";
 import GeneralInformationStep
     from "@/features/organization/components/GeneralInformationStep/GeneralInformationStep.tsx";
-import {useProfile} from "@/features/auth/authHooks.ts";
-import {useApplyApplication} from "@/features/organization/orgHooks.ts";
+
+
+import {useCreateOrganizationApplication} from "@/features/organization-application/orgApplicationHooks.ts";
 import {type FormikHelpers, useFormik} from "formik";
 import type {ApplicationRequestDto} from "@/features/organization/orgApi.ts";
 import AddressStep from "@/features/organization/components/ AddressStep/ AddressStep.tsx";
@@ -64,9 +65,7 @@ const steps = [GeneralInformationStep, AddressStep, ContactStep, ReviewStep];
 
 export default function CreateOrganizationPage() {
 
-    const {data: user} = useProfile();
-
-    const applyMutation = useApplyApplication();
+    const applyMutation = useCreateOrganizationApplication();
 
     const navigate = useNavigate();
 
@@ -119,7 +118,6 @@ export default function CreateOrganizationPage() {
         onSubmit: async (values, helper: FormikHelpers<typeof initialValues>) => {
 
             const payload: ApplicationRequestDto = {
-                userId: user.id,
                 organizationForm: values.organizationForm,
                 organizationName: values.organizationName,
                 description: values.description,

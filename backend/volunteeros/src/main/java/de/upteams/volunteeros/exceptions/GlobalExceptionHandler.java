@@ -3,6 +3,7 @@ package de.upteams.volunteeros.exceptions;
 import com.cloudinary.Api;
 import de.upteams.volunteeros.dto.errors.ApiError;
 import de.upteams.volunteeros.exceptions.types.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -221,6 +222,14 @@ public class GlobalExceptionHandler {
         String message = e.getMessage();
         logger.warn(message, e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiError(message));
+    }
+
+    @ExceptionHandler( EntityNotFoundException.class)
+    public ResponseEntity<ApiError> handleException( EntityNotFoundException e) {
+        String message = e.getMessage();
+        logger.warn(message, e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ApiError(message));
     }
 

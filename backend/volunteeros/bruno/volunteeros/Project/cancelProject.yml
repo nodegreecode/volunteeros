@@ -1,0 +1,20 @@
+info:
+  name: cancelProject
+  type: http
+  seq: 12
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/projects/:projectId/cancel"
+  params:
+    - name: projectId
+      value: "310"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

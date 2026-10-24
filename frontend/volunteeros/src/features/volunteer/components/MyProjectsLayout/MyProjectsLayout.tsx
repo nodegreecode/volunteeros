@@ -5,9 +5,8 @@ import {
     ProjectDetailsDrawer
 } from "@/features/volunteer/components/ProjectDetailsDrawer/ProjectDetailsDrawer.tsx";
 import {useSearchParams} from "react-router-dom";
-import {useSingleProject} from "@/features/organization/orgHooks.ts";
 import Loading from "@/components/common/Loading.tsx";
-import {useProjectEvents} from "@/features/volunteer/volHooks.ts";
+import {useProjectEvents, useSingleProject} from "@/features/project/projectHook.ts";
 import ProjectEventsDrawer from "@/features/volunteer/components/ProjectEventsDrawer/ProjectEventsDrawer.tsx";
 
 export default function MyProjectsLayout() {

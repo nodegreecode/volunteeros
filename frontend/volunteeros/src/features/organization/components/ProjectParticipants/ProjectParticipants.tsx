@@ -1,6 +1,6 @@
-import {useProjectParticipants} from "@/features/organization/orgHooks.ts";
+import {useProjectParticipants} from "@/features/project/projectHook.ts";
 import Loading from "@/components/common/Loading.tsx";
-import {useParams} from "react-router-dom";
+import {useOutletContext, useParams} from "react-router-dom";
 import {
     Chip, Menu, MenuItem,
     Paper,
@@ -43,22 +43,14 @@ const eventStatusLabels = {
 
 export function ProjectParticipants() {
     const {projectId} = useParams();
+    const {participants} = useOutletContext();
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const {
-        data: projectParticipants,
-        isLoading: isLoadingProjectParticipants,
-        isError,
-        error
-    } = useProjectParticipants(Number(projectId));
 
-    if (isLoadingProjectParticipants) {
-        return <Loading/>;
-    }
-
-    const paginatedProjectParticipants = projectParticipants.slice(
+    const paginatedProjectParticipants = participants.slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
     );
@@ -107,7 +99,7 @@ export function ProjectParticipants() {
             </TableContainer>
             <TablePagination
                 component="div"
-                count={projectParticipants.length}
+                count={participants.length}
                 page={page}
                 onPageChange={(_, newPage) => setPage(newPage)}
                 rowsPerPage={rowsPerPage}

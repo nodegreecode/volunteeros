@@ -1,4 +1,5 @@
 package de.upteams.volunteeros.controller;
+
 import de.upteams.volunteeros.domain.enums.PageDirection;
 import de.upteams.volunteeros.domain.enums.CursorDirection;
 import de.upteams.volunteeros.dto.participation.ProjectParticipationResponseDto;
@@ -46,8 +47,8 @@ public class ProjectController {
     }
 
     @PatchMapping("/{projectId}/cancel")
-    public ProjectResponseDto cancelProject(@PathVariable Long projectId, Authentication authentication) {
-        return projectService.cancelProject(projectId, authentication.getName());
+    public ProjectResponseDto cancelProject(@PathVariable Long projectId) {
+        return projectService.cancelProject(projectId);
     }
 
     @PatchMapping("/{projectId}/complete")
@@ -82,7 +83,9 @@ public class ProjectController {
     }
 
     @GetMapping("/active")
-    public CursorPage<ProjectResponseDto> activeProjects(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "5") int limit, @RequestParam(defaultValue = "NEXT") PageDirection direction) {
+    public CursorPage<ProjectResponseDto> activeProjects(@RequestParam(required = false) String cursor,
+                                                         @RequestParam(defaultValue = "5") int limit,
+                                                         @RequestParam(defaultValue = "NEXT") PageDirection direction) {
         return projectService.activeProjectsPage(cursor, limit, direction);
     }
 

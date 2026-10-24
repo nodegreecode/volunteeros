@@ -1,5 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
-import { useCreateProjectEvent} from "@/features/organization/orgHooks.ts";
+import { useCreateProjectEvent} from "@/features/project/projectHook.ts";
 import {useFormik} from "formik";
 import type {ProjectCreateRequest} from "@/features/organization/orgApi.ts";
 import {Box, Button, Card, CardContent, TextField, Typography} from "@mui/material";

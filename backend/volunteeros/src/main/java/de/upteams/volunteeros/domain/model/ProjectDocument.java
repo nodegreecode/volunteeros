@@ -42,6 +42,8 @@ public class ProjectDocument {
     private String createdAt;
 
 
+    @Getter
+    @Setter
     public static class ImageDocument {
         private String publicId;
         private String secureUrl;

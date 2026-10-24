@@ -13,12 +13,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@mui/material/TextField";
 import {type ChangeEvent, useState} from "react";
-import {
-    useEditProject,
-    useProjectEvents,
-    useSingleProject,
-    useUploadProjectImage
-} from "@/features/organization/orgHooks.ts";
+import {useEditProject, useProjectEvents} from "@/features/project/projectHook.ts";
+import {useUploadProjectImage, useSingleProject, useProjectParticipants} from "@/features/project/projectHook.ts"
 import {useFormik} from "formik";
 import Loading from "@/components/common/Loading.tsx";
 import ProjectDetailsTabs from "@/features/organization/components/ProjectDetailsTabs/ProjectDetailsTabs.tsx";
@@ -83,7 +79,12 @@ export default function ProjectDetailsLayout() {
 
     const {mutate: editProject, isPending: isUpdatingProject} = useEditProject();
 
-    const {data: events = [], isLoading: isLoadingEvents, isError, error} = useProjectEvents(Number(projectId));
+    const {data: events = [], isLoading: isLoadingEvents} = useProjectEvents(Number(projectId));
+
+    const {
+        data: participants = [],
+        isLoading: isLoadingProjectParticipants
+    } = useProjectParticipants(Number(projectId));
 
     const formik = useFormik({
         initialValues: {
@@ -95,7 +96,7 @@ export default function ProjectDetailsLayout() {
         onSubmit: (values) => {
             editProject(
                 {
-                    projectId: projectId,
+                    projectId: Number(projectId),
                     values: {
                         title: values.title,
                         description: values.description,
@@ -111,7 +112,7 @@ export default function ProjectDetailsLayout() {
         }
     })
 
-    if (isLoadingProject || isLoadingEvents) {
+    if (isLoadingProject || isLoadingEvents || isLoadingProjectParticipants) {
         return <Loading/>
     }
 
@@ -208,7 +209,7 @@ export default function ProjectDetailsLayout() {
             </Card>
 
             <ProjectDetailsTabs/>
-            <Outlet context={events}/>
+            <Outlet context={{events, participants}}/>
         </Box>
     </>
 }

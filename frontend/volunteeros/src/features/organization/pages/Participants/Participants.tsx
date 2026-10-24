@@ -1,4 +1,4 @@
-import {useMyParticipants} from "@/features/volunteer/volHooks.ts";
+import {useMyParticipants} from "@/features/project-participation/projectParticipationHook.ts";
 import Loading from "@/components/common/Loading.tsx";
 import {Box, Stack, Typography} from "@mui/material";
 import ParticipationStats from "@/features/organization/components/Participants/ParticipationStats.tsx";
@@ -16,8 +16,7 @@ export default function Participants() {
         return (
             <Box>
                 <Typography color="text.secondary">
-                    You don't have an organization yet. Create an organization to start
-                    receiving project applications.
+                    You don't have participants yet.
                 </Typography>
             </Box>
         );

@@ -3,7 +3,7 @@ import {useState} from "react";
 import {
     useProjectEvents,
     useSingleProject,
-} from "@/features/organization/orgHooks.ts";
+} from "@/features/project/projectHook.ts";
 import Loading from "@/components/common/Loading.tsx";
 import {
     Box, Card, CardContent,
@@ -24,7 +24,7 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Divider from "@mui/material/Divider";
-import {useApplyForEvent} from "@/features/volunteer/volHooks.ts";
+import {useApplyForEvent} from "@/features/project-event/projectEventHook.ts";
 
 const getEventStatusColor = (status) => {
     switch (status) {

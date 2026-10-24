@@ -52,7 +52,7 @@ export default [
         element: <ProtectedRouteComponent/>,
         children: [
             {
-                path: "/app",
+                path: "app",
                 children: [
                     {
                         index: true,
@@ -151,8 +151,7 @@ export default [
                                                                             {
                                                                                 path: "registration",
                                                                                 element: <ProjectEventRegistration/>,
-                                                                                handle: {title: "Project Event Registration"}
-
+                                                                                handle: {title: "Project Event Registration"},
                                                                             },
                                                                             {
                                                                                 path: "check-in",
@@ -189,11 +188,11 @@ export default [
                                                 path: "projects",
                                                 element: <Projects/>,
                                                 handle: {title: "Browse Projects"},
-                                               /* children: [
-                                                    {
-                                                        index: true,
-                                                    },
-                                                ]*/
+                                                /* children: [
+                                                     {
+                                                         index: true,
+                                                     },
+                                                 ]*/
                                             },
                                             {
                                                 path: "my-projects",

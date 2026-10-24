@@ -1,4 +1,3 @@
-import { useAuth } from "@/features/auth/authHooks.ts";
 import {
   Box,
   Card,

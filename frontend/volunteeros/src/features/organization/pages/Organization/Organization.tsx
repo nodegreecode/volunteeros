@@ -1,4 +1,5 @@
-import {useApplication, useOrganization} from "@/features/organization/orgHooks.ts";
+import {  useOrganization} from "@/features/organization/orgHooks.ts";
+import {useOrganizationApplication} from "@/features/organization-application/orgApplicationHooks.ts";
 import Loading from "@/components/common/Loading.tsx";
 import OrganizationEmpty from "@/features/organization/components/OrganizationEmpty.tsx";
 import OrganizationPending from "@/features/organization/components/OrganizationPending.tsx";
@@ -7,7 +8,7 @@ import {Typography} from "@mui/material";
 import OrganizationOverview from "@/features/organization/components/OrganizationOverview.tsx";
 
 export default function Organization() {
-    const {data: application, isLoading: applicationLoading} = useApplication();
+    const {data: application, isLoading: applicationLoading} = useOrganizationApplication();
     const {data: organization, isLoading: organizationLoading} = useOrganization();
 
     if (organizationLoading || applicationLoading) {

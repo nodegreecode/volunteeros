@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 
 import ParticipantDrawer from "@/features/organization/components/Participants/ParticipantDrawer";
-import { useUpdateParticipationStatus } from "@/features/organization/orgHooks.ts";
+import { useUpdateParticipationStatus } from "@/features/project-participation/projectParticipationHook.ts";
 
 function statusColor(status: string) {
   switch (status) {
@@ -51,14 +51,11 @@ interface ParticipationTableProps {
   participants: Participant[];
 }
 
-export default function ParticipationTable({
-  participants,
-}: ParticipationTableProps) {
-  const { mutate: updateParticipationStatus, isPending } =
-    useUpdateParticipationStatus();
+export default function ParticipationTable({participants}: ParticipationTableProps) {
 
-  const [selectedParticipant, setSelectedParticipant] =
-    useState<Participant | null>(null);
+  const { mutate: updateParticipationStatus, isPending } = useUpdateParticipationStatus();
+
+  const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -67,10 +64,8 @@ export default function ParticipationTable({
     setDrawerOpen(true);
   }
 
-  function handleStatusUpdate(
-    participantId: number,
-    status: ParticipationStatus,
-  ) {
+  function handleStatusUpdate(participantId: number, status: ParticipationStatus) {
+
     updateParticipationStatus({
       participationId: participantId,
       status: status,

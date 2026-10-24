@@ -1,14 +1,10 @@
-import {BrowserRouter, RouterProvider} from "react-router-dom";
-import { useAuth } from "@/features/auth/authHooks.ts";
-//import Router from "./router";
-
-import {router} from "./router";
+import {RouterProvider} from "react-router-dom";
+import {router} from "./router.tsx";
 
 function App() {
-  useAuth();
-  return (
+    return (
         <RouterProvider router={router}/>
-  );
+    );
 }
 
 export default App;
